@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1"/>
+<title>Comercio Exterior de Chile 2025 · Puntos de transferencia de carga</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<style>
+:root{
+  --bg:#0f172a; --panel:#ffffff; --ink:#0f172a; --mut:#64748b; --line:#e2e8f0;
+  --mar:#2563eb; --aer:#f59e0b; --ter:#16a34a; --nac:#7c3aed;
+  --exp:#0d9488; --imp:#ea580c; --soft:#f1f5f9;
+}
+*{box-sizing:border-box}
+html,body{margin:0;height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--ink)}
+body{display:flex;flex-direction:column;background:var(--soft)}
+header{background:var(--bg);color:#fff;padding:10px 18px;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+header h1{font-size:16px;margin:0;font-weight:600;letter-spacing:.2px}
+header .sub{font-size:12px;color:#94a3b8}
+.badge{background:#1e293b;border:1px solid #334155;border-radius:999px;padding:3px 10px;font-size:11px;color:#cbd5e1}
+.badge b{color:#fff}
+.spacer{flex:1}
+.app{flex:1;display:flex;min-height:0}
+.mapwrap{flex:1;position:relative;min-width:0}
+#map{position:absolute;inset:0;background:#dbeafe}
+.panel{width:430px;background:var(--panel);border-left:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.controls{position:absolute;top:10px;left:10px;z-index:600;display:flex;flex-direction:column;gap:8px}
+.seg{background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.15);display:flex;overflow:hidden}
+.seg button{border:0;background:#fff;padding:7px 12px;font-size:12.5px;cursor:pointer;color:var(--mut);font-weight:600}
+.seg button.on{background:var(--bg);color:#fff}
+.seg.small button{padding:5px 10px;font-size:11.5px}
+.legend{background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.15);padding:8px 11px;font-size:11.5px;color:var(--mut)}
+.legend .row{display:flex;align-items:center;gap:6px;margin:2px 0}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block}
+.search{position:absolute;top:10px;right:10px;z-index:600}
+.search input{border:0;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.15);padding:8px 12px;font-size:13px;width:220px}
+.results{position:absolute;top:42px;right:0;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.18);max-height:300px;overflow:auto;width:240px;display:none}
+.results div{padding:7px 12px;font-size:12.5px;cursor:pointer;border-bottom:1px solid var(--soft)}
+.results div:hover{background:var(--soft)}
+.phead{padding:14px 16px 10px;border-bottom:1px solid var(--line)}
+.phead .ptipo{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
+.phead h2{margin:3px 0 2px;font-size:18px}
+.phead .preg{font-size:12px;color:var(--mut)}
+.kpis{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:11px}
+.kpi{background:var(--soft);border-radius:9px;padding:8px 10px}
+.kpi .l{font-size:10px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
+.kpi .v{font-size:15px;font-weight:700;margin-top:2px}
+.kpi.exp .v{color:var(--exp)} .kpi.imp .v{color:var(--imp)}
+.tabs{display:flex;border-bottom:1px solid var(--line);padding:0 10px}
+.tabs button{border:0;background:none;padding:10px 12px;font-size:13px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--bg)}
+.tabbody{flex:1;overflow:auto;padding:14px 16px}
+.sect{margin-bottom:18px}
+.sect h3{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);margin:0 0 8px}
+.bars .b{margin:5px 0}
+.bars .b .t{display:flex;justify-content:space-between;font-size:12px;margin-bottom:2px}
+.bars .b .t .pct{color:var(--mut);font-variant-numeric:tabular-nums}
+.bars .b .track{height:7px;background:var(--soft);border-radius:5px;overflow:hidden}
+.bars .b .fill{height:100%;border-radius:5px}
+.chartbox{position:relative;height:200px;margin-top:6px}
+.note{font-size:11px;color:var(--mut);background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:7px 9px;margin-top:6px}
+.cmp-pick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
+.cmp-pick .chip{font-size:11.5px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:#fff}
+.cmp-pick .chip.on{background:var(--bg);color:#fff;border-color:var(--bg)}
+footer{background:#fff;border-top:1px solid var(--line);padding:8px 16px;font-size:10.5px;color:var(--mut);line-height:1.45}
+.leaflet-tooltip.wt{font-size:12px}
+.muted{color:var(--mut);font-size:12px}
+@media (max-width:880px){.app{flex-direction:column}.panel{width:100%;height:48%}.mapwrap{height:52%}}
+</style>
+</head>
+<body>
+<header>
+  <div>
+    <h1>Comercio Exterior de Chile · <span style="color:#38bdf8">2025</span></h1>
+    <div class="sub">Puntos de transferencia de carga — perfil de comercio con el mundo</div>
+  </div>
+  <div class="spacer"></div>
+  <div class="badge" id="badgeExp">Export · <b>—</b></div>
+  <div class="badge" id="badgeImp">Import · <b>—</b></div>
+  <div class="badge" id="badgePts">— puntos</div>
+</header>
+
+<div class="app">
+  <div class="mapwrap">
+    <div id="map"></div>
+    <div class="controls">
+      <div class="seg" id="viewSeg">
+        <button data-v="puntos" class="on">Puntos</button>
+        <button data-v="influencia">Influencia nacional</button>
+        <button data-v="mundo">Mundo</button>
+      </div>
+      <div class="seg small" id="metricSeg">
+        <button data-m="total" class="on">Total</button>
+        <button data-m="exp">Exportación</button>
+        <button data-m="imp">Importación</button>
+      </div>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="search">
+      <input id="q" placeholder="Buscar punto…" autocomplete="off"/>
+      <div class="results" id="results"></div>
+    </div>
+  </div>
+
+  <aside class="panel">
+    <div class="phead">
+      <div class="ptipo" id="pTipo">Total nacional</div>
+      <h2 id="pName">TOTAL NACIONAL</h2>
+      <div class="preg" id="pReg">Chile · todos los puntos</div>
+      <div class="kpis">
+        <div class="kpi exp"><div class="l">Export FOB</div><div class="v" id="kExp">—</div></div>
+        <div class="kpi imp"><div class="l">Import CIF</div><div class="v" id="kImp">—</div></div>
+        <div class="kpi"><div class="l">Total</div><div class="v" id="kTot">—</div></div>
+      </div>
+    </div>
+    <div class="tabs" id="tabs">
+      <button data-t="perfil" class="on">Perfil</button>
+      <button data-t="tendencias">Tendencias</button>
+      <button data-t="comparar">Comparar</button>
+    </div>
+    <div class="tabbody" id="tabbody"></div>
+  </aside>
+</div>
+
+<footer id="foot"></footer>
+
+<script src="data_bundle.js"></script>
+<script>
+const D = window.DATA;
+const PUNTOS = D.puntos.slice();
+const NAC = D.nacional;
+const byCod = {}; PUNTOS.forEach(p=>byCod[p.cod]=p); byCod[0]=NAC;
+const fmtUSD = v => {
+  if(v==null) return '—';
+  const a=Math.abs(v);
+  if(a>=1e9) return '$'+(v/1e9).toFixed(2)+' MM';   // miles de millones
+  if(a>=1e6) return '$'+(v/1e6).toFixed(1)+' M';
+  if(a>=1e3) return '$'+(v/1e3).toFixed(0)+' k';
+  return '$'+v.toFixed(0);
+};
+const fmtKg = v => v==null?'—': v>=1e9?(v/1e9).toFixed(2)+' Mt': v>=1e6?(v/1e6).toFixed(1)+' kt':(v/1e3).toFixed(0)+' t';
+const GCOL={maritimo:'#2563eb',aereo:'#f59e0b',terrestre:'#16a34a',nacional:'#7c3aed'};
+const GLAB={maritimo:'Marítimo',aereo:'Aéreo',terrestre:'Terrestre / fronterizo',nacional:'Nacional'};
+const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+
+let state = { sel:NAC, view:'puntos', metric:'total', tab:'perfil', cmp:new Set() };
+
+// ---------------- mapa
+const map = L.map('map',{zoomControl:false,minZoom:2,worldCopyJump:true}).setView([-38,-71],4);
+L.control.zoom({position:'bottomright'}).addTo(map);
+L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+  {attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+
+const layerPoints = L.layerGroup().addTo(map);
+const layerFlows  = L.layerGroup();
+let layerRegions=null, layerWorld=null;
+const markers={};
+
+// centroides de regiones (promedio de vertices)
+const REGCENT={};
+(function(){
+  D.regiones.features.forEach(f=>{
+    let sx=0,sy=0,n=0;
+    const walk=c=>{ if(typeof c[0]==='number'){sx+=c[0];sy+=c[1];n++;} else c.forEach(walk); };
+    walk(f.geometry.coordinates);
+    REGCENT[f.properties.codregion]=[sy/n,sx/n];
+  });
+})();
+
+function pointRadius(p){
+  const v=p.total||0; return Math.max(5, Math.min(34, Math.sqrt(v/1e6)*0.9));
+}
+function setMarkerEmphasis(faint){
+  Object.entries(markers).forEach(([cod,m])=>{
+    const sel = state.sel && (+cod===state.sel.cod);
+    m.setStyle({fillOpacity: faint? (sel?.7:.18) : .82,
+                radius: faint? Math.max(4,pointRadius(byCod[cod])*0.6) : pointRadius(byCod[cod])});
+  });
+}
+function drawPoints(){
+  layerPoints.clearLayers();
+  PUNTOS.forEach(p=>{
+    if(p.lat==null) return;
+    const m=L.circleMarker([p.lat,p.lon],{
+      radius:pointRadius(p), color:'#fff', weight:1.2,
+      fillColor:GCOL[p.grupo], fillOpacity:.82
+    });
+    m.on('click',()=>select(p));
+    m.bindTooltip(`<b>${p.nombre}</b><br>${fmtUSD(p.total)} total`,{className:'wt'});
+    m.addTo(layerPoints); markers[p.cod]=m;
+  });
+}
+
+// ---------------- choropleth helpers
+function rampWorld(pct){ // 0..max
+  const stops=[[0,'#eef2ff'],[1,'#c7d2fe'],[5,'#818cf8'],[15,'#4f46e5'],[30,'#3730a3']];
+  let c=stops[0][1];
+  for(const [t,col] of stops){ if(pct>=t) c=col; }
+  return c;
+}
+function rampReg(pct){
+  const stops=[[0,'#ecfdf5'],[2,'#a7f3d0'],[8,'#34d399'],[20,'#059669'],[40,'#065f46']];
+  let c=stops[0][1];
+  for(const [t,col] of stops){ if(pct>=t) c=col; }
+  return c;
+}
+
+function selCountryShares(){ // iso3 -> {pct,val,name}
+  const m={}; const s=state.sel; const met=state.metric==='imp'?'imp':'exp';
+  if(s.cod===0){
+    (met==='imp'?D.paises.imp:D.paises.exp).forEach(r=>{ if(r.iso3) m[r.iso3]={pct:r.pct,val:r[met==='imp'?'cif':'fob'],name:r.nombre}; });
+  } else {
+    const arr= met==='imp'? s.top_origenes : s.top_destinos;
+    arr.forEach(r=>{ if(r.iso3) m[r.iso3]={pct:r.pct,val:r.valor,name:r.nombre}; });
+  }
+  return m;
+}
+
+function buildWorld(){
+  if(layerWorld) return;
+  layerWorld=L.geoJSON(D.world,{
+    style:{weight:.5,color:'#cbd5e1',fillColor:'#eef2ff',fillOpacity:.9},
+    onEachFeature:(f,ly)=>ly.on('click',()=>{})
+  });
+}
+function paintWorld(){
+  const sh=selCountryShares();
+  layerWorld.eachLayer(ly=>{
+    const iso=ly.feature.id; const d=sh[iso];
+    ly.setStyle({fillColor: d?rampWorld(d.pct):'#f8fafc', fillOpacity: d?.92:.5});
+    const met=state.metric==='imp'?'Importado':'Exportado';
+    ly.unbindTooltip();
+    ly.bindTooltip(`<b>${(f=>f.properties.name)(ly.feature)}</b>`+
+      (d?`<br>${met}: ${fmtUSD(d.val)} · ${d.pct.toFixed(1)}%`:'<br><span style="color:#94a3b8">sin registro</span>'),
+      {className:'wt',sticky:true});
+  });
+}
+
+function buildRegions(){
+  if(layerRegions) return;
+  layerRegions=L.geoJSON(D.regiones,{
+    style:{weight:.6,color:'#94a3b8',fillColor:'#f1f5f9',fillOpacity:.6}
+  });
+}
+function regShares(kind){ // kind exp|imp -> cod->pct
+  const m={}; const arr= kind==='imp'? state.sel.infl_imp : state.sel.infl_exp;
+  (arr||[]).forEach(r=>m[r.cod]={pct:r.pct,val:r.valor,nombre:r.nombre});
+  return m;
+}
+function paintRegions(){
+  const ex=regShares('exp');
+  layerRegions.eachLayer(ly=>{
+    const cr=ly.feature.properties.codregion; const d=ex[cr];
+    ly.setStyle({fillColor: d?rampReg(d.pct):'#f8fafc', fillOpacity: d?.85:.45});
+    ly.unbindTooltip();
+    const im=regShares('imp')[cr];
+    ly.bindTooltip(`<b>${ly.feature.properties.nombre}</b>`+
+      `<br><span style="color:#0d9488">Origen export: ${d?d.pct.toFixed(1)+'%':'—'}</span>`+
+      `<br><span style="color:#ea580c">Nacionaliz. import: ${im?im.pct.toFixed(1)+'%':'—'}</span>`,
+      {className:'wt',sticky:true});
+  });
+}
+function drawFlows(){
+  layerFlows.clearLayers();
+  const s=state.sel; if(s.lat==null) return;
+  const W=p=>Math.max(1.2,Math.min(11,Math.sqrt(p)*1.9));
+  (s.infl_exp||[]).forEach(r=>{ const c=REGCENT[r.cod]; if(!c||r.pct<0.5)return;
+    L.polyline([c,[s.lat,s.lon]],{color:'#0d9488',weight:W(r.pct),opacity:.55}).addTo(layerFlows); });
+  (s.infl_imp||[]).forEach(r=>{ const c=REGCENT[r.cod]; if(!c||r.pct<0.5)return;
+    L.polyline([[s.lat,s.lon],c],{color:'#ea580c',weight:W(r.pct),opacity:.45,dashArray:'4 4'}).addTo(layerFlows); });
+}
+
+// ---------------- vista
+function setView(v){
+  state.view=v;
+  document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  [layerPoints,layerFlows].forEach(l=>map.removeLayer(l));
+  if(layerRegions) map.removeLayer(layerRegions);
+  if(layerWorld) map.removeLayer(layerWorld);
+  if(v==='puntos'){
+    layerPoints.addTo(map); setMarkerEmphasis(false); map.setView([-38,-71],4);
+  } else if(v==='influencia'){
+    buildRegions(); layerRegions.addTo(map); paintRegions();
+    layerFlows.addTo(map); drawFlows();
+    layerPoints.addTo(map); setMarkerEmphasis(true);
+    map.setView([-38,-71],4);
+  } else if(v==='mundo'){
+    buildWorld(); layerWorld.addTo(map); paintWorld();
+    map.setView([8,70],2);
+  }
+  renderLegend();
+}
+function renderLegend(){
+  const el=document.getElementById('legend');
+  if(state.view==='puntos'){
+    el.innerHTML='<b>Tipo de punto</b>'+['maritimo','aereo','terrestre'].map(g=>
+      `<div class="row"><span class="dot" style="background:${GCOL[g]}"></span>${GLAB[g]}</div>`).join('')
+      +'<div class="row muted" style="margin-top:4px">Tamaño ∝ comercio total</div>';
+  } else if(state.view==='influencia'){
+    el.innerHTML='<b>Área de influencia</b>'+
+      '<div class="row"><span class="dot" style="background:#0d9488"></span>Origen de exportación (real)</div>'+
+      '<div class="row"><span class="dot" style="background:#ea580c"></span>Nacionalización import (aduana)</div>'+
+      '<div class="row muted">Relleno = % origen export por región</div>';
+  } else {
+    el.innerHTML='<b>'+(state.metric==='imp'?'% importado desde':'% exportado a')+'</b>'+
+      [[0,'#eef2ff'],[1,'#c7d2fe'],[5,'#818cf8'],[15,'#4f46e5'],[30,'#3730a3']].map(([t,c])=>
+      `<div class="row"><span class="dot" style="background:${c}"></span>≥ ${t}%</div>`).join('');
+  }
+}
+
+// ---------------- panel
+let charts=[];
+function clearCharts(){ charts.forEach(c=>c.destroy()); charts=[]; }
+function barsHTML(items,color,valuef){
+  if(!items||!items.length) return '<div class="muted">Sin datos.</div>';
+  const max=Math.max(...items.map(i=>i.pct||0))||1;
+  return '<div class="bars">'+items.map(i=>`
+    <div class="b"><div class="t"><span>${i.nombre}</span>
+    <span class="pct">${valuef?valuef(i):''} ${(i.pct||0).toFixed(1)}%</span></div>
+    <div class="track"><div class="fill" style="width:${100*(i.pct||0)/max}%;background:${color}"></div></div></div>`).join('')+'</div>';
+}
+
+function renderPanel(){
+  const p=state.sel;
+  document.getElementById('pTipo').textContent = p.cod===0?'Total nacional':GLAB[p.grupo];
+  document.getElementById('pTipo').style.color = GCOL[p.grupo]||'#7c3aed';
+  document.getElementById('pName').textContent = p.nombre;
+  document.getElementById('pReg').textContent = p.cod===0?'Chile · todos los puntos':
+     (p.zona||'')+(p.via_dom?' · vía dominante '+p.via_dom:'');
+  document.getElementById('kExp').textContent=fmtUSD(p.exp_fob);
+  document.getElementById('kImp').textContent=fmtUSD(p.imp_cif);
+  document.getElementById('kTot').textContent=fmtUSD(p.total);
+  const body=document.getElementById('tabbody'); clearCharts();
+  if(state.tab==='perfil') renderPerfil(body,p);
+  else if(state.tab==='tendencias') renderTend(body,p);
+  else renderComparar(body);
+}
+
+function renderPerfil(body,p){
+  body.innerHTML=`
+   <div class="sect"><h3>Destinos de exportación (FOB)</h3>${barsHTML(p.top_destinos,'#0d9488',i=>fmtUSD(i.valor))}</div>
+   <div class="sect"><h3>Orígenes de importación (CIF)</h3>${barsHTML(p.top_origenes,'#ea580c',i=>fmtUSD(i.valor))}</div>
+   <div class="sect"><h3>Tipo de producto — exportación</h3>${barsHTML(p.top_tipo_exp,'#14b8a6')}</div>
+   <div class="sect"><h3>Tipo de producto — importación</h3>${barsHTML(p.top_tipo_imp,'#fb923c')}</div>
+   <div class="sect"><h3>Principio 80/20 — productos exportados</h3><div class="chartbox"><canvas id="c8020"></canvas></div></div>
+   <div class="sect"><h3>Área de influencia nacional</h3>
+     <div class="muted" style="margin-bottom:6px">De qué región proviene la carga exportada (verde) y dónde se nacionaliza la importación (naranja).</div>
+     ${barsHTML(p.infl_exp,'#0d9488')}
+     <div class="note">La región de importación corresponde a la <b>aduana de nacionalización</b>, no al destino de consumo final (el microdato DIN no registra región de destino).</div>
+   </div>`;
+  draw8020(p);
+}
+function draw8020(p){
+  const it=(p.top_prod_exp||[]).slice(0,10); if(!it.length) return;
+  const ctx=document.getElementById('c8020'); if(!ctx)return;
+  charts.push(new Chart(ctx,{data:{labels:it.map(i=>i.nombre.length>22?i.nombre.slice(0,22)+'…':i.nombre),
+    datasets:[
+     {type:'bar',label:'% FOB',data:it.map(i=>i.pct),backgroundColor:'#0d9488',yAxisID:'y'},
+     {type:'line',label:'% acumulado',data:it.map(i=>i.pct_acum),borderColor:'#1e293b',backgroundColor:'#1e293b',yAxisID:'y1',tension:.25,pointRadius:2}
+    ]},
+    options:{maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},
+      scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9}}},y1:{display:false,position:'right',max:100}}}}));
+}
+
+function renderTend(body,p){
+  body.innerHTML=`
+   <div class="sect"><h3>Evolución mensual 2025 (US$)</h3><div class="chartbox" style="height:230px"><canvas id="cmes"></canvas></div></div>
+   <div class="sect"><h3>Peso vs valor</h3><div class="chartbox"><canvas id="cpv"></canvas></div></div>
+   <div class="muted">Serie construida desde el campo MES del microdato 2025.</div>`;
+  const ctx=document.getElementById('cmes');
+  charts.push(new Chart(ctx,{type:'line',data:{labels:MESES,datasets:[
+    {label:'Export FOB',data:p.mes_exp,borderColor:'#0d9488',backgroundColor:'rgba(13,148,136,.12)',fill:true,tension:.3,pointRadius:2},
+    {label:'Import CIF',data:p.mes_imp,borderColor:'#ea580c',backgroundColor:'rgba(234,88,12,.10)',fill:true,tension:.3,pointRadius:2}
+  ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,font:{size:11}}}},
+     scales:{y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}},x:{ticks:{font:{size:10}}}}}}));
+  const ctx2=document.getElementById('cpv');
+  charts.push(new Chart(ctx2,{type:'bar',data:{labels:['Exportación','Importación'],datasets:[
+    {label:'Valor (US$)',data:[p.exp_fob,p.imp_cif],backgroundColor:['#0d9488','#ea580c'],yAxisID:'y'},
+  ]},options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtUSD(c.raw)}}},
+     scales:{y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}}}}}));
+}
+
+function renderComparar(body){
+  const pts=PUNTOS.filter(p=>p.lat!=null).slice(0,40);
+  body.innerHTML=`<div class="muted" style="margin-bottom:8px">Elige hasta 5 puntos para comparar.</div>
+   <div class="cmp-pick" id="cmpPick"></div>
+   <div class="sect"><h3>Comercio total (US$)</h3><div class="chartbox" style="height:240px"><canvas id="ccmp"></canvas></div></div>
+   <div class="sect"><h3>Balance (CIF − FOB)</h3><div class="chartbox"><canvas id="ccmp2"></canvas></div></div>`;
+  const pick=document.getElementById('cmpPick');
+  if(state.cmp.size===0){ [PUNTOS[0],PUNTOS[1],PUNTOS[2]].forEach(p=>p&&state.cmp.add(p.cod)); }
+  pts.forEach(p=>{
+    const c=document.createElement('div'); c.className='chip'+(state.cmp.has(p.cod)?' on':'');
+    c.textContent=p.nombre; c.onclick=()=>{
+      if(state.cmp.has(p.cod)) state.cmp.delete(p.cod);
+      else { if(state.cmp.size>=5){return;} state.cmp.add(p.cod);} renderComparar(body);
+    }; pick.appendChild(c);
+  });
+  const sel=[...state.cmp].map(c=>byCod[c]).filter(Boolean);
+  clearCharts();
+  charts.push(new Chart(document.getElementById('ccmp'),{type:'bar',
+    data:{labels:sel.map(p=>p.nombre),datasets:[
+      {label:'Export FOB',data:sel.map(p=>p.exp_fob),backgroundColor:'#0d9488'},
+      {label:'Import CIF',data:sel.map(p=>p.imp_cif),backgroundColor:'#ea580c'}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:11,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtUSD(c.raw)}}},
+      scales:{x:{stacked:false,ticks:{font:{size:9}}},y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}}}}}));
+  charts.push(new Chart(document.getElementById('ccmp2'),{type:'bar',
+    data:{labels:sel.map(p=>p.nombre),datasets:[{label:'Balance',data:sel.map(p=>p.balance),
+      backgroundColor:sel.map(p=>p.balance>=0?'#ea580c':'#0d9488')}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtUSD(c.raw)}}},
+      scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}}}}}));
+}
+
+// ---------------- seleccion
+function select(p){
+  state.sel=p;
+  if(state.view==='mundo') paintWorld();
+  if(state.view==='influencia'){ paintRegions(); drawFlows(); }
+  Object.values(markers).forEach(m=>m.setStyle({weight:1.2}));
+  if(markers[p.cod]) markers[p.cod].setStyle({weight:3,color:'#0f172a'});
+  if(p.lat!=null && state.view!=='mundo') map.panTo([p.lat,p.lon]);
+  renderPanel();
+}
+
+// ---------------- UI wiring
+document.querySelectorAll('#viewSeg button').forEach(b=>b.onclick=()=>setView(b.dataset.v));
+document.querySelectorAll('#metricSeg button').forEach(b=>b.onclick=()=>{
+  state.metric=b.dataset.m;
+  document.querySelectorAll('#metricSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  if(state.view==='mundo'){paintWorld();renderLegend();}
+});
+document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
+  state.tab=b.dataset.t;
+  document.querySelectorAll('#tabs button').forEach(x=>x.classList.toggle('on',x===b));
+  renderPanel();
+});
+const q=document.getElementById('q'), res=document.getElementById('results');
+const deacc=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+q.oninput=()=>{
+  const t=deacc(q.value.trim()); if(!t){res.style.display='none';return;}
+  const hits=PUNTOS.filter(p=>deacc(p.nombre).includes(t)).slice(0,12);
+  res.innerHTML=hits.map(p=>`<div data-c="${p.cod}">${p.nombre} · ${fmtUSD(p.total)}</div>`).join('');
+  res.style.display=hits.length?'block':'none';
+  res.querySelectorAll('div').forEach(d=>d.onclick=()=>{const p=byCod[d.dataset.c];select(p);if(state.view==='puntos'&&p.lat)map.setView([p.lat,p.lon],7);res.style.display='none';q.value='';});
+};
+document.addEventListener('click',e=>{ if(!e.target.closest('.search')) res.style.display='none'; });
+
+// header + footer
+document.getElementById('badgeExp').innerHTML='Export · <b>'+fmtUSD(NAC.exp_fob)+'</b>';
+document.getElementById('badgeImp').innerHTML='Import · <b>'+fmtUSD(NAC.imp_cif)+'</b>';
+document.getElementById('badgePts').textContent=D.meta.n_puntos+' puntos';
+const cu=D.meta.cuadre;
+document.getElementById('foot').innerHTML=
+ `<b>Fuente:</b> Servicio Nacional de Aduanas — microdatos DUS (exportaciones) y DIN (importaciones) ${D.meta.anio}; clasificador 2022 v2.0 y tablas de códigos (Anexo 51). Elaboración propia. `+
+ `Coordenadas: referencia geográfica pública. `+
+ `<b>Cuadre:</b> suma FOB por punto = ${fmtUSD(cu.suma_fob_puntos)} (${cu.exp_cobertura_pct}% del total nacional ${fmtUSD(cu.exp_nacional_total)}); `+
+ `suma CIF = ${fmtUSD(cu.suma_cif_puntos)} (${cu.imp_cobertura_pct}% de ${fmtUSD(cu.imp_nacional_total)}). `+
+ `El área de influencia de importación usa la aduana de nacionalización (no destino final).`;
+
+// init
+drawPoints(); renderLegend(); select(NAC); setView('puntos');
+</script>
+</body>
+</html>

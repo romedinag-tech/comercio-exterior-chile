@@ -1,0 +1,58 @@
+{
+  "anio": 2025,
+  "generado": "procesar_comex.py",
+  "n_puntos": 74,
+  "cuadre": {
+    "exp_nacional_total": 107490989894.0,
+    "suma_fob_puntos": 101798193485.0,
+    "exp_cobertura_pct": 94.7,
+    "imp_nacional_total": 79445300744.0,
+    "suma_cif_puntos": 76787465799.0,
+    "imp_cobertura_pct": 96.65
+  },
+  "sin_coordenada": [
+    {
+      "cod": 944,
+      "nombre": "TERRITORIO ANTÁRTICO CHILENO",
+      "tipo": "Puerto marítimo",
+      "total": 40343.0
+    },
+    {
+      "cod": 960,
+      "nombre": "ABRA DE NAPA",
+      "tipo": "Avanzada fronteriza",
+      "total": 571230.0
+    },
+    {
+      "cod": 971,
+      "nombre": "PANGUIPULLI",
+      "tipo": "Avanzada fronteriza",
+      "total": 800.0
+    },
+    {
+      "cod": 973,
+      "nombre": "LAGO VERDE",
+      "tipo": "Avanzada fronteriza",
+      "total": 22.0
+    },
+    {
+      "cod": 978,
+      "nombre": "BAKER",
+      "tipo": "Avanzada fronteriza",
+      "total": 70569.0
+    }
+  ],
+  "fuentes": [
+    "Servicio Nacional de Aduanas - microdato DUS (exportaciones) 2025",
+    "Servicio Nacional de Aduanas - microdato DIN (importaciones) 2025",
+    "Servicio Nacional de Aduanas - tablas de codigos (Anexo 51)",
+    "Servicio Nacional de Aduanas - clasificador 2022 v2.0",
+    "Coordenadas: referencia geografica publica (tabla del estudio, extendida)"
+  ],
+  "notas": [
+    "Influencia de EXPORTACION (infl_exp): region de origen real de la carga (COD_REGION_ORIGEN del DUS). Responde 'de que region del pais proviene lo exportado'.",
+    "Influencia de IMPORTACION (infl_imp): region de la ADUANA DE NACIONALIZACION (COD_ADUANA_TRAMITACION). Indica donde se nacionaliza la carga, NO la region de destino/consumo final, que el microdato DIN no registra.",
+    "Peso de importacion: el DIN no trae peso bruto; se usa CANTIDAD_MERCANCIA solo cuando COD_UNIDAD_MEDIDA = 6 (kilogramos).",
+    "Cobertura del cuadre <100%: corresponde a operaciones con puerto no chileno o codigo de puerto 0/desconocido en el microdato."
+  ]
+}

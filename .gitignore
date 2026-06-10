@@ -1,0 +1,9 @@
+# datos crudos / temporales (los microdatos viven fuera de este repo)
+*.rar
+*.zip
+_diag_*.json
+_try.geojson
+__pycache__/
+*.pyc
+.DS_Store
+Thumbs.db

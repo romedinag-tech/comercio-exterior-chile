@@ -1,0 +1,3158 @@
+{
+ "exp": [
+  {
+   "cod": 336,
+   "nombre": "China",
+   "iso3": "CHN",
+   "continente": "Asia",
+   "fob": 36382768137.4,
+   "pct": 35.74
+  },
+  {
+   "cod": 225,
+   "nombre": "Estados Unidos de América",
+   "iso3": "USA",
+   "continente": "América",
+   "fob": 17563085212.2,
+   "pct": 17.253
+  },
+  {
+   "cod": 331,
+   "nombre": "Japón",
+   "iso3": "JPN",
+   "continente": "Asia",
+   "fob": 7716737394.6,
+   "pct": 7.58
+  },
+  {
+   "cod": 220,
+   "nombre": "Brasil",
+   "iso3": "BRA",
+   "continente": "América",
+   "fob": 4872452646.4,
+   "pct": 4.786
+  },
+  {
+   "cod": 333,
+   "nombre": "Corea del Sur",
+   "iso3": "KOR",
+   "continente": "Asia",
+   "fob": 4749330398.4,
+   "pct": 4.665
+  },
+  {
+   "cod": 317,
+   "nombre": "India",
+   "iso3": "IND",
+   "continente": "Asia",
+   "fob": 3784541045.1,
+   "pct": 3.718
+  },
+  {
+   "cod": 515,
+   "nombre": "Holanda",
+   "iso3": "NLD",
+   "continente": "Europa",
+   "fob": 2090298810.3,
+   "pct": 2.053
+  },
+  {
+   "cod": 517,
+   "nombre": "España",
+   "iso3": "ESP",
+   "continente": "Europa",
+   "fob": 1958888240.6,
+   "pct": 1.924
+  },
+  {
+   "cod": 216,
+   "nombre": "México",
+   "iso3": "MEX",
+   "continente": "América",
+   "fob": 1863161064.6,
+   "pct": 1.83
+  },
+  {
+   "cod": 508,
+   "nombre": "Suiza",
+   "iso3": "CHE",
+   "continente": "Europa",
+   "fob": 1691307707.3,
+   "pct": 1.661
+  },
+  {
+   "cod": 219,
+   "nombre": "Perú",
+   "iso3": "PER",
+   "continente": "América",
+   "fob": 1516116467.7,
+   "pct": 1.489
+  },
+  {
+   "cod": 563,
+   "nombre": "Alemania",
+   "iso3": "DEU",
+   "continente": "Europa",
+   "fob": 1474371630.0,
+   "pct": 1.448
+  },
+  {
+   "cod": 505,
+   "nombre": "Francia",
+   "iso3": "FRA",
+   "continente": "Europa",
+   "fob": 1246898855.9,
+   "pct": 1.225
+  },
+  {
+   "cod": 226,
+   "nombre": "Canadá",
+   "iso3": "CAN",
+   "continente": "América",
+   "fob": 1236313345.3,
+   "pct": 1.214
+  },
+  {
+   "cod": 224,
+   "nombre": "Argentina",
+   "iso3": "ARG",
+   "continente": "América",
+   "fob": 1077095100.1,
+   "pct": 1.058
+  },
+  {
+   "cod": 202,
+   "nombre": "Colombia",
+   "iso3": "COL",
+   "continente": "América",
+   "fob": 888813418.2,
+   "pct": 0.873
+  },
+  {
+   "cod": 330,
+   "nombre": "Taiwán (Formosa)",
+   "iso3": "TWN",
+   "continente": "Asia",
+   "fob": 840913958.1,
+   "pct": 0.826
+  },
+  {
+   "cod": 504,
+   "nombre": "Italia",
+   "iso3": "ITA",
+   "continente": "Europa",
+   "fob": 794327865.7,
+   "pct": 0.78
+  },
+  {
+   "cod": 510,
+   "nombre": "Reino Unido",
+   "iso3": "GBR",
+   "continente": "Europa",
+   "fob": 612114301.1,
+   "pct": 0.601
+  },
+  {
+   "cod": 319,
+   "nombre": "Thailandia",
+   "iso3": "THA",
+   "continente": "Asia",
+   "fob": 599750474.3,
+   "pct": 0.589
+  },
+  {
+   "cod": 218,
+   "nombre": "Ecuador",
+   "iso3": "ECU",
+   "continente": "América",
+   "fob": 551492856.2,
+   "pct": 0.542
+  },
+  {
+   "cod": 514,
+   "nombre": "Bélgica",
+   "iso3": "BEL",
+   "continente": "Europa",
+   "fob": 543903327.1,
+   "pct": 0.534
+  },
+  {
+   "cod": 562,
+   "nombre": "Rusia",
+   "iso3": "RUS",
+   "continente": "Europa",
+   "fob": 456846048.0,
+   "pct": 0.449
+  },
+  {
+   "cod": 902,
+   "nombre": "Aprovisionamiento (Rancho) de naves y aeronaves extranjeras y de maderas para estibar mercancías cargadas en puertos chilenos",
+   "iso3": null,
+   "continente": "Otros",
+   "fob": 452729911.9,
+   "pct": 0.445
+  },
+  {
+   "cod": 511,
+   "nombre": "Suecia",
+   "iso3": "SWE",
+   "continente": "Europa",
+   "fob": 410861688.0,
+   "pct": 0.404
+  },
+  {
+   "cod": 211,
+   "nombre": "Costa Rica",
+   "iso3": "CRI",
+   "continente": "América",
+   "fob": 383850207.3,
+   "pct": 0.377
+  },
+  {
+   "cod": 325,
+   "nombre": "Vietnam",
+   "iso3": "VNM",
+   "continente": "Asia",
+   "fob": 311450151.3,
+   "pct": 0.306
+  },
+  {
+   "cod": 221,
+   "nombre": "Bolivia",
+   "iso3": "BOL",
+   "continente": "América",
+   "fob": 297448124.4,
+   "pct": 0.292
+  },
+  {
+   "cod": 513,
+   "nombre": "Noruega",
+   "iso3": "NOR",
+   "continente": "Europa",
+   "fob": 236648715.1,
+   "pct": 0.232
+  },
+  {
+   "cod": 406,
+   "nombre": "Australia",
+   "iso3": "AUS",
+   "continente": "Oceania",
+   "fob": 234373628.0,
+   "pct": 0.23
+  },
+  {
+   "cod": 528,
+   "nombre": "Polonia",
+   "iso3": "POL",
+   "continente": "Europa",
+   "fob": 221727709.3,
+   "pct": 0.218
+  },
+  {
+   "cod": 512,
+   "nombre": "Finlandia",
+   "iso3": "FIN",
+   "continente": "Europa",
+   "fob": 221206817.6,
+   "pct": 0.217
+  },
+  {
+   "cod": 215,
+   "nombre": "Guatemala",
+   "iso3": "GTM",
+   "continente": "América",
+   "fob": 198274978.4,
+   "pct": 0.195
+  },
+  {
+   "cod": 527,
+   "nombre": "Bulgaria",
+   "iso3": "BGR",
+   "continente": "Europa",
+   "fob": 189584272.0,
+   "pct": 0.186
+  },
+  {
+   "cod": 223,
+   "nombre": "Uruguay",
+   "iso3": "URY",
+   "continente": "América",
+   "fob": 186053865.6,
+   "pct": 0.183
+  },
+  {
+   "cod": 329,
+   "nombre": "Malasia",
+   "iso3": "MYS",
+   "continente": "Asia",
+   "fob": 182994195.6,
+   "pct": 0.18
+  },
+  {
+   "cod": 206,
+   "nombre": "República Dominicana",
+   "iso3": "DOM",
+   "continente": "América",
+   "fob": 178858105.6,
+   "pct": 0.176
+  },
+  {
+   "cod": 222,
+   "nombre": "Paraguay",
+   "iso3": "PRY",
+   "continente": "América",
+   "fob": 176113896.8,
+   "pct": 0.173
+  },
+  {
+   "cod": 341,
+   "nombre": "Emiratos Arabes Unidos",
+   "iso3": "ARE",
+   "continente": "Asia",
+   "fob": 171979191.6,
+   "pct": 0.169
+  },
+  {
+   "cod": 313,
+   "nombre": "Bahrein",
+   "iso3": "BHR",
+   "continente": "Asia",
+   "fob": 163931584.8,
+   "pct": 0.161
+  },
+  {
+   "cod": 507,
+   "nombre": "Dinamarca",
+   "iso3": "DNK",
+   "continente": "Europa",
+   "fob": 157854640.6,
+   "pct": 0.155
+  },
+  {
+   "cod": 107,
+   "nombre": "Costa de Marfil",
+   "iso3": "CIV",
+   "continente": "Africa",
+   "fob": 144920149.3,
+   "pct": 0.142
+  },
+  {
+   "cod": 251,
+   "nombre": "Puerto Rico",
+   "iso3": "PRI",
+   "continente": "América",
+   "fob": 139631771.1,
+   "pct": 0.137
+  },
+  {
+   "cod": 522,
+   "nombre": "Turquia",
+   "iso3": "TUR",
+   "continente": "Europa",
+   "fob": 139069010.5,
+   "pct": 0.137
+  },
+  {
+   "cod": 210,
+   "nombre": "Panamá",
+   "iso3": "PAN",
+   "continente": "América",
+   "fob": 138228382.3,
+   "pct": 0.136
+  },
+  {
+   "cod": 901,
+   "nombre": "Combustibles y lubricantes destinados al consumo de naves y aeronaves extranjeras y de revistas con el mismo objeto",
+   "iso3": null,
+   "continente": "Otros",
+   "fob": 126235386.0,
+   "pct": 0.124
+  },
+  {
+   "cod": 111,
+   "nombre": "Nigeria",
+   "iso3": "NGA",
+   "continente": "Africa",
+   "fob": 122575805.0,
+   "pct": 0.12
+  },
+  {
+   "cod": 306,
+   "nombre": "Israel",
+   "iso3": "ISR",
+   "continente": "Asia",
+   "fob": 111963739.0,
+   "pct": 0.11
+  },
+  {
+   "cod": 201,
+   "nombre": "Venezuela",
+   "iso3": "VEN",
+   "continente": "América",
+   "fob": 103777708.0,
+   "pct": 0.102
+  },
+  {
+   "cod": 335,
+   "nombre": "Filipinas",
+   "iso3": "PHL",
+   "continente": "Asia",
+   "fob": 98283431.8,
+   "pct": 0.097
+  },
+  {
+   "cod": 124,
+   "nombre": "Egipto",
+   "iso3": "EGY",
+   "continente": "Africa",
+   "fob": 94354842.0,
+   "pct": 0.093
+  },
+  {
+   "cod": 112,
+   "nombre": "Sudáfrica",
+   "iso3": "ZAF",
+   "continente": "Africa",
+   "fob": 93616688.8,
+   "pct": 0.092
+  },
+  {
+   "cod": 302,
+   "nombre": "Arabia Saudita",
+   "iso3": "SAU",
+   "continente": "Asia",
+   "fob": 86464561.1,
+   "pct": 0.085
+  },
+  {
+   "cod": 332,
+   "nombre": "Singapur",
+   "iso3": "SGP",
+   "continente": "Asia",
+   "fob": 84391019.4,
+   "pct": 0.083
+  },
+  {
+   "cod": 315,
+   "nombre": "Cambodia",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 82482872.3,
+   "pct": 0.081
+  },
+  {
+   "cod": 501,
+   "nombre": "Portugal",
+   "iso3": "PRT",
+   "continente": "Europa",
+   "fob": 80850394.2,
+   "pct": 0.079
+  },
+  {
+   "cod": 342,
+   "nombre": "Hong Kong (Región administrativa especial de China)",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 80773605.6,
+   "pct": 0.079
+  },
+  {
+   "cod": 506,
+   "nombre": "Irlanda",
+   "iso3": "IRL",
+   "continente": "Europa",
+   "fob": 79322230.5,
+   "pct": 0.078
+  },
+  {
+   "cod": 328,
+   "nombre": "Indonesia",
+   "iso3": "IDN",
+   "continente": "Asia",
+   "fob": 77232346.2,
+   "pct": 0.076
+  },
+  {
+   "cod": 405,
+   "nombre": "Nueva Zelandia",
+   "iso3": "NZL",
+   "continente": "Oceania",
+   "fob": 69776998.6,
+   "pct": 0.069
+  },
+  {
+   "cod": 213,
+   "nombre": "El Salvador",
+   "iso3": "SLV",
+   "continente": "América",
+   "fob": 60510678.0,
+   "pct": 0.059
+  },
+  {
+   "cod": 161,
+   "nombre": "Burkina Faso",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 58734305.8,
+   "pct": 0.058
+  },
+  {
+   "cod": 554,
+   "nombre": "Lituania",
+   "iso3": "LTU",
+   "continente": "Europa",
+   "fob": 57571235.0,
+   "pct": 0.057
+  },
+  {
+   "cod": 214,
+   "nombre": "Honduras",
+   "iso3": "HND",
+   "continente": "América",
+   "fob": 53968918.7,
+   "pct": 0.053
+  },
+  {
+   "cod": 551,
+   "nombre": "Kasajstán",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 43910863.4,
+   "pct": 0.043
+  },
+  {
+   "cod": 321,
+   "nombre": "Bangladesh",
+   "iso3": "BGD",
+   "continente": "Asia",
+   "fob": 41806995.6,
+   "pct": 0.041
+  },
+  {
+   "cod": 149,
+   "nombre": "Camerún",
+   "iso3": "CMR",
+   "continente": "Africa",
+   "fob": 39801039.9,
+   "pct": 0.039
+  },
+  {
+   "cod": 108,
+   "nombre": "Ghana",
+   "iso3": "GHA",
+   "continente": "Africa",
+   "fob": 38418122.4,
+   "pct": 0.038
+  },
+  {
+   "cod": 520,
+   "nombre": "Grecia",
+   "iso3": "GRC",
+   "continente": "Europa",
+   "fob": 36296681.0,
+   "pct": 0.036
+  },
+  {
+   "cod": 324,
+   "nombre": "Pakistán",
+   "iso3": "PAK",
+   "continente": "Asia",
+   "fob": 29095435.7,
+   "pct": 0.029
+  },
+  {
+   "cod": 205,
+   "nombre": "Jamaica",
+   "iso3": "JAM",
+   "continente": "América",
+   "fob": 28832189.4,
+   "pct": 0.028
+  },
+  {
+   "cod": 305,
+   "nombre": "Chipre",
+   "iso3": "CYP",
+   "continente": "Asia",
+   "fob": 23987733.8,
+   "pct": 0.024
+  },
+  {
+   "cod": 209,
+   "nombre": "Cuba",
+   "iso3": "CUB",
+   "continente": "América",
+   "fob": 23836569.4,
+   "pct": 0.023
+  },
+  {
+   "cod": 999,
+   "nombre": "Otros",
+   "iso3": null,
+   "continente": "Otros",
+   "fob": 22254743.2,
+   "pct": 0.022
+  },
+  {
+   "cod": 212,
+   "nombre": "Nicaragua",
+   "iso3": "NIC",
+   "continente": "América",
+   "fob": 21382583.2,
+   "pct": 0.021
+  },
+  {
+   "cod": 203,
+   "nombre": "Trinidad y Tobago",
+   "iso3": "TTO",
+   "continente": "América",
+   "fob": 21330110.3,
+   "pct": 0.021
+  },
+  {
+   "cod": 509,
+   "nombre": "Austria",
+   "iso3": "AUT",
+   "continente": "Europa",
+   "fob": 19620773.1,
+   "pct": 0.019
+  },
+  {
+   "cod": 553,
+   "nombre": "Letonia",
+   "iso3": "LVA",
+   "continente": "Europa",
+   "fob": 18929179.1,
+   "pct": 0.019
+  },
+  {
+   "cod": 532,
+   "nombre": "Luxemburgo",
+   "iso3": "LUX",
+   "continente": "Europa",
+   "fob": 18666462.2,
+   "pct": 0.018
+  },
+  {
+   "cod": 523,
+   "nombre": "Malta",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 17823695.4,
+   "pct": 0.018
+  },
+  {
+   "cod": 559,
+   "nombre": "Ucrania",
+   "iso3": "UKR",
+   "continente": "Europa",
+   "fob": 17649615.5,
+   "pct": 0.017
+  },
+  {
+   "cod": 544,
+   "nombre": "República Checa",
+   "iso3": "CZE",
+   "continente": "Europa",
+   "fob": 17168003.5,
+   "pct": 0.017
+  },
+  {
+   "cod": 128,
+   "nombre": "Marruecos",
+   "iso3": "MAR",
+   "continente": "Africa",
+   "fob": 16572342.3,
+   "pct": 0.016
+  },
+  {
+   "cod": 542,
+   "nombre": "Belarus",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 14065386.1,
+   "pct": 0.014
+  },
+  {
+   "cod": 311,
+   "nombre": "Libano",
+   "iso3": "LBN",
+   "continente": "Asia",
+   "fob": 11909824.0,
+   "pct": 0.012
+  },
+  {
+   "cod": 304,
+   "nombre": "Omán",
+   "iso3": "OMN",
+   "continente": "Asia",
+   "fob": 10678742.9,
+   "pct": 0.01
+  },
+  {
+   "cod": 303,
+   "nombre": "Kuwait",
+   "iso3": "KWT",
+   "continente": "Asia",
+   "fob": 10445678.9,
+   "pct": 0.01
+  },
+  {
+   "cod": 144,
+   "nombre": "República del Congo",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 10065545.3,
+   "pct": 0.01
+  },
+  {
+   "cod": 550,
+   "nombre": "Georgia",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 9433001.8,
+   "pct": 0.009
+  },
+  {
+   "cod": 245,
+   "nombre": "Islas Virgenes Britanicas",
+   "iso3": null,
+   "continente": "América",
+   "fob": 9299819.7,
+   "pct": 0.009
+  },
+  {
+   "cod": 301,
+   "nombre": "Jordania",
+   "iso3": "JOR",
+   "continente": "Asia",
+   "fob": 9041016.4,
+   "pct": 0.009
+  },
+  {
+   "cod": 314,
+   "nombre": "Sri Lanka",
+   "iso3": "LKA",
+   "continente": "Asia",
+   "fob": 8699744.1,
+   "pct": 0.009
+  },
+  {
+   "cod": 307,
+   "nombre": "Iraq",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 7267638.2,
+   "pct": 0.007
+  },
+  {
+   "cod": 126,
+   "nombre": "Tunez",
+   "iso3": "TUN",
+   "continente": "Africa",
+   "fob": 6191201.6,
+   "pct": 0.006
+  },
+  {
+   "cod": 127,
+   "nombre": "Argelia",
+   "iso3": "DZA",
+   "continente": "Africa",
+   "fob": 6030012.5,
+   "pct": 0.006
+  },
+  {
+   "cod": 312,
+   "nombre": "Qatar",
+   "iso3": "QAT",
+   "continente": "Asia",
+   "fob": 5297698.3,
+   "pct": 0.005
+  },
+  {
+   "cod": 549,
+   "nombre": "Estonia",
+   "iso3": "EST",
+   "continente": "Europa",
+   "fob": 4736783.5,
+   "pct": 0.005
+  },
+  {
+   "cod": 109,
+   "nombre": "Togo",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 4724522.0,
+   "pct": 0.005
+  },
+  {
+   "cod": 519,
+   "nombre": "Rumania",
+   "iso3": "ROU",
+   "continente": "Europa",
+   "fob": 4263180.0,
+   "pct": 0.004
+  },
+  {
+   "cod": 106,
+   "nombre": "Liberia",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 4080398.2,
+   "pct": 0.004
+  },
+  {
+   "cod": 320,
+   "nombre": "Nepal",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 3951361.4,
+   "pct": 0.004
+  },
+  {
+   "cod": 516,
+   "nombre": "Islandia",
+   "iso3": "ISL",
+   "continente": "Europa",
+   "fob": 3780780.1,
+   "pct": 0.004
+  },
+  {
+   "cod": 101,
+   "nombre": "Senegal",
+   "iso3": "SEN",
+   "continente": "Africa",
+   "fob": 3779689.7,
+   "pct": 0.004
+  },
+  {
+   "cod": 217,
+   "nombre": "Guyana",
+   "iso3": "GUY",
+   "continente": "América",
+   "fob": 3759841.5,
+   "pct": 0.004
+  },
+  {
+   "cod": 547,
+   "nombre": "Croacia",
+   "iso3": "HRV",
+   "continente": "Europa",
+   "fob": 3428367.6,
+   "pct": 0.003
+  },
+  {
+   "cod": 548,
+   "nombre": "Eslovenia",
+   "iso3": "SVN",
+   "continente": "Europa",
+   "fob": 3421970.7,
+   "pct": 0.003
+  },
+  {
+   "cod": 117,
+   "nombre": "Zambia",
+   "iso3": "ZMB",
+   "continente": "Africa",
+   "fob": 3209968.0,
+   "pct": 0.003
+  },
+  {
+   "cod": 540,
+   "nombre": "Armenia",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 3146846.3,
+   "pct": 0.003
+  },
+  {
+   "cod": 125,
+   "nombre": "Libia",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 2990782.8,
+   "pct": 0.003
+  },
+  {
+   "cod": 530,
+   "nombre": "Hungria",
+   "iso3": "HUN",
+   "continente": "Europa",
+   "fob": 2826025.3,
+   "pct": 0.003
+  },
+  {
+   "cod": 236,
+   "nombre": "Belice",
+   "iso3": "BLZ",
+   "continente": "América",
+   "fob": 2741908.2,
+   "pct": 0.003
+  },
+  {
+   "cod": 208,
+   "nombre": "Haití",
+   "iso3": null,
+   "continente": "América",
+   "fob": 2387891.8,
+   "pct": 0.002
+  },
+  {
+   "cod": 204,
+   "nombre": "Barbados",
+   "iso3": null,
+   "continente": "América",
+   "fob": 2327978.8,
+   "pct": 0.002
+  },
+  {
+   "cod": 243,
+   "nombre": "Aruba",
+   "iso3": null,
+   "continente": "América",
+   "fob": 2325226.5,
+   "pct": 0.002
+  },
+  {
+   "cod": 552,
+   "nombre": "Kirgistán",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 2234043.1,
+   "pct": 0.002
+  },
+  {
+   "cod": 408,
+   "nombre": "Territorio Francés en Oceanía y el Pacífico",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 2191847.0,
+   "pct": 0.002
+  },
+  {
+   "cod": 246,
+   "nombre": "Islas Caymán",
+   "iso3": null,
+   "continente": "América",
+   "fob": 2072568.8,
+   "pct": 0.002
+  },
+  {
+   "cod": 425,
+   "nombre": "Guam",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 1658219.7,
+   "pct": 0.002
+  },
+  {
+   "cod": 309,
+   "nombre": "Irán",
+   "iso3": "IRN",
+   "continente": "Asia",
+   "fob": 1632774.5,
+   "pct": 0.002
+  },
+  {
+   "cod": 159,
+   "nombre": "Namibia",
+   "iso3": "NAM",
+   "continente": "Africa",
+   "fob": 1601526.9,
+   "pct": 0.002
+  },
+  {
+   "cod": 424,
+   "nombre": "Islas Marianas del Norte",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 1564667.3,
+   "pct": 0.002
+  },
+  {
+   "cod": 134,
+   "nombre": "Mauritania",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 1545538.1,
+   "pct": 0.002
+  },
+  {
+   "cod": 207,
+   "nombre": "Bahamas",
+   "iso3": null,
+   "continente": "América",
+   "fob": 1531870.9,
+   "pct": 0.002
+  },
+  {
+   "cod": 140,
+   "nombre": "Angola",
+   "iso3": "AGO",
+   "continente": "Africa",
+   "fob": 1522356.3,
+   "pct": 0.001
+  },
+  {
+   "cod": 250,
+   "nombre": "Martinica",
+   "iso3": null,
+   "continente": "América",
+   "fob": 1438106.2,
+   "pct": 0.001
+  },
+  {
+   "cod": 546,
+   "nombre": "República de Serbia",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 1428919.4,
+   "pct": 0.001
+  },
+  {
+   "cod": 344,
+   "nombre": "Brunei",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 1407020.4,
+   "pct": 0.001
+  },
+  {
+   "cod": 422,
+   "nombre": "Polinesia Francesa",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 1297546.6,
+   "pct": 0.001
+  },
+  {
+   "cod": 556,
+   "nombre": "Moldova",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 1254351.2,
+   "pct": 0.001
+  },
+  {
+   "cod": 121,
+   "nombre": "Mozambique",
+   "iso3": "MOZ",
+   "continente": "Africa",
+   "fob": 1119599.6,
+   "pct": 0.001
+  },
+  {
+   "cod": 137,
+   "nombre": "Kenia",
+   "iso3": "KEN",
+   "continente": "Africa",
+   "fob": 1095731.9,
+   "pct": 0.001
+  },
+  {
+   "cod": 228,
+   "nombre": "Territorio Francés en América",
+   "iso3": null,
+   "continente": "América",
+   "fob": 1038518.1,
+   "pct": 0.001
+  },
+  {
+   "cod": 326,
+   "nombre": "Myanmar (ex Birmania)",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 1032717.3,
+   "pct": 0.001
+  },
+  {
+   "cod": 541,
+   "nombre": "Azerbaiyan",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 917172.0,
+   "pct": 0.001
+  },
+  {
+   "cod": 423,
+   "nombre": "Nueva Caledonia",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 908327.0,
+   "pct": 0.001
+  },
+  {
+   "cod": 403,
+   "nombre": "Tonga (Isla Tonga)",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 892780.5,
+   "pct": 0.001
+  },
+  {
+   "cod": 143,
+   "nombre": "República Democratica del Congo (ex Zaire)",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 880567.8,
+   "pct": 0.001
+  },
+  {
+   "cod": 235,
+   "nombre": "Surinam",
+   "iso3": "SUR",
+   "continente": "América",
+   "fob": 791978.2,
+   "pct": 0.001
+  },
+  {
+   "cod": 145,
+   "nombre": "Gabon",
+   "iso3": "GAB",
+   "continente": "Africa",
+   "fob": 754777.2,
+   "pct": 0.001
+  },
+  {
+   "cod": 534,
+   "nombre": "Liechtenstein",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 713001.1,
+   "pct": 0.001
+  },
+  {
+   "cod": 247,
+   "nombre": "Antillas Neerlandesas",
+   "iso3": null,
+   "continente": "América",
+   "fob": 707167.2,
+   "pct": 0.001
+  },
+  {
+   "cod": 327,
+   "nombre": "Maldivas (Isla Maldivas)",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 696757.8,
+   "pct": 0.001
+  },
+  {
+   "cod": 518,
+   "nombre": "Albania",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 671927.3,
+   "pct": 0.001
+  },
+  {
+   "cod": 337,
+   "nombre": "Mongolia",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 658351.9,
+   "pct": 0.001
+  },
+  {
+   "cod": 147,
+   "nombre": "Guinea Ecuatorial",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 651675.0,
+   "pct": 0.001
+  },
+  {
+   "cod": 240,
+   "nombre": "Antigua y Barbuda",
+   "iso3": null,
+   "continente": "América",
+   "fob": 558762.0,
+   "pct": 0.001
+  },
+  {
+   "cod": 156,
+   "nombre": "Seychelles",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 543649.8,
+   "pct": 0.001
+  },
+  {
+   "cod": 401,
+   "nombre": "Fiji",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 536456.7,
+   "pct": 0.001
+  },
+  {
+   "cod": 119,
+   "nombre": "Mauricio",
+   "iso3": "MUS",
+   "continente": "Africa",
+   "fob": 536276.4,
+   "pct": 0.001
+  },
+  {
+   "cod": 113,
+   "nombre": "Botswana",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 516061.0,
+   "pct": 0.001
+  },
+  {
+   "cod": 233,
+   "nombre": "Santa Lucía (Islas  Occidentales)",
+   "iso3": null,
+   "continente": "América",
+   "fob": 495635.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 417,
+   "nombre": "Micronesia",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 475085.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 232,
+   "nombre": "Granada",
+   "iso3": null,
+   "continente": "América",
+   "fob": 469534.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 566,
+   "nombre": "Guernsey",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 469053.9,
+   "pct": 0.0
+  },
+  {
+   "cod": 153,
+   "nombre": "Territorio Francés en África",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 416906.9,
+   "pct": 0.0
+  },
+  {
+   "cod": 135,
+   "nombre": "Tanzania",
+   "iso3": "TZA",
+   "continente": "Africa",
+   "fob": 412066.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 543,
+   "nombre": "Bosnia y Herzegovina",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 401194.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 404,
+   "nombre": "Samoa Occidental",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 369346.9,
+   "pct": 0.0
+  },
+  {
+   "cod": 131,
+   "nombre": "Niger",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 348400.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 555,
+   "nombre": "Macedonia",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 343338.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 244,
+   "nombre": "Bermudas",
+   "iso3": null,
+   "continente": "América",
+   "fob": 324787.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 316,
+   "nombre": "Laos",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 319456.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 133,
+   "nombre": "Mali",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 283527.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 560,
+   "nombre": "Uzbekistan",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 254263.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 229,
+   "nombre": "Territorio Holandes en América",
+   "iso3": null,
+   "continente": "América",
+   "fob": 251136.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 310,
+   "nombre": "Siria",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 248569.1,
+   "pct": 0.0
+  },
+  {
+   "cod": 248,
+   "nombre": "Turcas y Caicos",
+   "iso3": null,
+   "continente": "América",
+   "fob": 192124.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 150,
+   "nombre": "Benín",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 188953.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 231,
+   "nombre": "Dominica",
+   "iso3": null,
+   "continente": "América",
+   "fob": 181506.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 249,
+   "nombre": "Islas Virgenes (Estados Unidos de América)",
+   "iso3": null,
+   "continente": "América",
+   "fob": 156403.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 242,
+   "nombre": "Anguila",
+   "iso3": null,
+   "continente": "América",
+   "fob": 98919.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 104,
+   "nombre": "Guinea",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 81863.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 412,
+   "nombre": "Papua Nueva Guinea",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 78960.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 241,
+   "nombre": "Saint Kitts & Nevis",
+   "iso3": null,
+   "continente": "América",
+   "fob": 76120.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 234,
+   "nombre": "San Vicente y las Granadinas",
+   "iso3": null,
+   "continente": "América",
+   "fob": 75847.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 165,
+   "nombre": "Saharavi",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 69964.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 561,
+   "nombre": "Montenegro",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 63574.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 116,
+   "nombre": "Zimbabwe",
+   "iso3": "ZWE",
+   "continente": "Africa",
+   "fob": 62379.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 122,
+   "nombre": "Swazilandia",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 62100.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 419,
+   "nombre": "Tuvalu",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 61825.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 136,
+   "nombre": "Uganda",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 45306.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 148,
+   "nombre": "República Centroafricana",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 44200.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 322,
+   "nombre": "Palestina",
+   "iso3": null,
+   "continente": "Asia",
+   "fob": 43704.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 253,
+   "nombre": "Groenlandia",
+   "iso3": null,
+   "continente": "América",
+   "fob": 37422.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 115,
+   "nombre": "Malawi",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 30932.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 345,
+   "nombre": "Macao",
+   "iso3": "HKG",
+   "continente": "Asia",
+   "fob": 29825.9,
+   "pct": 0.0
+  },
+  {
+   "cod": 120,
+   "nombre": "Madagascar",
+   "iso3": "MDG",
+   "continente": "Africa",
+   "fob": 23842.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 105,
+   "nombre": "Sierra Leona",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 22950.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 142,
+   "nombre": "Rwanda",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 16150.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 164,
+   "nombre": "Islas Marshall",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 15775.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 427,
+   "nombre": "Islas Cook",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 12769.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 525,
+   "nombre": "Andorra",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 9862.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 118,
+   "nombre": "Comoras",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 6674.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 102,
+   "nombre": "Gambia",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 6660.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 227,
+   "nombre": "Territorio Británico en América",
+   "iso3": null,
+   "continente": "América",
+   "fob": 4609.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 129,
+   "nombre": "Cabo Verde",
+   "iso3": null,
+   "continente": "Africa",
+   "fob": 2569.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 535,
+   "nombre": "Monaco",
+   "iso3": null,
+   "continente": "Europa",
+   "fob": 2300.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 997,
+   "nombre": "Chile",
+   "iso3": null,
+   "continente": "América",
+   "fob": 2007.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 418,
+   "nombre": "Islas Salomón",
+   "iso3": null,
+   "continente": "Oceania",
+   "fob": 906.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 139,
+   "nombre": "Etiopia",
+   "iso3": "ETH",
+   "continente": "Africa",
+   "fob": 400.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 906,
+   "nombre": "Depósito franco",
+   "iso3": null,
+   "continente": "América",
+   "fob": 124.4,
+   "pct": 0.0
+  }
+ ],
+ "imp": [
+  {
+   "cod": 336,
+   "nombre": "China",
+   "iso3": "CHN",
+   "continente": "Asia",
+   "cif": 21637198876.9,
+   "pct": 28.178
+  },
+  {
+   "cod": 225,
+   "nombre": "Estados Unidos de América",
+   "iso3": "USA",
+   "continente": "América",
+   "cif": 14161284264.1,
+   "pct": 18.442
+  },
+  {
+   "cod": 220,
+   "nombre": "Brasil",
+   "iso3": "BRA",
+   "continente": "América",
+   "cif": 7097506611.6,
+   "pct": 9.243
+  },
+  {
+   "cod": 224,
+   "nombre": "Argentina",
+   "iso3": "ARG",
+   "continente": "América",
+   "cif": 4467531888.6,
+   "pct": 5.818
+  },
+  {
+   "cod": 563,
+   "nombre": "Alemania",
+   "iso3": "DEU",
+   "continente": "Europa",
+   "cif": 2788702341.9,
+   "pct": 3.632
+  },
+  {
+   "cod": 517,
+   "nombre": "España",
+   "iso3": "ESP",
+   "continente": "Europa",
+   "cif": 1937488873.3,
+   "pct": 2.523
+  },
+  {
+   "cod": 219,
+   "nombre": "Perú",
+   "iso3": "PER",
+   "continente": "América",
+   "cif": 1933561162.9,
+   "pct": 2.518
+  },
+  {
+   "cod": 325,
+   "nombre": "Vietnam",
+   "iso3": "VNM",
+   "continente": "Asia",
+   "cif": 1613862669.1,
+   "pct": 2.102
+  },
+  {
+   "cod": 331,
+   "nombre": "Japón",
+   "iso3": "JPN",
+   "continente": "Asia",
+   "cif": 1604589646.3,
+   "pct": 2.09
+  },
+  {
+   "cod": 216,
+   "nombre": "México",
+   "iso3": "MEX",
+   "continente": "América",
+   "cif": 1542576256.8,
+   "pct": 2.009
+  },
+  {
+   "cod": 504,
+   "nombre": "Italia",
+   "iso3": "ITA",
+   "continente": "Europa",
+   "cif": 1480593306.3,
+   "pct": 1.928
+  },
+  {
+   "cod": 333,
+   "nombre": "Corea del Sur",
+   "iso3": "KOR",
+   "continente": "Asia",
+   "cif": 1470122066.6,
+   "pct": 1.915
+  },
+  {
+   "cod": 317,
+   "nombre": "India",
+   "iso3": "IND",
+   "continente": "Asia",
+   "cif": 1316992294.1,
+   "pct": 1.715
+  },
+  {
+   "cod": 222,
+   "nombre": "Paraguay",
+   "iso3": "PRY",
+   "continente": "América",
+   "cif": 998998966.4,
+   "pct": 1.301
+  },
+  {
+   "cod": 505,
+   "nombre": "Francia",
+   "iso3": "FRA",
+   "continente": "Europa",
+   "cif": 989682472.3,
+   "pct": 1.289
+  },
+  {
+   "cod": 202,
+   "nombre": "Colombia",
+   "iso3": "COL",
+   "continente": "América",
+   "cif": 872341453.1,
+   "pct": 1.136
+  },
+  {
+   "cod": 226,
+   "nombre": "Canadá",
+   "iso3": "CAN",
+   "continente": "América",
+   "cif": 680446615.7,
+   "pct": 0.886
+  },
+  {
+   "cod": 218,
+   "nombre": "Ecuador",
+   "iso3": "ECU",
+   "continente": "América",
+   "cif": 663953227.5,
+   "pct": 0.865
+  },
+  {
+   "cod": 319,
+   "nombre": "Thailandia",
+   "iso3": "THA",
+   "continente": "Asia",
+   "cif": 654302504.2,
+   "pct": 0.852
+  },
+  {
+   "cod": 510,
+   "nombre": "Reino Unido",
+   "iso3": "GBR",
+   "continente": "Europa",
+   "cif": 541338787.6,
+   "pct": 0.705
+  },
+  {
+   "cod": 904,
+   "nombre": "Origenes o Destinaciones no precisadas por razones comerciales o militares",
+   "iso3": null,
+   "continente": "Otros",
+   "cif": 527255104.1,
+   "pct": 0.687
+  },
+  {
+   "cod": 328,
+   "nombre": "Indonesia",
+   "iso3": "IDN",
+   "continente": "Asia",
+   "cif": 488745552.0,
+   "pct": 0.636
+  },
+  {
+   "cod": 515,
+   "nombre": "Holanda",
+   "iso3": "NLD",
+   "continente": "Europa",
+   "cif": 487078919.5,
+   "pct": 0.634
+  },
+  {
+   "cod": 522,
+   "nombre": "Turquia",
+   "iso3": "TUR",
+   "continente": "Europa",
+   "cif": 476937279.2,
+   "pct": 0.621
+  },
+  {
+   "cod": 511,
+   "nombre": "Suecia",
+   "iso3": "SWE",
+   "continente": "Europa",
+   "cif": 461686238.1,
+   "pct": 0.601
+  },
+  {
+   "cod": 514,
+   "nombre": "Bélgica",
+   "iso3": "BEL",
+   "continente": "Europa",
+   "cif": 419362171.1,
+   "pct": 0.546
+  },
+  {
+   "cod": 512,
+   "nombre": "Finlandia",
+   "iso3": "FIN",
+   "continente": "Europa",
+   "cif": 373042172.4,
+   "pct": 0.486
+  },
+  {
+   "cod": 203,
+   "nombre": "Trinidad y Tobago",
+   "iso3": "TTO",
+   "continente": "América",
+   "cif": 372903266.2,
+   "pct": 0.486
+  },
+  {
+   "cod": 508,
+   "nombre": "Suiza",
+   "iso3": "CHE",
+   "continente": "Europa",
+   "cif": 319164978.0,
+   "pct": 0.416
+  },
+  {
+   "cod": 528,
+   "nombre": "Polonia",
+   "iso3": "POL",
+   "continente": "Europa",
+   "cif": 307686067.2,
+   "pct": 0.401
+  },
+  {
+   "cod": 507,
+   "nombre": "Dinamarca",
+   "iso3": "DNK",
+   "continente": "Europa",
+   "cif": 282021730.8,
+   "pct": 0.367
+  },
+  {
+   "cod": 509,
+   "nombre": "Austria",
+   "iso3": "AUT",
+   "continente": "Europa",
+   "cif": 276777931.4,
+   "pct": 0.36
+  },
+  {
+   "cod": 501,
+   "nombre": "Portugal",
+   "iso3": "PRT",
+   "continente": "Europa",
+   "cif": 243117511.9,
+   "pct": 0.317
+  },
+  {
+   "cod": 321,
+   "nombre": "Bangladesh",
+   "iso3": "BGD",
+   "continente": "Asia",
+   "cif": 238899268.6,
+   "pct": 0.311
+  },
+  {
+   "cod": 329,
+   "nombre": "Malasia",
+   "iso3": "MYS",
+   "continente": "Asia",
+   "cif": 237074817.9,
+   "pct": 0.309
+  },
+  {
+   "cod": 506,
+   "nombre": "Irlanda",
+   "iso3": "IRL",
+   "continente": "Europa",
+   "cif": 233299262.1,
+   "pct": 0.304
+  },
+  {
+   "cod": 330,
+   "nombre": "Taiwán (Formosa)",
+   "iso3": "TWN",
+   "continente": "Asia",
+   "cif": 225427898.7,
+   "pct": 0.294
+  },
+  {
+   "cod": 513,
+   "nombre": "Noruega",
+   "iso3": "NOR",
+   "continente": "Europa",
+   "cif": 203300859.6,
+   "pct": 0.265
+  },
+  {
+   "cod": 406,
+   "nombre": "Australia",
+   "iso3": "AUS",
+   "continente": "Oceania",
+   "cif": 174704451.4,
+   "pct": 0.228
+  },
+  {
+   "cod": 223,
+   "nombre": "Uruguay",
+   "iso3": "URY",
+   "continente": "América",
+   "cif": 167678908.9,
+   "pct": 0.218
+  },
+  {
+   "cod": 221,
+   "nombre": "Bolivia",
+   "iso3": "BOL",
+   "continente": "América",
+   "cif": 118495277.5,
+   "pct": 0.154
+  },
+  {
+   "cod": 544,
+   "nombre": "República Checa",
+   "iso3": "CZE",
+   "continente": "Europa",
+   "cif": 106625778.6,
+   "pct": 0.139
+  },
+  {
+   "cod": 215,
+   "nombre": "Guatemala",
+   "iso3": "GTM",
+   "continente": "América",
+   "cif": 97453663.8,
+   "pct": 0.127
+  },
+  {
+   "cod": 332,
+   "nombre": "Singapur",
+   "iso3": "SGP",
+   "continente": "Asia",
+   "cif": 96450823.4,
+   "pct": 0.126
+  },
+  {
+   "cod": 341,
+   "nombre": "Emiratos Arabes Unidos",
+   "iso3": "ARE",
+   "continente": "Asia",
+   "cif": 86141258.2,
+   "pct": 0.112
+  },
+  {
+   "cod": 306,
+   "nombre": "Israel",
+   "iso3": "ISR",
+   "continente": "Asia",
+   "cif": 82525702.0,
+   "pct": 0.107
+  },
+  {
+   "cod": 324,
+   "nombre": "Pakistán",
+   "iso3": "PAK",
+   "continente": "Asia",
+   "cif": 82110331.8,
+   "pct": 0.107
+  },
+  {
+   "cod": 405,
+   "nombre": "Nueva Zelandia",
+   "iso3": "NZL",
+   "continente": "Oceania",
+   "cif": 71494238.0,
+   "pct": 0.093
+  },
+  {
+   "cod": 315,
+   "nombre": "Cambodia",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 70437738.8,
+   "pct": 0.092
+  },
+  {
+   "cod": 314,
+   "nombre": "Sri Lanka",
+   "iso3": "LKA",
+   "continente": "Asia",
+   "cif": 69609643.8,
+   "pct": 0.091
+  },
+  {
+   "cod": 112,
+   "nombre": "Sudáfrica",
+   "iso3": "ZAF",
+   "continente": "Africa",
+   "cif": 69566230.6,
+   "pct": 0.091
+  },
+  {
+   "cod": 342,
+   "nombre": "Hong Kong (Región administrativa especial de China)",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 67865880.7,
+   "pct": 0.088
+  },
+  {
+   "cod": 530,
+   "nombre": "Hungria",
+   "iso3": "HUN",
+   "continente": "Europa",
+   "cif": 66095743.8,
+   "pct": 0.086
+  },
+  {
+   "cod": 128,
+   "nombre": "Marruecos",
+   "iso3": "MAR",
+   "continente": "Africa",
+   "cif": 61988111.1,
+   "pct": 0.081
+  },
+  {
+   "cod": 540,
+   "nombre": "Armenia",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 60374586.8,
+   "pct": 0.079
+  },
+  {
+   "cod": 999,
+   "nombre": "Otros",
+   "iso3": null,
+   "continente": "Otros",
+   "cif": 59309844.0,
+   "pct": 0.077
+  },
+  {
+   "cod": 335,
+   "nombre": "Filipinas",
+   "iso3": "PHL",
+   "continente": "Asia",
+   "cif": 58410839.7,
+   "pct": 0.076
+  },
+  {
+   "cod": 554,
+   "nombre": "Lituania",
+   "iso3": "LTU",
+   "continente": "Europa",
+   "cif": 40930672.4,
+   "pct": 0.053
+  },
+  {
+   "cod": 520,
+   "nombre": "Grecia",
+   "iso3": "GRC",
+   "continente": "Europa",
+   "cif": 39985198.4,
+   "pct": 0.052
+  },
+  {
+   "cod": 211,
+   "nombre": "Costa Rica",
+   "iso3": "CRI",
+   "continente": "América",
+   "cif": 35798231.8,
+   "pct": 0.047
+  },
+  {
+   "cod": 527,
+   "nombre": "Bulgaria",
+   "iso3": "BGR",
+   "continente": "Europa",
+   "cif": 30106002.0,
+   "pct": 0.039
+  },
+  {
+   "cod": 519,
+   "nombre": "Rumania",
+   "iso3": "ROU",
+   "continente": "Europa",
+   "cif": 28647426.5,
+   "pct": 0.037
+  },
+  {
+   "cod": 210,
+   "nombre": "Panamá",
+   "iso3": "PAN",
+   "continente": "América",
+   "cif": 27787501.8,
+   "pct": 0.036
+  },
+  {
+   "cod": 548,
+   "nombre": "Eslovenia",
+   "iso3": "SVN",
+   "continente": "Europa",
+   "cif": 24237354.0,
+   "pct": 0.032
+  },
+  {
+   "cod": 562,
+   "nombre": "Rusia",
+   "iso3": "RUS",
+   "continente": "Europa",
+   "cif": 20126637.7,
+   "pct": 0.026
+  },
+  {
+   "cod": 124,
+   "nombre": "Egipto",
+   "iso3": "EGY",
+   "continente": "Africa",
+   "cif": 20121968.4,
+   "pct": 0.026
+  },
+  {
+   "cod": 549,
+   "nombre": "Estonia",
+   "iso3": "EST",
+   "continente": "Europa",
+   "cif": 14732519.4,
+   "pct": 0.019
+  },
+  {
+   "cod": 997,
+   "nombre": "Chile",
+   "iso3": null,
+   "continente": "América",
+   "cif": 14130661.6,
+   "pct": 0.018
+  },
+  {
+   "cod": 206,
+   "nombre": "República Dominicana",
+   "iso3": "DOM",
+   "continente": "América",
+   "cif": 13828261.1,
+   "pct": 0.018
+  },
+  {
+   "cod": 251,
+   "nombre": "Puerto Rico",
+   "iso3": "PRI",
+   "continente": "América",
+   "cif": 12898797.5,
+   "pct": 0.017
+  },
+  {
+   "cod": 326,
+   "nombre": "Myanmar (ex Birmania)",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 11180585.4,
+   "pct": 0.015
+  },
+  {
+   "cod": 553,
+   "nombre": "Letonia",
+   "iso3": "LVA",
+   "continente": "Europa",
+   "cif": 10174769.4,
+   "pct": 0.013
+  },
+  {
+   "cod": 111,
+   "nombre": "Nigeria",
+   "iso3": "NGA",
+   "continente": "Africa",
+   "cif": 10122611.1,
+   "pct": 0.013
+  },
+  {
+   "cod": 532,
+   "nombre": "Luxemburgo",
+   "iso3": "LUX",
+   "continente": "Europa",
+   "cif": 9482244.2,
+   "pct": 0.012
+  },
+  {
+   "cod": 201,
+   "nombre": "Venezuela",
+   "iso3": "VEN",
+   "continente": "América",
+   "cif": 9021648.6,
+   "pct": 0.012
+  },
+  {
+   "cod": 302,
+   "nombre": "Arabia Saudita",
+   "iso3": "SAU",
+   "continente": "Asia",
+   "cif": 8386595.7,
+   "pct": 0.011
+  },
+  {
+   "cod": 559,
+   "nombre": "Ucrania",
+   "iso3": "UKR",
+   "continente": "Europa",
+   "cif": 7972877.9,
+   "pct": 0.01
+  },
+  {
+   "cod": 546,
+   "nombre": "República de Serbia",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 7535284.7,
+   "pct": 0.01
+  },
+  {
+   "cod": 523,
+   "nombre": "Malta",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 7115493.0,
+   "pct": 0.009
+  },
+  {
+   "cod": 213,
+   "nombre": "El Salvador",
+   "iso3": "SLV",
+   "continente": "América",
+   "cif": 7006945.4,
+   "pct": 0.009
+  },
+  {
+   "cod": 547,
+   "nombre": "Croacia",
+   "iso3": "HRV",
+   "continente": "Europa",
+   "cif": 6725394.2,
+   "pct": 0.009
+  },
+  {
+   "cod": 305,
+   "nombre": "Chipre",
+   "iso3": "CYP",
+   "continente": "Asia",
+   "cif": 6710860.5,
+   "pct": 0.009
+  },
+  {
+   "cod": 516,
+   "nombre": "Islandia",
+   "iso3": "ISL",
+   "continente": "Europa",
+   "cif": 6472333.9,
+   "pct": 0.008
+  },
+  {
+   "cod": 301,
+   "nombre": "Jordania",
+   "iso3": "JOR",
+   "continente": "Asia",
+   "cif": 6240753.7,
+   "pct": 0.008
+  },
+  {
+   "cod": 126,
+   "nombre": "Tunez",
+   "iso3": "TUN",
+   "continente": "Africa",
+   "cif": 6153493.7,
+   "pct": 0.008
+  },
+  {
+   "cod": 910,
+   "nombre": "Zona Franca Arica, Zona Industrial",
+   "iso3": null,
+   "continente": "América",
+   "cif": 5744038.4,
+   "pct": 0.007
+  },
+  {
+   "cod": 212,
+   "nombre": "Nicaragua",
+   "iso3": "NIC",
+   "continente": "América",
+   "cif": 5690161.5,
+   "pct": 0.007
+  },
+  {
+   "cod": 214,
+   "nombre": "Honduras",
+   "iso3": "HND",
+   "continente": "América",
+   "cif": 5686570.7,
+   "pct": 0.007
+  },
+  {
+   "cod": 304,
+   "nombre": "Omán",
+   "iso3": "OMN",
+   "continente": "Asia",
+   "cif": 4702522.7,
+   "pct": 0.006
+  },
+  {
+   "cod": 560,
+   "nombre": "Uzbekistan",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 3328520.5,
+   "pct": 0.004
+  },
+  {
+   "cod": 209,
+   "nombre": "Cuba",
+   "iso3": "CUB",
+   "continente": "América",
+   "cif": 2840689.9,
+   "pct": 0.004
+  },
+  {
+   "cod": 137,
+   "nombre": "Kenia",
+   "iso3": "KEN",
+   "continente": "Africa",
+   "cif": 2003320.4,
+   "pct": 0.003
+  },
+  {
+   "cod": 534,
+   "nombre": "Liechtenstein",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 1990994.4,
+   "pct": 0.003
+  },
+  {
+   "cod": 905,
+   "nombre": "Zona franca Iquique",
+   "iso3": null,
+   "continente": "América",
+   "cif": 1982286.6,
+   "pct": 0.003
+  },
+  {
+   "cod": 309,
+   "nombre": "Irán",
+   "iso3": "IRN",
+   "continente": "Asia",
+   "cif": 1646021.6,
+   "pct": 0.002
+  },
+  {
+   "cod": 551,
+   "nombre": "Kasajstán",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 1525310.3,
+   "pct": 0.002
+  },
+  {
+   "cod": 120,
+   "nombre": "Madagascar",
+   "iso3": "MDG",
+   "continente": "Africa",
+   "cif": 1126032.9,
+   "pct": 0.001
+  },
+  {
+   "cod": 543,
+   "nombre": "Bosnia y Herzegovina",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 872842.6,
+   "pct": 0.001
+  },
+  {
+   "cod": 542,
+   "nombre": "Belarus",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 809730.3,
+   "pct": 0.001
+  },
+  {
+   "cod": 135,
+   "nombre": "Tanzania",
+   "iso3": "TZA",
+   "continente": "Africa",
+   "cif": 801819.0,
+   "pct": 0.001
+  },
+  {
+   "cod": 107,
+   "nombre": "Costa de Marfil",
+   "iso3": "CIV",
+   "continente": "Africa",
+   "cif": 750451.8,
+   "pct": 0.001
+  },
+  {
+   "cod": 518,
+   "nombre": "Albania",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 739689.3,
+   "pct": 0.001
+  },
+  {
+   "cod": 208,
+   "nombre": "Haití",
+   "iso3": null,
+   "continente": "América",
+   "cif": 571161.3,
+   "pct": 0.001
+  },
+  {
+   "cod": 101,
+   "nombre": "Senegal",
+   "iso3": "SEN",
+   "continente": "Africa",
+   "cif": 569890.4,
+   "pct": 0.001
+  },
+  {
+   "cod": 108,
+   "nombre": "Ghana",
+   "iso3": "GHA",
+   "continente": "Africa",
+   "cif": 499621.5,
+   "pct": 0.001
+  },
+  {
+   "cod": 316,
+   "nombre": "Laos",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 417510.8,
+   "pct": 0.001
+  },
+  {
+   "cod": 139,
+   "nombre": "Etiopia",
+   "iso3": "ETH",
+   "continente": "Africa",
+   "cif": 346756.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 556,
+   "nombre": "Moldova",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 339654.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 555,
+   "nombre": "Macedonia",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 298437.9,
+   "pct": 0.0
+  },
+  {
+   "cod": 311,
+   "nombre": "Libano",
+   "iso3": "LBN",
+   "continente": "Asia",
+   "cif": 274234.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 550,
+   "nombre": "Georgia",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 236825.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 127,
+   "nombre": "Argelia",
+   "iso3": "DZA",
+   "continente": "Africa",
+   "cif": 236819.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 345,
+   "nombre": "Macao",
+   "iso3": "HKG",
+   "continente": "Asia",
+   "cif": 224737.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 119,
+   "nombre": "Mauricio",
+   "iso3": "MUS",
+   "continente": "Africa",
+   "cif": 197459.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 422,
+   "nombre": "Polinesia Francesa",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 190426.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 117,
+   "nombre": "Zambia",
+   "iso3": "ZMB",
+   "continente": "Africa",
+   "cif": 167589.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 557,
+   "nombre": "Tadjikistán",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 166225.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 156,
+   "nombre": "Seychelles",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 164493.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 142,
+   "nombre": "Rwanda",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 160285.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 536,
+   "nombre": "San Marino",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 159667.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 164,
+   "nombre": "Islas Marshall",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 138600.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 136,
+   "nombre": "Uganda",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 129867.1,
+   "pct": 0.0
+  },
+  {
+   "cod": 205,
+   "nombre": "Jamaica",
+   "iso3": "JAM",
+   "continente": "América",
+   "cif": 109713.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 312,
+   "nombre": "Qatar",
+   "iso3": "QAT",
+   "continente": "Asia",
+   "cif": 99917.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 116,
+   "nombre": "Zimbabwe",
+   "iso3": "ZWE",
+   "continente": "Africa",
+   "cif": 99689.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 907,
+   "nombre": "Zona franca Punta Arenas",
+   "iso3": null,
+   "continente": "América",
+   "cif": 94697.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 204,
+   "nombre": "Barbados",
+   "iso3": null,
+   "continente": "América",
+   "cif": 94259.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 130,
+   "nombre": "Chad",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 89757.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 129,
+   "nombre": "Cabo Verde",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 86509.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 525,
+   "nombre": "Andorra",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 82148.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 131,
+   "nombre": "Niger",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 81995.9,
+   "pct": 0.0
+  },
+  {
+   "cod": 235,
+   "nombre": "Surinam",
+   "iso3": "SUR",
+   "continente": "América",
+   "cif": 80575.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 535,
+   "nombre": "Monaco",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 79116.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 401,
+   "nombre": "Fiji",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 68864.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 320,
+   "nombre": "Nepal",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 61662.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 558,
+   "nombre": "Turkmenistán",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 57872.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 145,
+   "nombre": "Gabon",
+   "iso3": "GAB",
+   "continente": "Africa",
+   "cif": 53173.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 140,
+   "nombre": "Angola",
+   "iso3": "AGO",
+   "continente": "Africa",
+   "cif": 48354.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 418,
+   "nombre": "Islas Salomón",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 42967.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 310,
+   "nombre": "Siria",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 39542.1,
+   "pct": 0.0
+  },
+  {
+   "cod": 207,
+   "nombre": "Bahamas",
+   "iso3": null,
+   "continente": "América",
+   "cif": 37188.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 109,
+   "nombre": "Togo",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 36680.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 417,
+   "nombre": "Micronesia",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 34693.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 236,
+   "nombre": "Belice",
+   "iso3": "BLZ",
+   "continente": "América",
+   "cif": 28174.1,
+   "pct": 0.0
+  },
+  {
+   "cod": 113,
+   "nombre": "Botswana",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 27851.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 901,
+   "nombre": "Combustibles y lubricantes destinados al consumo de naves y aeronaves extranjeras y de revistas con el mismo objeto",
+   "iso3": null,
+   "continente": "Otros",
+   "cif": 27240.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 150,
+   "nombre": "Benín",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 25096.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 114,
+   "nombre": "Lesotho",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 24363.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 245,
+   "nombre": "Islas Virgenes Britanicas",
+   "iso3": null,
+   "continente": "América",
+   "cif": 23194.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 159,
+   "nombre": "Namibia",
+   "iso3": "NAM",
+   "continente": "Africa",
+   "cif": 20726.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 402,
+   "nombre": "Nauru",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 18730.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 151,
+   "nombre": "Territorio Britanico en Africa",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 18422.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 308,
+   "nombre": "Afghanistán",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 18108.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 217,
+   "nombre": "Guyana",
+   "iso3": "GUY",
+   "continente": "América",
+   "cif": 13400.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 134,
+   "nombre": "Mauritania",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 13276.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 227,
+   "nombre": "Territorio Británico en América",
+   "iso3": null,
+   "continente": "América",
+   "cif": 12864.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 234,
+   "nombre": "San Vicente y las Granadinas",
+   "iso3": null,
+   "continente": "América",
+   "cif": 12656.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 303,
+   "nombre": "Kuwait",
+   "iso3": "KWT",
+   "continente": "Asia",
+   "cif": 12521.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 337,
+   "nombre": "Mongolia",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 12200.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 229,
+   "nombre": "Territorio Holandes en América",
+   "iso3": null,
+   "continente": "América",
+   "cif": 11457.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 409,
+   "nombre": "Territorio NorteAméricano en Oceanía y el Pacífico",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 9075.9,
+   "pct": 0.0
+  },
+  {
+   "cod": 344,
+   "nombre": "Brunei",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 8902.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 404,
+   "nombre": "Samoa Occidental",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 8834.1,
+   "pct": 0.0
+  },
+  {
+   "cod": 231,
+   "nombre": "Dominica",
+   "iso3": null,
+   "continente": "América",
+   "cif": 8373.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 105,
+   "nombre": "Sierra Leona",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 8106.9,
+   "pct": 0.0
+  },
+  {
+   "cod": 149,
+   "nombre": "Camerún",
+   "iso3": "CMR",
+   "continente": "Africa",
+   "cif": 7609.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 161,
+   "nombre": "Burkina Faso",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 6770.1,
+   "pct": 0.0
+  },
+  {
+   "cod": 313,
+   "nombre": "Bahrein",
+   "iso3": "BHR",
+   "continente": "Asia",
+   "cif": 6387.1,
+   "pct": 0.0
+  },
+  {
+   "cod": 552,
+   "nombre": "Kirgistán",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 6117.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 155,
+   "nombre": "Djibouti",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 4874.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 122,
+   "nombre": "Swazilandia",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 4566.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 541,
+   "nombre": "Azerbaiyan",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 3510.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 102,
+   "nombre": "Gambia",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 3491.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 147,
+   "nombre": "Guinea Ecuatorial",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 3421.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 243,
+   "nombre": "Aruba",
+   "iso3": null,
+   "continente": "América",
+   "cif": 3146.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 144,
+   "nombre": "República del Congo",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 2332.0,
+   "pct": 0.0
+  },
+  {
+   "cod": 106,
+   "nombre": "Liberia",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 2024.7,
+   "pct": 0.0
+  },
+  {
+   "cod": 148,
+   "nombre": "República Centroafricana",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 1988.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 146,
+   "nombre": "Sao Tome y Príncipe",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 1927.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 123,
+   "nombre": "Sudán",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 1638.8,
+   "pct": 0.0
+  },
+  {
+   "cod": 426,
+   "nombre": "Timor Oriental",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 1102.1,
+   "pct": 0.0
+  },
+  {
+   "cod": 307,
+   "nombre": "Iraq",
+   "iso3": null,
+   "continente": "Asia",
+   "cif": 647.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 242,
+   "nombre": "Anguila",
+   "iso3": null,
+   "continente": "América",
+   "cif": 370.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 246,
+   "nombre": "Islas Caymán",
+   "iso3": null,
+   "continente": "América",
+   "cif": 340.5,
+   "pct": 0.0
+  },
+  {
+   "cod": 427,
+   "nombre": "Islas Cook",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 296.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 244,
+   "nombre": "Bermudas",
+   "iso3": null,
+   "continente": "América",
+   "cif": 284.1,
+   "pct": 0.0
+  },
+  {
+   "cod": 153,
+   "nombre": "Territorio Francés en África",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 261.3,
+   "pct": 0.0
+  },
+  {
+   "cod": 415,
+   "nombre": "Vanuatu",
+   "iso3": null,
+   "continente": "Oceania",
+   "cif": 258.2,
+   "pct": 0.0
+  },
+  {
+   "cod": 240,
+   "nombre": "Antigua y Barbuda",
+   "iso3": null,
+   "continente": "América",
+   "cif": 213.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 561,
+   "nombre": "Montenegro",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 185.4,
+   "pct": 0.0
+  },
+  {
+   "cod": 133,
+   "nombre": "Mali",
+   "iso3": null,
+   "continente": "Africa",
+   "cif": 115.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 566,
+   "nombre": "Guernsey",
+   "iso3": null,
+   "continente": "Europa",
+   "cif": 108.6,
+   "pct": 0.0
+  },
+  {
+   "cod": 121,
+   "nombre": "Mozambique",
+   "iso3": "MOZ",
+   "continente": "Africa",
+   "cif": 92.4,
+   "pct": 0.0
+  }
+ ]
+}

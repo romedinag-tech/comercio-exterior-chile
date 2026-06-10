@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Comercio Exterior de Chile 2025 · Puntos de transferencia de carga</title>
+<title>Dinámicas Comercio Exterior de Chile · Puntos de transferencia de carga</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -183,6 +183,8 @@ header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .subseg button{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:9px;padding:6px 11px;font-size:11.5px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--ff);transition:all .15s}
 .subseg button:hover{border-color:var(--cop)}
 .subseg button.on{background:linear-gradient(180deg,var(--cop),var(--cop2));color:#1a1206;border-color:transparent}
+.cmpgrp{margin-bottom:10px}
+.cmpgh{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:5px}
 .cmp-pick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px}
 .cmp-pick .chip{font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:rgba(255,255,255,.03);color:var(--ink2);transition:all .14s}
 .cmp-pick .chip:hover{border-color:var(--cop)}
@@ -205,7 +207,7 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
       <circle cx="20" cy="20" r="2.4" fill="#080d15"/>
     </svg>
     <div>
-      <h1>Comercio Exterior de Chile <b>2025</b></h1>
+      <h1>Dinámicas Comercio Exterior de Chile <b>2025</b></h1>
       <div class="sub">Inteligencia de puntos de transferencia de carga · DUS / DIN — Aduanas</div>
     </div>
   </div>
@@ -421,10 +423,10 @@ function selCountryShares(){
 function buildWorld(){ if(layerWorld) return; layerWorld=L.geoJSON(D.world,{style:{weight:.4,color:'rgba(255,255,255,.14)',fillColor:'#101a28',fillOpacity:.85}}); }
 function paintWorld(){
   const sh=selCountryShares();
-  const sym=state.repr==='simbolos';
+  const choro=isChoro();
   layerWorld.eachLayer(ly=>{
     const iso=ly.feature.id; const d=sh[iso];
-    ly.setStyle({fillColor: (sym||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: sym?.5:(d?.95:.55), color:'rgba(255,255,255,.12)'});
+    ly.setStyle({fillColor: (!choro||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: !choro?.5:(d?.95:.55), color:'rgba(255,255,255,.12)'});
     const met=state.metric==='imp'?'Importado':'Exportado';
     ly.unbindTooltip();
     ly.bindTooltip(`<b>${ly.feature.properties.name}</b>`+(d?`<br>${met}: ${fmtUSD(d.val)} · ${d.pct.toFixed(1)}%`:'<br><span style="color:#7385a0">sin registro</span>'),{className:'wt',sticky:true});
@@ -435,10 +437,10 @@ function regShares(kind){ const m={}; const arr= kind==='imp'? state.sel.infl_im
 function paintRegions(){
   const ex=regShares('exp'), im=regShares('imp');
   const usar = state.metric==='imp' ? im : ex;
-  const sym=state.repr==='simbolos';
+  const choro=isChoro();
   layerRegions.eachLayer(ly=>{
     const cr=ly.feature.properties.codregion; const d=usar[cr];
-    ly.setStyle({fillColor: (sym||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: sym?.4:(d?.9:.45), color:'rgba(255,255,255,.14)'});
+    ly.setStyle({fillColor: (!choro||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: !choro?.4:(d?.9:.45), color:'rgba(255,255,255,.14)'});
     ly.unbindTooltip();
     ly.bindTooltip(`<b>${ly.feature.properties.nombre}</b>`+
       `<br><span style="color:${EXP}">Origen export: ${ex[cr]?ex[cr].pct.toFixed(1)+'%':'—'}</span>`+
@@ -480,7 +482,7 @@ function updateSymbols(){
   map.removeLayer(layerSymbols);
   const sym=(state.view==='influencia'||state.view==='mundo') && state.repr==='simbolos';
   if(sym){ paintSymbols(); layerSymbols.addTo(map); }
-  // en influencia, los flujos (líneas) solo conviven con la coropleta
+  // en influencia, los flujos (líneas) solo en coropleta pura (sin columnas)
   if(state.view==='influencia' && state.repr==='coropleta'){ if(!map.hasLayer(layerFlows)) layerFlows.addTo(map); }
   else if(state.view==='influencia') map.removeLayer(layerFlows);
 }
@@ -490,8 +492,11 @@ const colcanvas=document.getElementById('colcanvas');
 function lighten(hex,amt){ const n=parseInt(hex.slice(1),16); let r=(n>>16)&255,g=(n>>8)&255,b=n&255;
   r=Math.round(r+(255-r)*amt); g=Math.round(g+(255-g)*amt); b=Math.round(b+(255-b)*amt); return `rgb(${r},${g},${b})`; }
 function columnItems(){
-  if(state.view==='puntos') return PUNTOS.filter(p=>p.lat!=null).map(p=>({ll:[p.lat,p.lon],val:Math.max(0,metricVal(p)),color:GCOL[p.grupo]}));
-  return geoItems().filter(i=>i.c&&i.val>0).map(i=>({ll:i.c,val:i.val,color:(state.metric==='imp'?IMP:EXP)}));
+  if(state.view==='puntos'){
+    const arr=PUNTOS.filter(p=>p.lat!=null).map(p=>({ll:[p.lat,p.lon],val:Math.max(0,metricVal(p)),color:GCOL[p.grupo]}));
+    const tot=arr.reduce((s,i)=>s+i.val,0)||1; arr.forEach(i=>i.pct=100*i.val/tot); return arr;
+  }
+  return geoItems().filter(i=>i.c&&i.val>0).map(i=>({ll:i.c,val:i.val,pct:i.pct,color:(state.metric==='imp'?IMP:EXP)}));
 }
 function drawCol(ctx,x,y,h,w,color){
   ctx.fillStyle='rgba(0,0,0,.30)'; ctx.beginPath(); ctx.ellipse(x,y,w*0.75,w*0.32,0,0,2*Math.PI); ctx.fill();
@@ -506,25 +511,31 @@ function drawColumns(){
   const ctx=colcanvas.getContext('2d'); const dpr=window.devicePixelRatio||1; const size=map.getSize();
   if(colcanvas.width!==size.x*dpr||colcanvas.height!==size.y*dpr){ colcanvas.width=size.x*dpr; colcanvas.height=size.y*dpr; colcanvas.style.width=size.x+'px'; colcanvas.style.height=size.y+'px'; }
   ctx.setTransform(dpr,0,0,dpr,0,0); ctx.clearRect(0,0,size.x,size.y);
-  if(state.repr!=='columnas') return;
+  if(!isColumns()) return;
   const items=columnItems(); if(!items.length) return;
   const max=Math.max(1,...items.map(i=>i.val));
-  const pts=items.map(i=>{ const p=map.latLngToContainerPoint(i.ll); return {x:p.x,y:p.y,val:i.val,color:i.color}; })
+  const pts=items.map(i=>{ const p=map.latLngToContainerPoint(i.ll); return {x:p.x,y:p.y,val:i.val,pct:i.pct||0,color:i.color}; })
     .filter(p=>p.x>-60&&p.x<size.x+60&&p.y>-260&&p.y<size.y+60).sort((a,b)=>a.y-b.y);
   const w=state.view==='puntos'?8:10;
   const hMax=Math.min(160, size.y*0.66);
-  pts.forEach(p=>{ const h=14+hMax*Math.pow(p.val/max,0.62); drawCol(ctx,p.x,p.y,h,w,p.color); });
+  pts.forEach(p=>{ const h=14+hMax*Math.pow(p.val/max,0.62); drawCol(ctx,p.x,p.y,h,w,p.color);
+    if(p.pct>=2){ ctx.font='600 10px Inter,system-ui,sans-serif'; ctx.textAlign='center'; ctx.textBaseline='bottom';
+      ctx.shadowColor='rgba(0,0,0,.85)'; ctx.shadowBlur=3; ctx.fillStyle='#fff';
+      ctx.fillText(p.pct.toFixed(p.pct>=10?0:1)+'%', p.x, p.y-h-3); ctx.shadowBlur=0; }
+  });
 }
 function updateColumns(){
-  const on=state.repr==='columnas';
+  const on=isColumns();
   colcanvas.style.display=on?'block':'none';
   if(on) drawColumns();
 }
 function reprOptions(){
   return state.view==='puntos'
     ? [['icons','Íconos'],['columnas','Columnas 3D']]
-    : [['coropleta','Coropleta'],['simbolos','Símbolos prop.'],['columnas','Columnas 3D']];
+    : [['coro_col','Coropleta + 3D'],['coropleta','Coropleta'],['simbolos','Símbolos'],['columnas','Columnas 3D']];
 }
+function isChoro(){ return state.repr==='coropleta'||state.repr==='coro_col'; }
+function isColumns(){ return state.repr==='columnas'||state.repr==='coro_col'; }
 function renderReprControl(){
   const opts=reprOptions();
   if(!opts.some(o=>o[0]===state.repr)) state.repr=opts[0][0];
@@ -542,13 +553,14 @@ function applyRepr(){
 function setView(v){
   state.view=v;
   document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
+  renderReprControl();  // fija un repr válido para la vista ANTES de pintar
   [layerPoints,layerFlows,layerSymbols].forEach(l=>map.removeLayer(l));
   if(layerRegions) map.removeLayer(layerRegions);
   if(layerWorld) map.removeLayer(layerWorld);
   if(v==='puntos'){ layerPoints.addTo(map); refreshMarkers(); map.setView([-38,-71],4); }
   else if(v==='influencia'){ buildRegions(); layerRegions.addTo(map); paintRegions(); layerFlows.addTo(map); drawFlows(); layerPoints.addTo(map); refreshMarkers(); map.setView([-38,-71],4); }
   else if(v==='mundo'){ buildWorld(); layerWorld.addTo(map); paintWorld(); map.setView([8,70],2); }
-  renderReprControl(); updateSymbols(); updateColumns(); renderLegend();
+  updateSymbols(); updateColumns(); renderLegend();
 }
 function renderLegend(){
   const el=document.getElementById('legend');
@@ -650,7 +662,7 @@ function renderSidebar(){
     grp.innerHTML=`<div class="gh"><span class="lic" style="background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}<span class="cnt num">${pts.length}</span><span class="car">▾</span></div>
       <div class="gitems">`+pts.map(p=>`<div class="it" data-c="${p.cod}"><span>${p.nombre}</span><span class="v num">${fmtUSD(p.total)}</span></div>`).join('')+`</div>`;
     grp.querySelector('.gh').onclick=()=>grp.classList.toggle('collapsed');
-    grp.querySelectorAll('.it').forEach(it=>it.onclick=()=>{ const p=byCod[it.dataset.c]; select(p); if(p.lat!=null){ if(state.view==='mundo')setView('puntos'); map.setView([p.lat,p.lon],7);} });
+    grp.querySelectorAll('.it').forEach(it=>it.onclick=()=>{ const p=byCod[it.dataset.c]; select(p); if(p.lat!=null && state.view==='puntos') map.setView([p.lat,p.lon],7); });
     el.appendChild(grp);
   });
 }
@@ -707,15 +719,15 @@ function renderTend(body,p){
   const unit=state.anualUnit||'valor';
   const a=p.anual;
   const anualCard = a
-    ? `<div class="card full"><h3>Movimiento de carga por año · 2012–2025
+    ? `<div class="card"><h3>Carga por año · 2012–2025
          <span class="un"><span class="subseg" style="display:inline-flex;margin:0" id="anUnit">
-           <button data-u="valor" class="${unit==='valor'?'on':''}">Valor US$</button>
-           <button data-u="peso" class="${unit==='peso'?'on':''}">Tonelaje</button></span></span></h3>
-       <div class="chartbox" style="height:264px"><canvas id="canual"></canvas></div></div>`
-    : `<div class="card full"><h3>Movimiento de carga por año · 2012–2025</h3><div class="muted">Sin serie histórica para este punto.</div></div>`;
+           <button data-u="valor" class="${unit==='valor'?'on':''}">US$</button>
+           <button data-u="peso" class="${unit==='peso'?'on':''}">Ton</button></span></span></h3>
+       <div class="chartbox"><canvas id="canual"></canvas></div></div>`
+    : `<div class="card"><h3>Carga por año · 2012–2025</h3><div class="muted">Sin serie histórica para este punto.</div></div>`;
   body.innerHTML=anualCard+`
-   <div class="card wide"><h3>Evolución mensual 2025 · ${p.nombre}</h3><div class="chartbox"><canvas id="cmes"></canvas></div></div>
-   <div class="card wide"><h3>Evolución mensual por terminal · top 8 (comercio total)</h3><div class="chartbox"><canvas id="cterm"></canvas></div></div>
+   <div class="card"><h3>Evolución mensual 2025 · ${p.nombre}</h3><div class="chartbox"><canvas id="cmes"></canvas></div></div>
+   <div class="card"><h3>Mensual por terminal · top 8 (total)</h3><div class="chartbox"><canvas id="cterm"></canvas></div></div>
    <div class="card"><h3>Peso vs valor 2025</h3><div class="chartbox"><canvas id="cpv"></canvas></div></div>`;
   const gridY={ticks:{font:{size:9},callback:v=>fmtUSD(v)},grid:{color:'rgba(255,255,255,.05)'}};
   if(a){
@@ -743,16 +755,21 @@ function renderTend(body,p){
 }
 
 function renderComparar(body){
-  const pts=PUNTOS.filter(p=>p.lat!=null).slice(0,40);
-  body.innerHTML=`<div class="card wide"><div class="muted" style="margin-bottom:9px">Elige hasta 5 puntos para comparar.</div>
-   <div class="cmp-pick" id="cmpPick"></div><div class="chartbox" style="height:198px"><canvas id="ccmp"></canvas></div></div>
-   <div class="card"><h3>Balance · CIF − FOB</h3><div class="chartbox"><canvas id="ccmp2"></canvas></div></div>
-   <div class="card wide"><h3>Evolución mensual comparada · total</h3><div class="chartbox"><canvas id="ccmp3"></canvas></div></div>`;
-  const pick=document.getElementById('cmpPick');
   if(state.cmp.size===0){ [PUNTOS[0],PUNTOS[1],PUNTOS[2]].forEach(p=>p&&state.cmp.add(p.cod)); }
-  pts.forEach(p=>{ const c=document.createElement('div'); c.className='chip'+(state.cmp.has(p.cod)?' on':'');
-    c.textContent=p.nombre; c.onclick=()=>{ if(state.cmp.has(p.cod)) state.cmp.delete(p.cod); else { if(state.cmp.size>=5)return; state.cmp.add(p.cod);} renderComparar(body);};
-    pick.appendChild(c); });
+  const sumT=t=>PUNTOS.filter(p=>p.tipo===t).reduce((s,p)=>s+p.total,0);
+  const tipos=[...new Set(PUNTOS.filter(p=>p.lat!=null).map(p=>p.tipo))].sort((a,b)=>sumT(b)-sumT(a));
+  const selBox=`<div class="card"><h3>Puntos a comparar · máx 5</h3>`+tipos.map(t=>{
+      const pts=PUNTOS.filter(p=>p.tipo===t&&p.lat!=null).sort((a,b)=>b.total-a.total);
+      const col=GCOL[pts[0].grupo];
+      return `<div class="cmpgrp"><div class="cmpgh"><span class="lic" style="width:16px;height:16px;background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}</div>
+        <div class="cmp-pick">`+pts.map(p=>`<div class="chip${state.cmp.has(p.cod)?' on':''}" data-c="${p.cod}">${p.nombre}</div>`).join('')+`</div></div>`;
+    }).join('')+`</div>`;
+  body.innerHTML=selBox+`
+   <div class="card"><h3>Comercio · FOB vs CIF</h3><div class="chartbox"><canvas id="ccmp"></canvas></div></div>
+   <div class="card"><h3>Balance · CIF − FOB</h3><div class="chartbox"><canvas id="ccmp2"></canvas></div></div>
+   <div class="card"><h3>Evolución mensual · total</h3><div class="chartbox"><canvas id="ccmp3"></canvas></div></div>`;
+  body.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{ const cod=+c.dataset.c;
+    if(state.cmp.has(cod)) state.cmp.delete(cod); else { if(state.cmp.size>=5) return; state.cmp.add(cod);} renderComparar(body); });
   const sel=[...state.cmp].map(c=>byCod[c]).filter(Boolean);
   const gridY={ticks:{font:{size:9},callback:v=>fmtUSD(v)},grid:{color:'rgba(255,255,255,.05)'}};
   clearCharts();
@@ -857,7 +874,7 @@ document.getElementById('foot').innerHTML=
   window.addEventListener('mouseup',stop); window.addEventListener('touchend',stop);
 })();
 
-map.on('move zoom viewreset resize zoomend moveend',()=>{ if(state.repr==='columnas') drawColumns(); });
+map.on('move zoom viewreset resize zoomend moveend',()=>{ if(isColumns()) drawColumns(); });
 
 drawPoints(); renderSidebar(); renderLegend(); select(NAC); setView('puntos'); renderZoneBar(); renderMapInfo();
 </script>

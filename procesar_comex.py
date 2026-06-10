@@ -93,6 +93,12 @@ COORDS_EXTRA = {
  "SAN FRANCISCO": (-26.900,-68.270),   # Paso San Francisco (Atacama)
  "MAHUIL MALAL": (-39.570,-71.500),    # Paso Mamuil Malal / Tromen
  "PALENA": (-43.620,-71.720),          # Paso Palena - Carrenleufu
+ # --- completadas con fuente Servicio Nacional de Aduanas (ubicacion geografica de pasos) ---
+ "ABRA DE NAPA": (-20.500,-68.583),    # Aduana: 20 30'S 68 35'W (altiplano, frontera con Bolivia)
+ "LAGO VERDE": (-44.250,-71.800),      # Aduana: 44 15'S 71 48'W (Aysen)
+ "PANGUIPULLI": (-39.643,-72.334),     # localidad (no figura en tabla de pasos de Aduana)
+ "TERRITORIO ANTARTICO": (-62.196,-58.962),  # Base Pdte. Frei / Villa Las Estrellas, Isla Rey Jorge (punto representativo)
+ "BAKER": (-47.150,-72.550),           # Aduana lat 47 09'S; long oficial 79 51'W es erronea (cae en el oceano); ubicado en zona Rio Baker / Cochrane (Aysen)
 }
 COORDS.update(COORDS_EXTRA)
 COORDS_EXTRA_KEYS = set(COORDS_EXTRA)
@@ -431,6 +437,11 @@ meta = dict(
         "COD_UNIDAD_MEDIDA = 6 (kilogramos).",
         "Cobertura del cuadre <100%: corresponde a operaciones con puerto no chileno o "
         "codigo de puerto 0/desconocido en el microdato.",
+        "Coordenadas completadas (Abra de Napa, Lago Verde, Baker) desde la tabla de ubicacion "
+        "geografica de pasos del Servicio Nacional de Aduanas. La longitud oficial de BAKER "
+        "(79 51'W) es erronea (cae en el oceano Pacifico); se conservo la latitud oficial "
+        "(47 09'S) y se ubico en la zona del Rio Baker / Cochrane (Aysen). Panguipulli usa la "
+        "localidad y Territorio Antartico la Base Frei (Isla Rey Jorge) como punto representativo.",
     ],
 )
 

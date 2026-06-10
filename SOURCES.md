@@ -39,7 +39,15 @@ coordenadas (2 decimales) y se embebieron en `data_bundle.js`. Copias originales
   geolocalizar (Caleta Coloso, Patache, Los Vilos, Taltal, Corral, Constitución, Juan
   Fernández, Isla de Pascua, Paso San Francisco, Mamuil Malal, Paso Palena). Marcadas como
   `coord_src = "referencia_anadida"`.
-- 5 puntos quedan sin coordenada (ver README); **no se inventaron**.
+- Los 5 puntos restantes se completaron con fuente verificada — **Servicio Nacional de
+  Aduanas, "Ubicación geográfica de los pasos fronterizos"**
+  (https://www.aduana.cl/ubicacion-geografica-de-los-pasos-fronterizos/aduana/2007-02-28/125018.html):
+  Abra de Napa (20°30'S 68°35'W) y Lago Verde (44°15'S 71°48'W). Panguipulli usa la localidad
+  (no figura en la tabla) y Territorio Antártico la Base Frei (Isla Rey Jorge) como punto
+  representativo. **Baker:** la longitud oficial (79°51'W) es errónea —cae en el océano—; se
+  conservó la latitud oficial (47°09'S) y se ubicó en la zona del Río Baker / Cochrane (Aysén).
+- Resultado: **0 puntos sin coordenada**; los 74 con comercio quedan geolocalizados. Ninguna
+  coordenada fue inventada.
 
 ## Nota de método
 

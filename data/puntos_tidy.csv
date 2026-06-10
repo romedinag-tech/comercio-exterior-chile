@@ -51,25 +51,25 @@
 964;SAN FRANCISCO;Avanzada fronteriza;terrestre;América del Sur;-26.9;-68.27;3902100.9;38358.3;3940459.2;4600973.0;947.5;-3863742.6;Argentina;China;Resto No minería;Resto No combustibles
 962;SAN PEDRO DE ATACAMA;Avanzada fronteriza;terrestre;América del Sur;-22.91;-67.99;2075920.9;0.0;2075920.9;7690163.0;0.0;-2075920.9;Bolivia;;Resto No minería;
 991;AEROP. C.I. DEL CAMPO;Aeropuerto;aereo;América del Sur;-53.0;-70.85;1169957.3;59641.5;1229598.8;609719.7;106.9;-1110315.9;Aprovisionamiento (Rancho) de naves y aeronaves extranjeras y de maderas para estibar mercancías cargadas en puertos chilenos;Estados Unidos de América;Rancho de naves;Maquinarias, aparatos y sus partes
-960;ABRA DE NAPA;Avanzada fronteriza;terrestre;América del Sur;;;571230.2;0.0;571230.2;54923.4;0.0;-571230.2;Bolivia;;Otros productos relevantes;
+960;ABRA DE NAPA;Avanzada fronteriza;terrestre;América del Sur;-20.5;-68.583;571230.2;0.0;571230.2;54923.4;0.0;-571230.2;Bolivia;;Otros productos relevantes;
 987;AEROP. CHACALLUTA;Aeropuerto;aereo;América del Sur;-18.35;-70.34;285760.5;3789.4;289550.0;269573.0;692.3;-281971.1;Combustibles y lubricantes destinados al consumo de naves y aeronaves extranjeras y de revistas con el mismo objeto;China;Rancho de naves;Resto No combustibles
 983;COYHAIQUE ALTO;Avanzada fronteriza;terrestre;América del Sur;-45.49;-71.3;185494.0;3540.0;189034.0;163940.0;0.0;-181954.0;Argentina;Argentina;Resto No minería;Resto No combustibles
 916;TALTAL;Puerto marítimo;maritimo;América del Sur;-25.411;-70.484;170495.3;0.0;170495.3;23530.0;0.0;-170495.3;Brasil;;Resto No minería;
 966;MAHUIL MALAL;Avanzada fronteriza;terrestre;América del Sur;-39.57;-71.5;145463.1;16727.6;162190.7;20335.0;2174.0;-128735.5;Uruguay;Argentina;Resto No minería;Resto No combustibles
 990;AEROP. EL TEPUAL;Aeropuerto;aereo;América del Sur;-41.44;-73.09;123364.6;4730.8;128095.4;147270.6;100.0;-118633.8;Combustibles y lubricantes destinados al consumo de naves y aeronaves extranjeras y de revistas con el mismo objeto;Reino Unido;Rancho de naves;Maquinarias, aparatos y sus partes
 993;CAP. HUACHIPATO;Puerto marítimo;maritimo;América Latina;-36.74;-73.13;59084.0;58890.0;117974.0;49653.7;1404.6;-194.0;Combustibles y lubricantes destinados al consumo de naves y aeronaves extranjeras y de revistas con el mismo objeto;Estados Unidos de América;Rancho de naves;Maquinarias, aparatos y sus partes
-978;BAKER;Avanzada fronteriza;terrestre;América del Sur;;;0.0;70569.3;70569.3;0.0;0.0;70569.3;;Argentina;;Maquinarias, aparatos y sus partes
+978;BAKER;Avanzada fronteriza;terrestre;América del Sur;-47.15;-72.55;0.0;70569.3;70569.3;0.0;0.0;70569.3;;Argentina;;Maquinarias, aparatos y sus partes
 988;AEROP. DIEGO ARACENA;Aeropuerto;aereo;América del Sur;-20.54;-70.18;56467.9;6245.8;62713.7;37637.2;59.0;-50222.1;Combustibles y lubricantes destinados al consumo de naves y aeronaves extranjeras y de revistas con el mismo objeto;Brasil;Rancho de naves;Maquinarias, aparatos y sus partes
-944;TERRITORIO ANTÁRTICO CHILENO;Puerto marítimo;maritimo;América del Sur;;;40343.1;0.0;40343.1;11367.0;0.0;-40343.1;Aprovisionamiento (Rancho) de naves y aeronaves extranjeras y de maderas para estibar mercancías cargadas en puertos chilenos;;Rancho de naves;
+944;TERRITORIO ANTÁRTICO CHILENO;Puerto marítimo;maritimo;América del Sur;-62.196;-58.962;40343.1;0.0;40343.1;11367.0;0.0;-40343.1;Aprovisionamiento (Rancho) de naves y aeronaves extranjeras y de maderas para estibar mercancías cargadas en puertos chilenos;;Rancho de naves;
 951;AGUAS NEGRAS;Avanzada fronteriza;terrestre;América del Sur;-30.18;-69.82;0.0;26524.2;26524.2;0.0;0.0;26524.2;;China;;Maquinarias, aparatos y sus partes
 923;CONSTITUCIÓN;Puerto marítimo;maritimo;América del Sur;-35.333;-72.411;0.0;8461.9;8461.9;0.0;0.0;8461.9;;Bolivia;;Resto No combustibles
 956;VISVIRI;Avanzada fronteriza;terrestre;América del Sur;-17.6;-69.48;5918.0;0.0;5918.0;139.0;0.0;-5918.0;Bolivia;;Resto No minería;
 947;PUNTA DELGADA;Puerto marítimo;maritimo;América Latina;-53.16;-70.92;4020.3;0.0;4020.3;363.0;0.0;-4020.3;Argentina;;Resto No minería;
 922;JUAN FERNANDEZ;Puerto marítimo;maritimo;América del Sur;-33.638;-78.83;0.0;2315.5;2315.5;0.0;8.2;2315.5;;Estados Unidos de América;;Maquinarias, aparatos y sus partes
-971;PANGUIPULLI;Avanzada fronteriza;terrestre;América del Sur;;;800.0;0.0;800.0;1.4;0.0;-800.0;Argentina;;Resto No minería;
+971;PANGUIPULLI;Avanzada fronteriza;terrestre;América del Sur;-39.643;-72.334;800.0;0.0;800.0;1.4;0.0;-800.0;Argentina;;Resto No minería;
 970;PALENA - CARRENLEUFU;Avanzada fronteriza;terrestre;América del Sur;-43.62;-71.72;0.0;731.8;731.8;0.0;344.0;731.8;;Zona franca Iquique;;Resto No combustibles
 929;ISLA DE PASCUA;Puerto marítimo;maritimo;América del Sur;-27.15;-109.433;0.0;443.8;443.8;0.0;40.0;443.8;;Estados Unidos de América;;Prendas de vestir y accesorios, y calzados
 927;LOTA;Puerto marítimo;maritimo;América del Sur;-37.09;-73.16;0.0;56.8;56.8;0.0;10.0;56.8;;China;;Maquinarias, aparatos y sus partes
 969;FUTALEUFU;Avanzada fronteriza;terrestre;América del Sur;-43.18;-71.85;50.0;0.0;50.0;1.0;0.0;-50.0;Argentina;;Resto No minería;
 979;DOROTEA;Avanzada fronteriza;terrestre;América del Sur;-51.66;-72.36;0.0;42.1;42.1;0.0;8.0;42.1;;China;;Maquinarias, aparatos y sus partes
-973;LAGO VERDE;Avanzada fronteriza;terrestre;América del Sur;;;0.0;22.2;22.2;0.0;0.0;22.2;;Brasil;;Otros productos relevantes
+973;LAGO VERDE;Avanzada fronteriza;terrestre;América del Sur;-44.25;-71.8;0.0;22.2;22.2;0.0;0.0;22.2;;Brasil;;Otros productos relevantes

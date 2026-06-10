@@ -70,21 +70,23 @@ La diferencia (<100 %) corresponde a operaciones con puerto no chileno o código
 - **Cobertura ISO3.** El mapeo nombre-país → ISO3 cubre ~99 % del FOB y ~99 % del CIF; el
   resto son códigos especiales (p. ej. rancho de naves) y una cola marginal de países.
 
-## Puntos sin coordenada (5)
+## Puntos sin coordenada
 
-Geolocalización pendiente — montos sí registrados, marcadores no dibujados. **No se inventan
-coordenadas.** Para incluirlos, agrega su `(lat, lon)` al diccionario `COORDS` de
-`procesar_comex.py` y reejecuta.
+**Ninguno: los 74 puntos con comercio están geolocalizados.** Los 5 que faltaban se
+completaron con fuente verificada (no se inventaron):
 
-| Cód | Nombre | Tipo | Total US$ |
-|---|---|---|---:|
-| 944 | Territorio Antártico Chileno | Puerto marítimo | 40.343 |
-| 960 | Abra de Napa | Avanzada fronteriza | 571.230 |
-| 971 | Panguipulli | Avanzada fronteriza | 800 |
-| 973 | Lago Verde | Avanzada fronteriza | 22 |
-| 978 | Baker | Avanzada fronteriza | 70.569 |
+| Cód | Nombre | Coordenada | Fuente |
+|---|---|---|---|
+| 944 | Territorio Antártico Chileno | −62.196, −58.962 | Base Pdte. Frei / Villa Las Estrellas (Isla Rey Jorge), punto representativo |
+| 960 | Abra de Napa | −20.500, −68.583 | Servicio Nacional de Aduanas — ubicación geográfica de pasos (20°30'S 68°35'W) |
+| 971 | Panguipulli | −39.643, −72.334 | Localidad de Panguipulli (no figura en la tabla de pasos de Aduana) |
+| 973 | Lago Verde | −44.250, −71.800 | Servicio Nacional de Aduanas — pasos (44°15'S 71°48'W) |
+| 978 | Baker | −47.150, −72.550 | Aduana lat. 47°09'S; **long. oficial 79°51'W es errónea** (cae en el Pacífico): se ubicó en la zona del Río Baker / Cochrane (Aysén) conservando la latitud oficial |
 
-Coordenadas **añadidas** a la tabla de referencia del spec (ubicaciones geográficas públicas,
+> Fuente de pasos: Servicio Nacional de Aduanas — *Ubicación geográfica de los pasos
+> fronterizos* (aduana.cl). Todas marcadas con `coord_src = "referencia_anadida"`.
+
+Coordenadas **añadidas** previamente a la tabla de referencia del spec (ubicaciones geográficas públicas,
 marcadas con `coord_src = "referencia_anadida"` en los datos): Caleta Coloso, Patache,
 Los Vilos, Taltal, Corral, Constitución, Juan Fernández, Isla de Pascua, Paso San Francisco,
 Mamuil Malal y Paso Palena.

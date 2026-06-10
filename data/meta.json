@@ -10,38 +10,7 @@
     "suma_cif_puntos": 76787465799.0,
     "imp_cobertura_pct": 96.65
   },
-  "sin_coordenada": [
-    {
-      "cod": 944,
-      "nombre": "TERRITORIO ANTÁRTICO CHILENO",
-      "tipo": "Puerto marítimo",
-      "total": 40343.0
-    },
-    {
-      "cod": 960,
-      "nombre": "ABRA DE NAPA",
-      "tipo": "Avanzada fronteriza",
-      "total": 571230.0
-    },
-    {
-      "cod": 971,
-      "nombre": "PANGUIPULLI",
-      "tipo": "Avanzada fronteriza",
-      "total": 800.0
-    },
-    {
-      "cod": 973,
-      "nombre": "LAGO VERDE",
-      "tipo": "Avanzada fronteriza",
-      "total": 22.0
-    },
-    {
-      "cod": 978,
-      "nombre": "BAKER",
-      "tipo": "Avanzada fronteriza",
-      "total": 70569.0
-    }
-  ],
+  "sin_coordenada": [],
   "fuentes": [
     "Servicio Nacional de Aduanas - microdato DUS (exportaciones) 2025",
     "Servicio Nacional de Aduanas - microdato DIN (importaciones) 2025",
@@ -53,6 +22,7 @@
     "Influencia de EXPORTACION (infl_exp): region de origen real de la carga (COD_REGION_ORIGEN del DUS). Responde 'de que region del pais proviene lo exportado'.",
     "Influencia de IMPORTACION (infl_imp): region de la ADUANA DE NACIONALIZACION (COD_ADUANA_TRAMITACION). Indica donde se nacionaliza la carga, NO la region de destino/consumo final, que el microdato DIN no registra.",
     "Peso de importacion: el DIN no trae peso bruto; se usa CANTIDAD_MERCANCIA solo cuando COD_UNIDAD_MEDIDA = 6 (kilogramos).",
-    "Cobertura del cuadre <100%: corresponde a operaciones con puerto no chileno o codigo de puerto 0/desconocido en el microdato."
+    "Cobertura del cuadre <100%: corresponde a operaciones con puerto no chileno o codigo de puerto 0/desconocido en el microdato.",
+    "Coordenadas completadas (Abra de Napa, Lago Verde, Baker) desde la tabla de ubicacion geografica de pasos del Servicio Nacional de Aduanas. La longitud oficial de BAKER (79 51'W) es erronea (cae en el oceano Pacifico); se conservo la latitud oficial (47 09'S) y se ubico en la zona del Rio Baker / Cochrane (Aysen). Panguipulli usa la localidad y Territorio Antartico la Base Frei (Isla Rey Jorge) como punto representativo."
   ]
 }

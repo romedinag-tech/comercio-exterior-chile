@@ -191,6 +191,22 @@ def load_dicts():
         cod = fint(r[1])
         if cod is None: continue
         regiones[cod] = r[2]
+    vias = {}
+    for r in sheet("Vias").iter_rows(min_row=5, values_only=True):
+        cod = fint(r[1])
+        if cod is None: continue
+        vias[cod] = r[2]
+    tcarga = {}
+    for r in sheet("Tipos de Carga").iter_rows(min_row=7, values_only=True):
+        c = r[1]
+        if isinstance(c, str) and len(c.strip()) == 1:
+            tcarga[c.strip().upper()] = r[2]
+    clausulas = {}
+    for r in sheet("Clausulas").iter_rows(min_row=5, values_only=True):
+        cod = fint(r[1])
+        if cod is None: continue
+        sig = r[3] if isinstance(r[3], str) and len(r[3].strip()) <= 5 else None
+        clausulas[cod] = (sig.strip() if sig else r[2])
     wb.close()
 
     # clasificador: arancel(8) -> niveles
@@ -204,7 +220,7 @@ def load_dicts():
         clasif[key] = dict(cap=str(r[0]).strip() if r[0] is not None else "",
                            n1_imp=r[3], n2_imp=r[4], n1_exp=r[6], n2_exp=r[7])
     wc.close()
-    return puertos, paises, regiones, clasif
+    return puertos, paises, regiones, clasif, vias, tcarga, clausulas
 
 # ---------------------------------------------------------------- series anuales por puerto (agregado oficial)
 ANUAL_YEARS = list(range(2012, 2026))   # 2012..2025
@@ -293,7 +309,7 @@ def anual_for(nombre, ANUAL):
                 exp_kg=serie("ex_kg"), imp_kg=serie("im_kg"))
 
 print("Cargando diccionarios...", flush=True)
-PUERTOS, PAISES, REGIONES, CLASIF = load_dicts()
+PUERTOS, PAISES, REGIONES, CLASIF, VIAS, TCARGA, CLAUS = load_dicts()
 print("Cargando series anuales por puerto (2012-2025)...", flush=True)
 ANUAL = load_anual()
 CHILE_PORTS = {c for c,p in PUERTOS.items() if p["cod_pais"] == CHILE_PAIS}
@@ -313,15 +329,22 @@ def new_port():
                 dest=Counter(), orig=Counter(),
                 texp=Counter(), timp=Counter(),
                 pexp=Counter(), pimp=Counter(),
+                pexp_kg=Counter(), pimp_kg=Counter(),
                 reg_exp=Counter(), reg_imp=Counter(),
                 via_exp=Counter(), via_imp=Counter(),
+                tc_exp=Counter(), tc_imp=Counter(),
+                cl_exp=Counter(), cl_imp=Counter(),
+                advalorem=0.0,
                 mes_exp=[0.0]*12, mes_imp=[0.0]*12)
 
 ports = defaultdict(new_port)
 nat = dict(fob=0.0, cif=0.0, peso_exp=0.0, peso_imp=0.0,
            dest=Counter(), orig=Counter(),
            mes_exp=[0.0]*12, mes_imp=[0.0]*12,
-           reg_exp=Counter(), reg_imp=Counter())
+           reg_exp=Counter(), reg_imp=Counter(),
+           pexp=Counter(), pimp=Counter(), pexp_kg=Counter(), pimp_kg=Counter(),
+           via_exp=Counter(), via_imp=Counter(), tc_exp=Counter(), tc_imp=Counter(),
+           cl_exp=Counter(), cl_imp=Counter(), advalorem=0.0)
 nat_fob_all = 0.0   # exportacion nacional total (todas las ops export, cualquier puerto)
 nat_cif_all = 0.0
 
@@ -344,19 +367,26 @@ with open(EXPO, encoding="latin-1", newline="") as f:
         kept += 1
         pais = fint(row[8]); region = fint(row[4]); via = fint(row[5])
         item = row[13]; mes = fint(row[1])
+        clau = fint(row[11]); tcar = (row[12] or "").strip().upper()
         d = ports[port]
         d["fob"] += fob; d["peso_exp"] += peso
         if mes and 1 <= mes <= 12: d["mes_exp"][mes-1] += fob
         if pais is not None: d["dest"][pais] += fob
         n1 = clasif_get(item, "n1_exp"); n2 = clasif_get(item, "n2_exp")
         if n1: d["texp"][n1] += fob
-        if n2: d["pexp"][n2] += fob
+        if n2: d["pexp"][n2] += fob; d["pexp_kg"][n2] += peso
         if region is not None: d["reg_exp"][region] += fob
         if via is not None: d["via_exp"][via] += fob
+        if tcar: d["tc_exp"][tcar] += fob
+        if clau is not None: d["cl_exp"][clau] += fob
         nat["fob"] += fob; nat["peso_exp"] += peso
         if pais is not None: nat["dest"][pais] += fob
         if mes and 1 <= mes <= 12: nat["mes_exp"][mes-1] += fob
         if region is not None: nat["reg_exp"][region] += fob
+        if n2: nat["pexp"][n2] += fob; nat["pexp_kg"][n2] += peso
+        if via is not None: nat["via_exp"][via] += fob
+        if tcar: nat["tc_exp"][tcar] += fob
+        if clau is not None: nat["cl_exp"][clau] += fob
 print(f"  filas={n}  export-ops puntos CL={kept}  FOB nacional(all)={nat_fob_all:,.0f}", flush=True)
 
 # ---------------------------------------------------------------- IMPORTACIONES
@@ -378,20 +408,27 @@ with open(IMPO, encoding="latin-1", newline="") as f:
         kept += 1
         pais = fint(row[4]); item = row[11]; via = fint(row[9]); aduana = fint(row[2])
         cant = fnum(row[15]); unidad = fint(row[16]); mes = fint(row[1])
+        adval = fnum(row[13]); clau = fint(row[10]); tcar = (row[17] or "").strip().upper()
         peso = cant if unidad == 6 else 0.0
         d = ports[port]
-        d["cif"] += cif; d["peso_imp"] += peso
+        d["cif"] += cif; d["peso_imp"] += peso; d["advalorem"] += adval
         if mes and 1 <= mes <= 12: d["mes_imp"][mes-1] += cif
         if pais is not None: d["orig"][pais] += cif
         n1 = clasif_get(item, "n1_imp"); n2 = clasif_get(item, "n2_imp")
         if n1: d["timp"][n1] += cif
-        if n2: d["pimp"][n2] += cif
+        if n2: d["pimp"][n2] += cif; d["pimp_kg"][n2] += peso
         reg = ADUANA_REGION.get(aduana)
         if reg is not None: d["reg_imp"][reg] += cif
         if via is not None: d["via_imp"][via] += cif
-        nat["cif"] += cif; nat["peso_imp"] += peso
+        if tcar: d["tc_imp"][tcar] += cif
+        if clau is not None: d["cl_imp"][clau] += cif
+        nat["cif"] += cif; nat["peso_imp"] += peso; nat["advalorem"] += adval
         if pais is not None: nat["orig"][pais] += cif
         if mes and 1 <= mes <= 12: nat["mes_imp"][mes-1] += cif
+        if n2: nat["pimp"][n2] += cif; nat["pimp_kg"][n2] += peso
+        if via is not None: nat["via_imp"][via] += cif
+        if tcar: nat["tc_imp"][tcar] += cif
+        if clau is not None: nat["cl_imp"][clau] += cif
         reg = ADUANA_REGION.get(aduana)
         if reg is not None: nat["reg_imp"][reg] += cif
         if n % 300000 == 0: print(f"    ...{n} filas", flush=True)
@@ -440,7 +477,52 @@ def top_region(counter, total, k=16):
 def via_dominante(d):
     tot = d["via_exp"] + d["via_imp"]
     if not tot: return None
-    return tot.most_common(1)[0][0]
+    return VIAS.get(tot.most_common(1)[0][0])
+
+def top_named(counter, total, lookup, k=8):
+    out=[]
+    for cod,v in counter.most_common(k):
+        out.append(dict(nombre=lookup(cod), valor=round(v,1),
+                        pct=round(100*v/total,2) if total else 0))
+    return out
+def via_nombre(c):  return VIAS.get(c) or "Otra / sin info"
+def tc_nombre(c):   return TCARGA.get(c) or "Otro / sin info"
+def cl_nombre(c):   return CLAUS.get(c) or "Otra / sin info"
+
+def hhi(counter):
+    """Indice Herfindahl-Hirschman (0-10000). >2500 concentrado, <1500 diversificado."""
+    tot = sum(counter.values())
+    if tot <= 0: return 0
+    return round(sum((v/tot)**2 for v in counter.values())*10000, 0)
+
+def precio_prod(fobc, kgc, k=10):
+    """Precio implicito US$/kg de los top productos por valor."""
+    out=[]
+    for name,fob in fobc.most_common(k):
+        kg = kgc.get(name, 0.0)
+        out.append(dict(nombre=name, valor=round(fob,1), kg=round(kg,1),
+                        usd_kg=round(fob/kg, 2) if kg > 0 else None))
+    return out
+
+def estructura(d):
+    """Bloque de estadisticas logisticas y de estructura por punto."""
+    fob, cif = d["fob"], d["cif"]
+    return dict(
+        via_exp=top_named(d["via_exp"], fob, via_nombre, 6),
+        via_imp=top_named(d["via_imp"], cif, via_nombre, 6),
+        tcarga_exp=top_named(d["tc_exp"], fob, tc_nombre, 6),
+        tcarga_imp=top_named(d["tc_imp"], cif, tc_nombre, 6),
+        incoterm_exp=top_named(d["cl_exp"], fob, cl_nombre, 6),
+        incoterm_imp=top_named(d["cl_imp"], cif, cl_nombre, 6),
+        hhi=dict(destinos=hhi(d["dest"]), origenes=hhi(d["orig"]),
+                 prod_exp=hhi(d["pexp"]), prod_imp=hhi(d["pimp"])),
+        precio_exp=precio_prod(d["pexp"], d["pexp_kg"]),
+        precio_imp=precio_prod(d["pimp"], d["pimp_kg"]),
+        usd_kg_exp=round(fob/d["peso_exp"], 2) if d["peso_exp"] > 0 else None,
+        usd_kg_imp=round(cif/d["peso_imp"], 2) if d["peso_imp"] > 0 else None,
+        advalorem=round(d["advalorem"], 1),
+        advalorem_pct=round(100*d["advalorem"]/cif, 2) if cif > 0 else 0,
+    )
 
 registros=[]; sin_coord=[]
 for cod in sorted(ports):
@@ -476,6 +558,7 @@ for cod in sorted(ports):
         mes_exp=[round(x,1) for x in d["mes_exp"]],
         mes_imp=[round(x,1) for x in d["mes_imp"]],
         anual=anual_for(meta["nombre"], ANUAL),
+        estructura=estructura(d),
     )
     registros.append(reg)
 
@@ -594,6 +677,7 @@ nacional = dict(
     mes_exp=[round(x,1) for x in nat["mes_exp"]],
     mes_imp=[round(x,1) for x in nat["mes_imp"]],
     anual=None,
+    estructura=estructura(nat),
 )
 # serie anual nacional = suma de los puntos (consistente con lo que se muestra)
 def _sum_anual(field):

@@ -276,6 +276,7 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
     <div class="tabs" id="tabs">
       <button data-t="perfil" class="on">Perfil</button>
       <button data-t="tendencias">Tendencias</button>
+      <button data-t="logistica">Logística &amp; estructura</button>
       <button data-t="comparar">Comparar</button>
       <button data-t="influencia">Análisis del área de influencia</button>
     </div>
@@ -692,8 +693,40 @@ function renderPanel(){
   const body=document.getElementById('tabbody'); clearCharts();
   if(state.tab==='perfil') renderPerfil(body,p);
   else if(state.tab==='tendencias') renderTend(body,p);
+  else if(state.tab==='logistica') renderEstructura(body,p);
   else if(state.tab==='comparar') renderComparar(body);
   else renderInfluencia(body,p);
+}
+function renderEstructura(body,p){
+  const e=p.estructura;
+  if(!e){ body.innerHTML='<div class="card"><div class="muted">Sin datos de estructura.</div></div>'; return; }
+  const dual=(t1,it1,c1,t2,it2,c2)=>`<h3>${t1}</h3>${barsHTML(it1,c1,i=>fmtUSD(i.valor))}
+     <h3 style="margin-top:13px">${t2}</h3>${barsHTML(it2,c2,i=>fmtUSD(i.valor))}`;
+  const hh=e.hhi;
+  const hhiRow=(lbl,v)=>{ const cls=v<1500?'#2dd4bf':v<2500?'#f0b45e':'#f47b46'; const lab=v<1500?'diversificado':v<2500?'moderado':'concentrado';
+    const w=Math.min(100,v/10000*100*2);
+    return `<div class="b"><div class="t"><span>${lbl}</span><span class="pct" style="color:${cls}">${v.toLocaleString('es')} · ${lab}</span></div>
+      <div class="track"><div class="fill" style="width:${w}%;background:${cls};color:${cls}"></div></div></div>`; };
+  const precioList=(arr)=> arr.length? '<div class="bars">'+arr.filter(i=>i.usd_kg!=null).slice(0,8).map(i=>{
+      const max=Math.max(...arr.filter(x=>x.usd_kg!=null).map(x=>x.usd_kg))||1;
+      return `<div class="b"><div class="t"><span>${i.nombre}</span><span class="pct">US$ ${i.usd_kg}/kg</span></div>
+        <div class="track"><div class="fill" style="width:${100*i.usd_kg/max}%;background:#5eead4;color:#5eead4"></div></div></div>`;
+    }).join('')+'</div>' : '<div class="muted">Sin datos.</div>';
+  body.innerHTML=`
+   <div class="card">${dual('Modo de transporte · exportación',e.via_exp,EXP,'Modo de transporte · importación',e.via_imp,IMP)}</div>
+   <div class="card">${dual('Tipo de carga · exportación',e.tcarga_exp,EXP,'Tipo de carga · importación',e.tcarga_imp,IMP)}</div>
+   <div class="card">${dual('Incoterm · exportación',e.incoterm_exp,EXP,'Incoterm · importación',e.incoterm_imp,IMP)}</div>
+   <div class="card"><h3>Concentración · índice HHI</h3>
+     <div class="bars">${hhiRow('Destinos (export)',hh.destinos)}${hhiRow('Orígenes (import)',hh.origenes)}${hhiRow('Productos export',hh.prod_exp)}${hhiRow('Productos import',hh.prod_imp)}</div>
+     <div class="muted" style="margin-top:6px">0–10.000. &lt;1.500 diversificado · 1.500–2.500 moderado · &gt;2.500 concentrado.</div></div>
+   <div class="card"><h3>Precio implícito · US$/kg</h3>
+     <div class="kpis" style="margin:0 0 9px"><div class="kpi exp"><div class="l">Export US$/kg</div><div class="v num">${e.usd_kg_exp??'—'}</div></div>
+       <div class="kpi imp"><div class="l">Import US$/kg</div><div class="v num">${e.usd_kg_imp??'—'}</div></div></div>
+     <h3>Top productos exportados</h3>${precioList(e.precio_exp)}</div>
+   <div class="card"><h3>Arancel ad-valorem recaudado · importación</h3>
+     <div class="kpis" style="margin:0"><div class="kpi"><div class="l">Total recaudado</div><div class="v num" style="color:var(--cop)">${fmtUSD(e.advalorem)}</div></div>
+       <div class="kpi"><div class="l">% del CIF</div><div class="v num">${e.advalorem_pct}%</div></div></div>
+     <div class="muted" style="margin-top:8px">Derecho ad-valorem efectivamente pagado en las importaciones que ingresan por este punto.</div></div>`;
 }
 
 function renderPerfil(body,p){

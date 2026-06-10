@@ -23,7 +23,12 @@ Abre `index.html` en un navegador (funciona offline: todos los datos van embebid
 - **Vista Mundo:** choropleth de países del mundo según su % en las exportaciones (o
   importaciones) del punto seleccionado o del total nacional. Tooltip con país, % y monto.
 - **Panel lateral:** pestañas *Perfil* (KPIs, destinos/orígenes, tipos de producto, 80/20),
-  *Tendencias* (evolución mensual 2025, peso vs valor) y *Comparar* (hasta 5 puntos).
+  *Tendencias* (carga por año 2012–2025, mensual, por terminal), *Logística & estructura*,
+  *Comparar* (hasta 5 puntos) y *Análisis del área de influencia*.
+- **Logística & estructura** (por punto, desde el microdato): modo de transporte
+  (`COD_VIA_TRANSPORTE`), tipo de carga (`COD_TIPO_CARGA`/`TPO_CARGA`), Incoterm
+  (`CLAUSULA_VENTA`/`CL_COMPRA`), concentración HHI de socios y productos, precio implícito
+  US$/kg por producto, y arancel ad-valorem recaudado (`AD_VALOREM_US`).
 - Buscador de puntos (insensible a acentos) y vista *Total nacional* por defecto.
 
 ## Metodología

@@ -36,6 +36,15 @@ Abre `index.html` en un navegador (funciona offline: todos los datos van embebid
 
 Formato CSV: delimitador `;`, encoding `latin-1`, decimales con coma.
 
+### Series anuales (movimiento de carga 2012–2025)
+Además del año base 2025 (microdato DUS/DIN), el dashboard incluye la **evolución anual
+2012–2025** por punto (valor FOB/CIF y tonelaje), a partir de los reportes agregados
+oficiales del Servicio Nacional de Aduanas por lugar de salida/ingreso
+(`expo_pto_monto/peso_*`, `impo_pto_monto/peso_*`). El año 2025 de esta serie agregada
+cuadra ~99% con el valor derivado del microdato; pequeñas diferencias provienen del filtro
+de tipos de operación. La serie nacional es la suma de los puntos (72/74 con histórico;
+sin serie: Isla de Pascua/Punta Delgada y "otros", marginales).
+
 ### Procesamiento (`procesar_comex.py`)
 1. **Filtros de operación.** Exportación: `COD_TIPO_OPERACION ∈ {200…216}`. Importación:
    `{101…180}` (lista completa en el script).

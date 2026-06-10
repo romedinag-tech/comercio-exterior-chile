@@ -206,8 +206,96 @@ def load_dicts():
     wc.close()
     return puertos, paises, regiones, clasif
 
+# ---------------------------------------------------------------- series anuales por puerto (agregado oficial)
+ANUAL_YEARS = list(range(2012, 2026))   # 2012..2025
+
+def nkey(s):
+    s = norm(s)
+    return "".join(ch for ch in s if ch.isalnum())
+
+# nombre del punto (tabla Puertos) -> nombre en los archivos agregados (cuando difieren)
+ANUAL_ALIASES = {
+    "AEROP. A.M. BENITEZ": "Aeropuerto Arturo Merino Benitez",
+    "AEROP. CERRO MORENO": "Aeropuerto Cerro Moreno",
+    "AEROPUERTO CARRIEL SUR 945": "Aeropuerto Carriel Sur",
+    "AEROP. C.I. DEL CAMPO": "Aeropuerto Carlos Ibanez del Campo",
+    "AEROP. CHACALLUTA": "Aeropuerto Chacalluta",
+    "AEROP. DIEGO ARACENA": "Aeropuerto Diego Aracena",
+    "AEROP. EL TEPUAL": "Aeropuerto El Tepual",
+    "CAP. HUACHIPATO": "Muelle Huachipato",
+    "LOS LIBERTADORES": "Cristo Redentor (Los Libertadores)",
+    "MONTE AYMOND": "Integracion Austral (Monte Aymond)",
+    "PASO JAMA": "Jama",
+    "CHACALLUTA": "Concordia (Chacalluta)",
+}
+
+def read_pto_year(path):
+    """Lee un archivo agregado 'por puerto x anio'. Autodetecta fila de encabezado
+    y columna de nombre. Devuelve {n2(nombre): {anio: valor}} y la fila 'Total'."""
+    wb = openpyxl.load_workbook(path, read_only=True, data_only=True)
+    ws = wb[wb.sheetnames[0]]
+    rows = list(ws.iter_rows(values_only=True))
+    wb.close()
+    hdr = None; ycols = []
+    for i, r in enumerate(rows):
+        yc = [(j, int(str(c))) for j, c in enumerate(r)
+              if c is not None and str(c).strip().isdigit() and 1990 < int(str(c)) < 2030]
+        if len(yc) >= 3:
+            hdr = i; ycols = yc; break
+    if hdr is None:
+        return {}
+    namecol = min(j for j, _ in ycols) - 1
+    out = {}
+    for r in rows[hdr+1:]:
+        if namecol >= len(r): continue
+        name = r[namecol]
+        if name is None or nkey(name) in ("", "IRALISTADODETABLAS"): continue
+        if isinstance(name, str) and ("Fuente:" in name or "Declaraciones" in name): continue
+        vals = {}
+        for j, y in ycols:
+            v = r[j] if j < len(r) else None
+            vals[y] = fnum(v)
+        out[nkey(name)] = vals
+    return out
+
+def merge_year(*dicts):
+    m = {}
+    for d in dicts:
+        for k, vals in d.items():
+            m.setdefault(k, {}).update(vals)
+    return m
+
+def load_anual():
+    ex_fob = merge_year(
+        read_pto_year(os.path.join(COMEX,"Exportaciones","expo_pto_monto_2002_2021.xlsx")),
+        read_pto_year(os.path.join(COMEX,"Exportaciones","expo_pto_monto_2022_2025.xlsx")))
+    im_cif = merge_year(
+        read_pto_year(os.path.join(COMEX,"Importaciones","Por lugar e ingreso","impo_pto_monto_2002_2021.xlsx")),
+        read_pto_year(os.path.join(COMEX,"impo_pto_monto_2022_2025.xlsx")))
+    ex_kg = merge_year(
+        read_pto_year(os.path.join(COMEX,"Exportaciones","expo_pto_peso_2002_2021.xlsx")),
+        read_pto_year(os.path.join(COMEX,"Exportaciones","expo_pto_peso_2022_2025.xlsx")))
+    im_kg = merge_year(
+        read_pto_year(os.path.join(COMEX,"Importaciones","Por lugar e ingreso","impo_pto_peso_2002_2021.xlsx")),
+        read_pto_year(os.path.join(COMEX,"Importaciones","Por lugar e ingreso","impo_pto_peso_2022_2025.xlsx")))
+    return dict(ex_fob=ex_fob, im_cif=im_cif, ex_kg=ex_kg, im_kg=im_kg)
+
+def anual_for(nombre, ANUAL):
+    al = ANUAL_ALIASES.get(norm(nombre))
+    key = nkey(al) if al else nkey(nombre)
+    def serie(src):
+        s = ANUAL[src].get(key, {})
+        return [round(s.get(y, 0.0), 1) for y in ANUAL_YEARS]
+    e = serie("ex_fob"); i = serie("im_cif")
+    if not any(e) and not any(i):
+        return None
+    return dict(years=ANUAL_YEARS, exp_fob=e, imp_cif=i,
+                exp_kg=serie("ex_kg"), imp_kg=serie("im_kg"))
+
 print("Cargando diccionarios...", flush=True)
 PUERTOS, PAISES, REGIONES, CLASIF = load_dicts()
+print("Cargando series anuales por puerto (2012-2025)...", flush=True)
+ANUAL = load_anual()
 CHILE_PORTS = {c for c,p in PUERTOS.items() if p["cod_pais"] == CHILE_PAIS}
 print(f"  puertos CL={len(CHILE_PORTS)}  paises={len(PAISES)}  regiones={len(REGIONES)}  aranceles={len(CLASIF)}", flush=True)
 
@@ -387,6 +475,7 @@ for cod in sorted(ports):
         infl_imp=top_region(d["reg_imp"], d["cif"]),   # region de la aduana (proxy destino import)
         mes_exp=[round(x,1) for x in d["mes_exp"]],
         mes_imp=[round(x,1) for x in d["mes_imp"]],
+        anual=anual_for(meta["nombre"], ANUAL),
     )
     registros.append(reg)
 
@@ -504,7 +593,18 @@ nacional = dict(
     infl_imp=top_region(nat["reg_imp"], nat["cif"]),
     mes_exp=[round(x,1) for x in nat["mes_exp"]],
     mes_imp=[round(x,1) for x in nat["mes_imp"]],
+    anual=None,
 )
+# serie anual nacional = suma de los puntos (consistente con lo que se muestra)
+def _sum_anual(field):
+    acc=[0.0]*len(ANUAL_YEARS)
+    for r in registros:
+        a=r.get("anual")
+        if not a: continue
+        for k,v in enumerate(a[field]): acc[k]+=v
+    return [round(x,1) for x in acc]
+nacional["anual"]=dict(years=ANUAL_YEARS, exp_fob=_sum_anual("exp_fob"),
+    imp_cif=_sum_anual("imp_cif"), exp_kg=_sum_anual("exp_kg"), imp_kg=_sum_anual("imp_kg"))
 
 bundle = dict(meta=meta, nacional=nacional, puntos=registros, paises=paises_comercio,
               world=world, regiones=chreg, region_nombres=REGIONES)

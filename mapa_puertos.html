@@ -78,7 +78,8 @@ header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .leaflet-control-zoom a:hover{background:var(--surface2)!important;color:var(--ink)!important}
 .leaflet-control-attribution{background:rgba(8,13,21,.6)!important;color:var(--mut)!important;font-size:9.5px}
 .leaflet-control-attribution a{color:var(--ink2)!important}
-.controls{position:absolute;top:12px;left:12px;z-index:600;display:flex;flex-direction:column;gap:9px}
+.controls{position:absolute;top:12px;left:12px;z-index:600;display:flex;flex-direction:column;gap:11px}
+.ctl-cap{font-family:var(--fd);font-size:8.5px;text-transform:uppercase;letter-spacing:1.3px;color:var(--mut);margin:0 0 4px 3px;font-weight:600}
 .seg{background:var(--glass);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);display:flex;overflow:hidden;backdrop-filter:blur(10px)}
 .seg button{border:0;background:transparent;padding:7px 13px;font-size:12px;cursor:pointer;color:var(--mut);font-weight:600;font-family:var(--ff);transition:color .15s,background .15s}
 .seg button:hover{color:var(--ink2)}
@@ -119,6 +120,15 @@ header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .zonebar .zseg .zp{font-family:var(--fd);font-size:12px;line-height:1}
 .zonebar .zseg small{font-weight:600;opacity:.85;font-size:8.5px;line-height:1.05;margin-top:1px}
 .zonebar .zseg.hl{outline:2px solid #fff;outline-offset:-2px;transform:translateX(-3px)}
+/* colorbar de % para choropleth */
+.cbarbox{display:flex;gap:8px;height:128px;flex:0 0 auto;margin-bottom:9px}
+.cbar{width:15px;border-radius:7px;border:1px solid var(--line);flex:0 0 auto}
+.cticks{display:flex;flex-direction:column;justify-content:space-between;font-size:9px;color:var(--mut);font-variant-numeric:tabular-nums}
+.ctop{flex:1;overflow:auto;border-top:1px solid var(--line2);padding-top:6px}
+.ctop .ccap{font-size:8.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);margin-bottom:3px}
+.ctop .ci{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink2);margin:3px 0;gap:6px}
+.ctop .ci span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ctop .ci .p{color:var(--cop);font-variant-numeric:tabular-nums;flex:0 0 auto;font-weight:600}
 
 /* info producto */
 .mapinfo{position:absolute;left:12px;bottom:16px;z-index:600;background:var(--glass);border:1px solid var(--line);border-radius:13px;
@@ -130,8 +140,11 @@ header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .tag.imp{background:rgba(244,123,70,.15);color:var(--imp);border:1px solid rgba(244,123,70,.3)}
 
 /* panel inferior */
-.panel{height:328px;background:linear-gradient(180deg,var(--surface),var(--bg2));border-top:1px solid var(--line);display:flex;flex-direction:column;min-height:0;box-shadow:0 -12px 30px -18px rgba(0,0,0,.7)}
-.panelhead{display:flex;align-items:center;gap:18px;padding:12px 18px 0}
+.panel{height:var(--panelh,462px);min-height:240px;background:linear-gradient(180deg,var(--surface),var(--bg2));border-top:1px solid var(--line);display:flex;flex-direction:column;min-height:0;box-shadow:0 -12px 30px -18px rgba(0,0,0,.7)}
+.resizer{height:9px;flex:0 0 auto;cursor:ns-resize;position:relative}
+.resizer::before{content:"";position:absolute;left:50%;top:3px;transform:translateX(-50%);width:54px;height:3px;border-radius:3px;background:rgba(255,255,255,.2);transition:background .15s,width .15s}
+.resizer:hover::before{background:var(--cop);width:80px}
+.panelhead{display:flex;align-items:center;gap:18px;padding:6px 18px 0}
 .ph-id .ptipo{font-family:var(--fd);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.3px}
 .ph-id h2{font-family:var(--fd);margin:2px 0 0;font-size:19px;font-weight:600;letter-spacing:.2px}
 .ph-id .preg{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
@@ -144,18 +157,21 @@ header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .tabs button{border:0;background:none;padding:9px 14px;font-size:12.5px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:var(--ff);transition:color .15s;margin-bottom:-1px}
 .tabs button:hover{color:var(--ink2)}
 .tabs button.on{color:var(--ink);border-bottom-color:var(--cop)}
-.tabbody{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;gap:14px;padding:14px 18px}
-.card{flex:0 0 auto;width:294px;height:100%;overflow:auto;border:1px solid var(--line);border-radius:14px;padding:13px 14px;
+.tabbody{flex:1;overflow-y:auto;overflow-x:hidden;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;padding:14px 18px;align-content:start}
+.card{overflow:auto;border:1px solid var(--line);border-radius:14px;padding:13px 15px;min-height:0;
   background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.008))}
-.card.wide{width:436px}
+.card.wide{grid-column:span 2}
+.card.full{grid-column:1/-1}
+@media (max-width:720px){.card.wide,.card.full{grid-column:auto}}
 .card h3{font-family:var(--fd);font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--mut);margin:0 0 10px;font-weight:600}
+.card h3 .un{float:right;text-transform:none;letter-spacing:0}
 .bars .b{margin:6px 0}
 .bars .b .t{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;gap:8px;color:var(--ink2)}
 .bars .b .t span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bars .b .t .pct{color:var(--mut);font-variant-numeric:tabular-nums;flex:0 0 auto}
 .bars .b .track{height:7px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden}
 .bars .b .fill{height:100%;border-radius:6px;box-shadow:0 0 10px -2px currentColor}
-.chartbox{position:relative;height:216px}
+.chartbox{position:relative;height:248px;min-height:200px}
 .note{font-size:10.5px;color:#f5cba0;background:rgba(227,165,102,.08);border:1px solid rgba(227,165,102,.22);border-radius:10px;padding:8px 10px;margin-top:9px;line-height:1.45}
 .subseg{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
 .subseg button{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:9px;padding:6px 11px;font-size:11.5px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--ff);transition:all .15s}
@@ -203,15 +219,21 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
     <div class="mapwrap">
       <div id="map"></div>
       <div class="controls">
-        <div class="seg" id="viewSeg">
-          <button data-v="puntos" class="on">Puntos</button>
-          <button data-v="influencia">Influencia</button>
-          <button data-v="mundo">Mundo</button>
+        <div>
+          <div class="ctl-cap">Qué muestra el mapa</div>
+          <div class="seg" id="viewSeg">
+            <button data-v="puntos" class="on" title="Ubicación de cada terminal de carga, tamaño según su comercio">Terminales</button>
+            <button data-v="influencia" title="Regiones de Chile que originan o reciben la carga del punto seleccionado">Influencia en Chile</button>
+            <button data-v="mundo" title="Países del mundo según su comercio con el punto seleccionado">Comercio mundial</button>
+          </div>
         </div>
-        <div class="seg small" id="metricSeg">
-          <button data-m="total" class="on">Total</button>
-          <button data-m="exp">Exportación</button>
-          <button data-m="imp">Importación</button>
+        <div>
+          <div class="ctl-cap">Flujo a mostrar</div>
+          <div class="seg small" id="metricSeg">
+            <button data-m="total" class="on">Total</button>
+            <button data-m="exp">Exportación</button>
+            <button data-m="imp">Importación</button>
+          </div>
         </div>
         <div class="legend" id="legend"></div>
       </div>
@@ -225,6 +247,7 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
   </div>
 
   <div class="panel">
+    <div class="resizer" id="resizer" title="Arrastra para agrandar el panel"></div>
     <div class="panelhead">
       <div class="ph-id">
         <div class="ptipo" id="pTipo">Total nacional</div>
@@ -273,6 +296,14 @@ const fmtUSD = v => {
   if(a>=1e6) return '$'+(v/1e6).toFixed(1)+' M';
   if(a>=1e3) return '$'+(v/1e3).toFixed(0)+' k';
   return '$'+v.toFixed(0);
+};
+const fmtTon = v => {
+  if(v==null) return '—';
+  const a=Math.abs(v);
+  if(a>=1e9) return (v/1e9).toFixed(1)+' Mt';
+  if(a>=1e6) return (v/1e6).toFixed(1)+' kt';
+  if(a>=1e3) return (v/1e3).toFixed(0)+' t';
+  return v.toFixed(0)+' kg';
 };
 const GCOL={maritimo:'#4f9bff',aereo:'#f0b45e',terrestre:'#46d38a',nacional:'#b581f0'};
 const GLAB={maritimo:'Marítimo',aereo:'Aéreo',terrestre:'Terrestre / fronterizo',nacional:'Nacional'};
@@ -434,7 +465,7 @@ function renderLegend(){
 }
 
 function metricVal(p){ return state.metric==='exp'?p.exp_fob : state.metric==='imp'?p.imp_cif : p.total; }
-function renderZoneBar(){
+function zoneBarsHTML(){
   const agg={}; ZONAS.forEach(z=>agg[z]=0); let tot=0;
   PUNTOS.forEach(p=>{ const z=macrozona(p.lat); if(!z)return; const v=metricVal(p)||0; agg[z]+=v; tot+=v; });
   const selZ = state.sel.lat!=null ? macrozona(state.sel.lat) : null;
@@ -442,8 +473,27 @@ function renderZoneBar(){
   let html=`<div class="zt">${lab} por zona</div><div class="zcol">`;
   ZONAS.forEach(z=>{ const pct=tot?100*agg[z]/tot:0;
     html+=`<div class="zseg ${z===selZ?'hl':''}" style="background:${ZCOL[z]};flex-grow:${Math.max(pct,3)}"><span class="zp">${pct.toFixed(1)}%</span><small>${z}</small></div>`; });
-  html+='</div>';
-  document.getElementById('zonebar').innerHTML=html;
+  return html+'</div>';
+}
+function colorbarHTML(){
+  const k=state.metric==='imp'?'imp':'exp';
+  const stops=RAMP[k];
+  const grad=`linear-gradient(to top, ${stops.map((s,i)=>`${s[1]} ${Math.round(i/(stops.length-1)*100)}%`).join(',')})`;
+  const isWorld=state.view==='mundo';
+  const titulo = state.metric==='imp'?'% importación':'% exportación';
+  const ticks=[...stops].map(s=>s[0]).reverse();
+  let tops;
+  if(isWorld){ const sh=selCountryShares(); tops=Object.values(sh).sort((a,b)=>b.pct-a.pct).slice(0,6).map(d=>({n:d.name,pct:d.pct})); }
+  else { const arr=(state.metric==='imp'?state.sel.infl_imp:state.sel.infl_exp)||[]; tops=arr.filter(r=>r.pct>0).slice(0,6).map(r=>({n:r.nombre,pct:r.pct})); }
+  const capwho = isWorld?'países':'regiones';
+  return `<div class="zt">${titulo}</div>
+    <div class="cbarbox"><div class="cbar" style="background:${grad}"></div>
+      <div class="cticks">${ticks.map((t,i)=>`<span>${i===0?'≥':''}${t}%</span>`).join('')}</div></div>
+    <div class="ctop"><div class="ccap">Top ${capwho} · ${state.sel.cod===0?'nacional':'del punto'}</div>
+      ${tops.length?tops.map(d=>`<div class="ci"><span>${d.n}</span><span class="p num">${d.pct.toFixed(1)}%</span></div>`).join(''):'<div class="muted">Sin datos.</div>'}</div>`;
+}
+function renderZoneBar(){
+  document.getElementById('zonebar').innerHTML = state.view==='puntos' ? zoneBarsHTML() : colorbarHTML();
 }
 
 function renderMapInfo(){
@@ -523,11 +573,31 @@ function draw8020(p){
 }
 
 function renderTend(body,p){
-  body.innerHTML=`
+  const unit=state.anualUnit||'valor';
+  const a=p.anual;
+  const anualCard = a
+    ? `<div class="card full"><h3>Movimiento de carga por año · 2012–2025
+         <span class="un"><span class="subseg" style="display:inline-flex;margin:0" id="anUnit">
+           <button data-u="valor" class="${unit==='valor'?'on':''}">Valor US$</button>
+           <button data-u="peso" class="${unit==='peso'?'on':''}">Tonelaje</button></span></span></h3>
+       <div class="chartbox" style="height:264px"><canvas id="canual"></canvas></div></div>`
+    : `<div class="card full"><h3>Movimiento de carga por año · 2012–2025</h3><div class="muted">Sin serie histórica para este punto.</div></div>`;
+  body.innerHTML=anualCard+`
    <div class="card wide"><h3>Evolución mensual 2025 · ${p.nombre}</h3><div class="chartbox"><canvas id="cmes"></canvas></div></div>
    <div class="card wide"><h3>Evolución mensual por terminal · top 8 (comercio total)</h3><div class="chartbox"><canvas id="cterm"></canvas></div></div>
-   <div class="card"><h3>Peso vs valor</h3><div class="chartbox"><canvas id="cpv"></canvas></div></div>`;
+   <div class="card"><h3>Peso vs valor 2025</h3><div class="chartbox"><canvas id="cpv"></canvas></div></div>`;
   const gridY={ticks:{font:{size:9},callback:v=>fmtUSD(v)},grid:{color:'rgba(255,255,255,.05)'}};
+  if(a){
+    const isPeso=unit==='peso';
+    const fmt=isPeso?fmtTon:fmtUSD;
+    const eD=isPeso?a.exp_kg:a.exp_fob, iD=isPeso?a.imp_kg:a.imp_cif;
+    charts.push(new Chart(document.getElementById('canual'),{type:'line',data:{labels:a.years,datasets:[
+      {label:isPeso?'Exportación (kg)':'Exportación FOB',data:eD,borderColor:EXP,backgroundColor:'rgba(45,212,191,.13)',fill:true,tension:.32,pointRadius:2,borderWidth:2.2},
+      {label:isPeso?'Importación (kg)':'Importación CIF',data:iD,borderColor:IMP,backgroundColor:'rgba(244,123,70,.11)',fill:true,tension:.32,pointRadius:2,borderWidth:2.2}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,font:{size:11}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmt(c.raw)}}},
+      scales:{y:{ticks:{font:{size:9},callback:v=>fmt(v)},grid:{color:'rgba(255,255,255,.05)'}},x:{ticks:{font:{size:10}},grid:{display:false}}}}}));
+    body.querySelectorAll('#anUnit button').forEach(b=>b.onclick=()=>{ state.anualUnit=b.dataset.u; renderPanel(); });
+  }
   charts.push(new Chart(document.getElementById('cmes'),{type:'line',data:{labels:MESES,datasets:[
     {label:'Export FOB',data:p.mes_exp,borderColor:EXP,backgroundColor:'rgba(45,212,191,.14)',fill:true,tension:.34,pointRadius:2,borderWidth:2},
     {label:'Import CIF',data:p.mes_imp,borderColor:IMP,backgroundColor:'rgba(244,123,70,.12)',fill:true,tension:.34,pointRadius:2,borderWidth:2}
@@ -641,6 +711,19 @@ document.getElementById('foot').innerHTML=
  `<b>Fuente:</b> Servicio Nacional de Aduanas — microdatos DUS (exportaciones) y DIN (importaciones) ${D.meta.anio}; clasificador 2022 v2.0 y tablas de códigos (Anexo 51). Elaboración propia. Coordenadas: referencia geográfica pública. `+
  `<b>Cuadre:</b> suma FOB por punto = ${fmtUSD(cu.suma_fob_puntos)} (${cu.exp_cobertura_pct}% del total nacional); suma CIF = ${fmtUSD(cu.suma_cif_puntos)} (${cu.imp_cobertura_pct}%). `+
  `El área de influencia de importación usa la aduana de nacionalización (no destino final).`;
+
+// redimensionar panel inferior
+(function(){
+  const rz=document.getElementById('resizer'); let drag=false;
+  const onMove=e=>{ if(!drag)return; const y=e.touches?e.touches[0].clientY:e.clientY;
+    const h=Math.max(220,Math.min(window.innerHeight-160, window.innerHeight-y));
+    document.documentElement.style.setProperty('--panelh',h+'px'); map.invalidateSize(); };
+  const stop=()=>{ if(drag){drag=false;document.body.style.userSelect='';document.body.style.cursor='';map.invalidateSize();} };
+  rz.addEventListener('mousedown',e=>{drag=true;document.body.style.userSelect='none';document.body.style.cursor='ns-resize';e.preventDefault();});
+  rz.addEventListener('touchstart',()=>{drag=true;},{passive:true});
+  window.addEventListener('mousemove',onMove); window.addEventListener('touchmove',onMove,{passive:true});
+  window.addEventListener('mouseup',stop); window.addEventListener('touchend',stop);
+})();
 
 drawPoints(); renderSidebar(); renderLegend(); select(NAC); setView('puntos'); renderZoneBar(); renderMapInfo();
 </script>

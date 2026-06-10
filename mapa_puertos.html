@@ -111,8 +111,8 @@ header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .leaflet-tooltip.wt::before{display:none}
 
 /* barra de zonas */
-.zonebar{position:absolute;top:74px;right:12px;bottom:20px;width:132px;z-index:600;background:var(--glass);
-  border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px 10px;display:flex;flex-direction:column;backdrop-filter:blur(10px)}
+.zonebar{position:absolute;top:74px;right:12px;bottom:20px;width:198px;z-index:600;background:var(--glass);
+  border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:11px 12px;display:flex;flex-direction:column;backdrop-filter:blur(10px)}
 .zonebar .zt{font-family:var(--fd);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin-bottom:7px;text-align:center}
 .zonebar .zcol{flex:1;display:flex;flex-direction:column;gap:3px}
 .zonebar .zseg{flex-grow:1;border-radius:7px;color:#0c0c0c;font-weight:700;display:flex;flex-direction:column;justify-content:center;
@@ -129,6 +129,10 @@ header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .ctop .ci{display:flex;justify-content:space-between;font-size:10.5px;color:var(--ink2);margin:3px 0;gap:6px}
 .ctop .ci span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .ctop .ci .p{color:var(--cop);font-variant-numeric:tabular-nums;flex:0 0 auto;font-weight:600}
+/* leyenda de tamaños (símbolos proporcionales) */
+.sleg{flex:0 0 auto;margin-bottom:9px}
+.sleg svg{display:block;margin:2px auto 0}
+.sleg .scap{font-size:8.5px;text-transform:uppercase;letter-spacing:.7px;color:var(--mut);margin-bottom:2px}
 
 /* info producto */
 .mapinfo{position:absolute;left:12px;bottom:16px;z-index:600;background:var(--glass);border:1px solid var(--line);border-radius:13px;
@@ -235,6 +239,13 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
             <button data-m="imp">Importación</button>
           </div>
         </div>
+        <div id="reprCtl">
+          <div class="ctl-cap">Forma cartográfica · áreas de influencia</div>
+          <div class="seg small" id="reprSeg">
+            <button data-r="coropleta" class="on" title="Pinta cada área por intensidad de %">Coropleta</button>
+            <button data-r="simbolos" title="Círculos proporcionales al valor en cada región/país">Símbolos proporcionales</button>
+          </div>
+        </div>
         <div class="legend" id="legend"></div>
       </div>
       <div class="search">
@@ -323,7 +334,7 @@ function macrozona(lat){
 }
 
 let state = { sel:NAC, view:'puntos', metric:'total', tab:'perfil', cmp:new Set(),
-              infl:{scope:'nacional',dir:'exp'} };
+              infl:{scope:'nacional',dir:'exp'}, repr:'coropleta' };
 
 // mapa
 const map = L.map('map',{zoomControl:false,minZoom:2,worldCopyJump:true}).setView([-38,-71],4);
@@ -336,15 +347,16 @@ const layerFlows  = L.layerGroup();
 let layerRegions=null, layerWorld=null;
 const markers={};
 
-const REGCENT={};
-(function(){
-  D.regiones.features.forEach(f=>{
-    let sx=0,sy=0,n=0;
-    const walk=c=>{ if(typeof c[0]==='number'){sx+=c[0];sy+=c[1];n++;} else c.forEach(walk); };
-    walk(f.geometry.coordinates);
-    REGCENT[f.properties.codregion]=[sy/n,sx/n];
-  });
-})();
+function centroid(geom){
+  let sx=0,sy=0,n=0;
+  const walk=c=>{ if(typeof c[0]==='number'){sx+=c[0];sy+=c[1];n++;} else c.forEach(walk); };
+  walk(geom.coordinates);
+  return n?[sy/n,sx/n]:null;
+}
+const REGCENT={}, WORLDCENT={};
+D.regiones.features.forEach(f=>{ REGCENT[f.properties.codregion]=centroid(f.geometry); });
+D.world.features.forEach(f=>{ if(f.id) WORLDCENT[f.id]=centroid(f.geometry); });
+const layerSymbols=L.layerGroup();
 
 function pointRadius(p){ const v=p.total||0; return Math.max(5, Math.min(34, Math.sqrt(v/1e6)*0.9)); }
 
@@ -404,9 +416,10 @@ function selCountryShares(){
 function buildWorld(){ if(layerWorld) return; layerWorld=L.geoJSON(D.world,{style:{weight:.4,color:'rgba(255,255,255,.14)',fillColor:'#101a28',fillOpacity:.85}}); }
 function paintWorld(){
   const sh=selCountryShares();
+  const sym=state.repr==='simbolos';
   layerWorld.eachLayer(ly=>{
     const iso=ly.feature.id; const d=sh[iso];
-    ly.setStyle({fillColor: d?rampMetric(d.pct):'#0e1726', fillOpacity: d?.95:.55, color: d?'rgba(255,255,255,.28)':'rgba(255,255,255,.10)'});
+    ly.setStyle({fillColor: (sym||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: sym?.5:(d?.95:.55), color:'rgba(255,255,255,.12)'});
     const met=state.metric==='imp'?'Importado':'Exportado';
     ly.unbindTooltip();
     ly.bindTooltip(`<b>${ly.feature.properties.name}</b>`+(d?`<br>${met}: ${fmtUSD(d.val)} · ${d.pct.toFixed(1)}%`:'<br><span style="color:#7385a0">sin registro</span>'),{className:'wt',sticky:true});
@@ -417,9 +430,10 @@ function regShares(kind){ const m={}; const arr= kind==='imp'? state.sel.infl_im
 function paintRegions(){
   const ex=regShares('exp'), im=regShares('imp');
   const usar = state.metric==='imp' ? im : ex;
+  const sym=state.repr==='simbolos';
   layerRegions.eachLayer(ly=>{
     const cr=ly.feature.properties.codregion; const d=usar[cr];
-    ly.setStyle({fillColor: d?rampMetric(d.pct):'#0e1726', fillOpacity: d?.9:.45, color: d?'rgba(255,255,255,.3)':'rgba(255,255,255,.12)'});
+    ly.setStyle({fillColor: (sym||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: sym?.4:(d?.9:.45), color:'rgba(255,255,255,.14)'});
     ly.unbindTooltip();
     ly.bindTooltip(`<b>${ly.feature.properties.nombre}</b>`+
       `<br><span style="color:${EXP}">Origen export: ${ex[cr]?ex[cr].pct.toFixed(1)+'%':'—'}</span>`+
@@ -434,16 +448,49 @@ function drawFlows(){
   (s.infl_imp||[]).forEach(r=>{ const c=REGCENT[r.cod]; if(!c||r.pct<0.5)return; L.polyline([[s.lat,s.lon],c],{color:IMP,weight:W(r.pct),opacity:.5,dashArray:'4 4'}).addTo(layerFlows); });
 }
 
+// símbolos proporcionales (forma cartográfica alternativa)
+function geoItems(){
+  if(state.view==='influencia'){
+    const arr=(state.metric==='imp'?state.sel.infl_imp:state.sel.infl_exp)||[];
+    return arr.map(r=>({nombre:r.nombre,val:r.valor,pct:r.pct,c:REGCENT[r.cod]}));
+  } else if(state.view==='mundo'){
+    const sh=selCountryShares();
+    return Object.entries(sh).map(([iso,d])=>({nombre:d.name,val:d.val,pct:d.pct,c:WORLDCENT[iso]}));
+  }
+  return [];
+}
+function radiusFor(val,max){ return 5+27*Math.sqrt(Math.max(0,val)/max); }
+function paintSymbols(){
+  layerSymbols.clearLayers();
+  const col=state.metric==='imp'?IMP:EXP;
+  const items=geoItems().filter(i=>i.c && i.val>0).sort((a,b)=>b.val-a.val);
+  const max=Math.max(1,...items.map(i=>i.val));
+  items.forEach(i=>{
+    L.circleMarker(i.c,{radius:radiusFor(i.val,max),color:'#fff',weight:1.1,fillColor:col,fillOpacity:.55})
+      .bindTooltip(`<b>${i.nombre}</b><br>${fmtUSD(i.val)} · ${i.pct.toFixed(1)}%`,{className:'wt'})
+      .addTo(layerSymbols);
+  });
+}
+function updateSymbols(){
+  map.removeLayer(layerSymbols);
+  const sym=(state.view==='influencia'||state.view==='mundo') && state.repr==='simbolos';
+  if(sym){ paintSymbols(); layerSymbols.addTo(map); }
+  // en influencia, los flujos (líneas) solo conviven con la coropleta
+  if(state.view==='influencia' && sym) map.removeLayer(layerFlows);
+  else if(state.view==='influencia'){ if(!map.hasLayer(layerFlows)) layerFlows.addTo(map); }
+}
+
 function setView(v){
   state.view=v;
   document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  [layerPoints,layerFlows].forEach(l=>map.removeLayer(l));
+  [layerPoints,layerFlows,layerSymbols].forEach(l=>map.removeLayer(l));
   if(layerRegions) map.removeLayer(layerRegions);
   if(layerWorld) map.removeLayer(layerWorld);
   if(v==='puntos'){ layerPoints.addTo(map); refreshMarkers(); map.setView([-38,-71],4); }
   else if(v==='influencia'){ buildRegions(); layerRegions.addTo(map); paintRegions(); layerFlows.addTo(map); drawFlows(); layerPoints.addTo(map); refreshMarkers(); map.setView([-38,-71],4); }
   else if(v==='mundo'){ buildWorld(); layerWorld.addTo(map); paintWorld(); map.setView([8,70],2); }
-  renderLegend();
+  document.getElementById('reprCtl').style.display=(v==='puntos')?'none':'block';
+  updateSymbols(); renderLegend();
 }
 function renderLegend(){
   const el=document.getElementById('legend');
@@ -475,25 +522,44 @@ function zoneBarsHTML(){
     html+=`<div class="zseg ${z===selZ?'hl':''}" style="background:${ZCOL[z]};flex-grow:${Math.max(pct,3)}"><span class="zp">${pct.toFixed(1)}%</span><small>${z}</small></div>`; });
   return html+'</div>';
 }
-function colorbarHTML(){
-  const k=state.metric==='imp'?'imp':'exp';
-  const stops=RAMP[k];
-  const grad=`linear-gradient(to top, ${stops.map((s,i)=>`${s[1]} ${Math.round(i/(stops.length-1)*100)}%`).join(',')})`;
-  const isWorld=state.view==='mundo';
-  const titulo = state.metric==='imp'?'% importación':'% exportación';
-  const ticks=[...stops].map(s=>s[0]).reverse();
+function topItemsHTML(){
+  const isWorld=state.view==='mundo'; const capwho=isWorld?'países':'regiones';
   let tops;
   if(isWorld){ const sh=selCountryShares(); tops=Object.values(sh).sort((a,b)=>b.pct-a.pct).slice(0,6).map(d=>({n:d.name,pct:d.pct})); }
   else { const arr=(state.metric==='imp'?state.sel.infl_imp:state.sel.infl_exp)||[]; tops=arr.filter(r=>r.pct>0).slice(0,6).map(r=>({n:r.nombre,pct:r.pct})); }
-  const capwho = isWorld?'países':'regiones';
+  return `<div class="ctop"><div class="ccap">Top ${capwho} · ${state.sel.cod===0?'nacional':'del punto'}</div>
+      ${tops.length?tops.map(d=>`<div class="ci"><span title="${d.n}">${d.n}</span><span class="p num">${d.pct.toFixed(1)}%</span></div>`).join(''):'<div class="muted">Sin datos.</div>'}</div>`;
+}
+function colorbarHTML(){
+  const k=state.metric==='imp'?'imp':'exp'; const stops=RAMP[k];
+  const grad=`linear-gradient(to top, ${stops.map((s,i)=>`${s[1]} ${Math.round(i/(stops.length-1)*100)}%`).join(',')})`;
+  const titulo = state.metric==='imp'?'% importación':'% exportación';
+  const ticks=[...stops].map(s=>s[0]).reverse();
   return `<div class="zt">${titulo}</div>
     <div class="cbarbox"><div class="cbar" style="background:${grad}"></div>
-      <div class="cticks">${ticks.map((t,i)=>`<span>${i===0?'≥':''}${t}%</span>`).join('')}</div></div>
-    <div class="ctop"><div class="ccap">Top ${capwho} · ${state.sel.cod===0?'nacional':'del punto'}</div>
-      ${tops.length?tops.map(d=>`<div class="ci"><span>${d.n}</span><span class="p num">${d.pct.toFixed(1)}%</span></div>`).join(''):'<div class="muted">Sin datos.</div>'}</div>`;
+      <div class="cticks">${ticks.map((t,i)=>`<span>${i===0?'≥':''}${t}%</span>`).join('')}</div></div>`+topItemsHTML();
+}
+function sizeLegendHTML(){
+  const titulo = state.metric==='imp'?'Importación · US$' : 'Exportación · US$';
+  const col=state.metric==='imp'?IMP:EXP;
+  const items=geoItems().filter(i=>i.c&&i.val>0); const max=Math.max(1,...items.map(i=>i.val));
+  const vals=[max, max/3, max/9].filter((v,i,a)=>v>0 && a.indexOf(v)===i);
+  const rMax=radiusFor(max,max), baseY=2*rMax+6, svgW=rMax*2+92, svgH=baseY+8;
+  let circles='',labels='';
+  vals.forEach(v=>{ const r=radiusFor(v,max);
+    circles+=`<circle cx="${rMax+2}" cy="${baseY-r}" r="${r}" fill="none" stroke="${col}" stroke-opacity=".85"/>`;
+    labels+=`<line x1="${rMax+2}" y1="${baseY-2*r}" x2="${rMax*2+10}" y2="${baseY-2*r}" stroke="${col}" stroke-opacity=".35" stroke-dasharray="2 2"/>`+
+            `<text x="${rMax*2+13}" y="${baseY-2*r+3}" font-size="9" fill="#b3c0d3">${fmtUSD(v)}</text>`;
+  });
+  return `<div class="sleg"><div class="scap">${titulo} · círculo ∝ valor</div>
+    <svg width="${svgW}" height="${svgH}" viewBox="0 0 ${svgW} ${svgH}">${labels}${circles}</svg></div>`+topItemsHTML();
 }
 function renderZoneBar(){
-  document.getElementById('zonebar').innerHTML = state.view==='puntos' ? zoneBarsHTML() : colorbarHTML();
+  let html;
+  if(state.view==='puntos') html=zoneBarsHTML();
+  else if(state.repr==='simbolos') html=sizeLegendHTML();
+  else html=colorbarHTML();
+  document.getElementById('zonebar').innerHTML=html;
 }
 
 function renderMapInfo(){
@@ -675,6 +741,7 @@ function select(p){
   state.sel=p;
   if(state.view==='mundo') paintWorld();
   if(state.view==='influencia'){ paintRegions(); drawFlows(); }
+  updateSymbols();
   refreshMarkers(); markSidebar(); renderZoneBar(); renderMapInfo();
   if(p.lat!=null && state.view!=='mundo') map.panTo([p.lat,p.lon]);
   renderPanel();
@@ -686,7 +753,14 @@ document.querySelectorAll('#metricSeg button').forEach(b=>b.onclick=()=>{
   document.querySelectorAll('#metricSeg button').forEach(x=>x.classList.toggle('on',x===b));
   if(state.view==='mundo'){paintWorld();renderLegend();}
   if(state.view==='influencia'){paintRegions();renderLegend();}
-  renderZoneBar();
+  updateSymbols(); renderZoneBar();
+});
+document.querySelectorAll('#reprSeg button').forEach(b=>b.onclick=()=>{
+  state.repr=b.dataset.r;
+  document.querySelectorAll('#reprSeg button').forEach(x=>x.classList.toggle('on',x===b));
+  if(state.view==='mundo') paintWorld();
+  if(state.view==='influencia') paintRegions();
+  updateSymbols(); renderZoneBar();
 });
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{
   state.tab=b.dataset.t;

@@ -102,8 +102,27 @@ data/puntos_tidy.csv   Equivalente tabular
 data/paises_comercio.json   Agregado país-socio nacional (export e import)
 data/meta.json         Cuadre, fuentes, notas, puntos sin coordenada
 assets/                GeoJSON mundo (ISO3) y regiones de Chile
+icons/                 Ícono SVG por tipo de terminal + catálogo (icons/index.html)
 SOURCES.md             Trazabilidad de fuentes
 ```
+
+### Íconos por tipo de terminal
+
+Cada punto del mapa usa un marcador con **glifo según su tipo** y **color según su grupo**;
+los marcadores escalan con el comercio total. Archivos sueltos en `icons/` (catálogo en
+`icons/index.html`):
+
+| Tipo | Ícono | Color |
+|---|---|---|
+| Puerto marítimo | ⚓ ancla | azul |
+| Aeropuerto | ✈ avión | naranja |
+| Avanzada fronteriza | 🚧 barrera | verde |
+| Ferrocarril | 🚆 tren | teal |
+| Antepuerto / terminal de carga | 📦 contenedores | violeta |
+
+Ferrocarril y antepuerto no tienen comercio registrado en 2025 en el microdato, pero el
+ícono queda disponible (el sistema es extensible: nuevos tipos caen en el ícono de
+contenedores por defecto).
 
 Para regenerar todo: `python procesar_comex.py`
 

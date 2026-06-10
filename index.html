@@ -67,6 +67,15 @@ header .sub{font-size:12px;color:#94a3b8}
 footer{background:#fff;border-top:1px solid var(--line);padding:8px 16px;font-size:10.5px;color:var(--mut);line-height:1.45}
 .leaflet-tooltip.wt{font-size:12px}
 .muted{color:var(--mut);font-size:12px}
+.mkwrap{background:none;border:none}
+.mk{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid #fff;
+    box-shadow:0 1px 4px rgba(0,0,0,.35);box-sizing:border-box}
+.mk svg{width:64%;height:64%;display:block}
+.mk.faint{opacity:.30}
+.mk.sel{box-shadow:0 0 0 3px #0f172a,0 2px 9px rgba(0,0,0,.5)}
+.legend .row .lic{width:19px;height:19px;border-radius:50%;border:1.5px solid #fff;display:inline-flex;
+    align-items:center;justify-content:center;flex:0 0 auto}
+.legend .row .lic svg{width:13px;height:13px}
 @media (max-width:880px){.app{flex-direction:column}.panel{width:100%;height:48%}.mapwrap{height:52%}}
 </style>
 </head>
@@ -172,25 +181,52 @@ const REGCENT={};
 function pointRadius(p){
   const v=p.total||0; return Math.max(5, Math.min(34, Math.sqrt(v/1e6)*0.9));
 }
-function setMarkerEmphasis(faint){
-  Object.entries(markers).forEach(([cod,m])=>{
-    const sel = state.sel && (+cod===state.sel.cod);
-    m.setStyle({fillOpacity: faint? (sel?.7:.18) : .82,
-                radius: faint? Math.max(4,pointRadius(byCod[cod])*0.6) : pointRadius(byCod[cod])});
-  });
+
+// ---------------- iconos por tipo de terminal (SVG, color inyectado)
+function glyphKey(tipo){
+  const t=(tipo||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
+  if(t.includes('maritimo')) return 'ancla';
+  if(t.includes('aeropuerto')||t.includes('aereo')) return 'avion';
+  if(t.includes('avanzada')||t.includes('fronter')) return 'barrera';
+  if(t.includes('ferrocarril')||t.includes('tren')) return 'tren';
+  if(t.includes('antepuerto')||t.includes('seco')||t.includes('terminal')) return 'contenedor';
+  return 'contenedor';
+}
+const GLYPHS={
+  // ancla — puerto marítimo
+  ancla:c=>`<svg viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="2.1" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="5" r="2.3"/><line x1="12" y1="7.3" x2="12" y2="20"/><line x1="8.4" y1="11" x2="15.6" y2="11"/><path d="M5 12.4a7 7 0 0 0 14 0"/></svg>`,
+  // avión — aeropuerto
+  avion:c=>`<svg viewBox="0 0 24 24" fill="#fff"><path d="M12 2c-.7 0-1.1.9-1.1 2.1v5.2L3 13.8v1.9l7.9-2.3v4.2l-2 1.4v1.6l3.2-.9 3.2.9v-1.6l-2-1.4v-4.2l7.9 2.3v-1.9L13.1 9.3V4.1C13.1 2.9 12.7 2 12 2z"/></svg>`,
+  // barrera — avanzada fronteriza
+  barrera:c=>`<svg viewBox="0 0 24 24" fill="#fff"><rect x="3.6" y="5.3" width="2.9" height="14.7" rx="1.3"/><circle cx="5.05" cy="8.7" r="1.7"/><rect x="4.6" y="7.1" width="15.4" height="3.5" rx="1.6"/><rect x="7.6" y="7.1" width="1.9" height="3.5" fill="${c}"/><rect x="11.7" y="7.1" width="1.9" height="3.5" fill="${c}"/><rect x="15.8" y="7.1" width="1.9" height="3.5" fill="${c}"/></svg>`,
+  // tren — ferrocarril
+  tren:c=>`<svg viewBox="0 0 24 24" fill="#fff"><rect x="6" y="3.4" width="12" height="13.6" rx="3.2"/><rect x="8.3" y="5.9" width="7.4" height="4" rx="1" fill="${c}"/><circle cx="9.3" cy="13" r="1.15" fill="${c}"/><circle cx="14.7" cy="13" r="1.15" fill="${c}"/><line x1="8.6" y1="17" x2="6.6" y2="20.6" stroke="#fff" stroke-width="2" stroke-linecap="round"/><line x1="15.4" y1="17" x2="17.4" y2="20.6" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>`,
+  // contenedores — antepuerto / terminal genérico (extensible)
+  contenedor:c=>`<svg viewBox="0 0 24 24" fill="#fff"><rect x="2.4" y="13" width="7" height="7.6" rx="1"/><rect x="10" y="13" width="7" height="7.6" rx="1"/><rect x="6.3" y="4.9" width="7" height="7.6" rx="1"/><g stroke="${c}" stroke-width="1.1"><line x1="4.7" y1="13.7" x2="4.7" y2="19.9"/><line x1="7.1" y1="13.7" x2="7.1" y2="19.9"/><line x1="12.3" y1="13.7" x2="12.3" y2="19.9"/><line x1="14.7" y1="13.7" x2="14.7" y2="19.9"/><line x1="8.6" y1="5.6" x2="8.6" y2="11.8"/><line x1="11" y1="5.6" x2="11" y2="11.8"/></g></svg>`,
+};
+function badgeDiameter(p,faint){
+  let d=2*pointRadius(p); d=Math.max(20,Math.min(46,d));
+  return Math.round(faint?d*0.74:d);
+}
+function makeIcon(p){
+  const faint = state.view==='influencia' && !(state.sel && state.sel.cod===p.cod);
+  const sel   = state.sel && state.sel.cod===p.cod && state.view!=='mundo';
+  const d=badgeDiameter(p,faint), col=GCOL[p.grupo];
+  const html=`<div class="mk ${faint?'faint':''} ${sel?'sel':''}" style="width:${d}px;height:${d}px;background:${col}">${GLYPHS[glyphKey(p.tipo)](col)}</div>`;
+  return L.divIcon({html,className:'mkwrap',iconSize:[d,d],iconAnchor:[d/2,d/2]});
 }
 function drawPoints(){
   layerPoints.clearLayers();
   PUNTOS.forEach(p=>{
     if(p.lat==null) return;
-    const m=L.circleMarker([p.lat,p.lon],{
-      radius:pointRadius(p), color:'#fff', weight:1.2,
-      fillColor:GCOL[p.grupo], fillOpacity:.82
-    });
+    const m=L.marker([p.lat,p.lon],{icon:makeIcon(p)});
     m.on('click',()=>select(p));
-    m.bindTooltip(`<b>${p.nombre}</b><br>${fmtUSD(p.total)} total`,{className:'wt'});
+    m.bindTooltip(`<b>${p.nombre}</b><br>${p.tipo} · ${fmtUSD(p.total)} total`,{className:'wt'});
     m.addTo(layerPoints); markers[p.cod]=m;
   });
+}
+function refreshMarkers(){
+  PUNTOS.forEach(p=>{ const m=markers[p.cod]; if(m) m.setIcon(makeIcon(p)); });
 }
 
 // ---------------- choropleth helpers
@@ -280,11 +316,11 @@ function setView(v){
   if(layerRegions) map.removeLayer(layerRegions);
   if(layerWorld) map.removeLayer(layerWorld);
   if(v==='puntos'){
-    layerPoints.addTo(map); setMarkerEmphasis(false); map.setView([-38,-71],4);
+    layerPoints.addTo(map); refreshMarkers(); map.setView([-38,-71],4);
   } else if(v==='influencia'){
     buildRegions(); layerRegions.addTo(map); paintRegions();
     layerFlows.addTo(map); drawFlows();
-    layerPoints.addTo(map); setMarkerEmphasis(true);
+    layerPoints.addTo(map); refreshMarkers();
     map.setView([-38,-71],4);
   } else if(v==='mundo'){
     buildWorld(); layerWorld.addTo(map); paintWorld();
@@ -295,9 +331,11 @@ function setView(v){
 function renderLegend(){
   const el=document.getElementById('legend');
   if(state.view==='puntos'){
-    el.innerHTML='<b>Tipo de punto</b>'+['maritimo','aereo','terrestre'].map(g=>
-      `<div class="row"><span class="dot" style="background:${GCOL[g]}"></span>${GLAB[g]}</div>`).join('')
-      +'<div class="row muted" style="margin-top:4px">Tamaño ∝ comercio total</div>';
+    const tipos=[...new Set(PUNTOS.map(p=>p.tipo))].sort();
+    el.innerHTML='<b>Tipo de terminal</b>'+tipos.map(t=>{
+      const g=PUNTOS.find(p=>p.tipo===t).grupo, col=GCOL[g];
+      return `<div class="row"><span class="lic" style="background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}</div>`;
+    }).join('')+'<div class="row muted" style="margin-top:4px">Tamaño ∝ comercio total</div>';
   } else if(state.view==='influencia'){
     el.innerHTML='<b>Área de influencia</b>'+
       '<div class="row"><span class="dot" style="background:#0d9488"></span>Origen de exportación (real)</div>'+
@@ -417,8 +455,7 @@ function select(p){
   state.sel=p;
   if(state.view==='mundo') paintWorld();
   if(state.view==='influencia'){ paintRegions(); drawFlows(); }
-  Object.values(markers).forEach(m=>m.setStyle({weight:1.2}));
-  if(markers[p.cod]) markers[p.cod].setStyle({weight:3,color:'#0f172a'});
+  refreshMarkers();
   if(p.lat!=null && state.view!=='mundo') map.panTo([p.lat,p.lon]);
   renderPanel();
 }

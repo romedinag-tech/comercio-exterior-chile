@@ -7,146 +7,199 @@
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;450;500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#0f172a; --panel:#ffffff; --ink:#0f172a; --mut:#64748b; --line:#e2e8f0;
-  --mar:#2563eb; --aer:#f59e0b; --ter:#16a34a; --nac:#7c3aed;
-  --exp:#0d9488; --imp:#ea580c; --soft:#f1f5f9;
+  --bg:#080d15; --bg2:#0b121d; --surface:#0f1a29; --surface2:#15243a; --glass:rgba(15,26,41,.74);
+  --line:rgba(255,255,255,.08); --line2:rgba(255,255,255,.045);
+  --ink:#eaf1fb; --ink2:#b3c0d3; --mut:#7385a0;
+  --cop:#e3a566; --cop2:#c98545; --cop-soft:rgba(227,165,102,.14);
+  --exp:#2dd4bf; --imp:#f47b46;
+  --mar:#4f9bff; --aer:#f0b45e; --ter:#46d38a; --nac:#b581f0;
+  --r:14px; --shadow:0 10px 34px -12px rgba(0,0,0,.65);
+  --ff:'Inter',system-ui,-apple-system,sans-serif; --fd:'Space Grotesk','Inter',system-ui,sans-serif;
 }
 *{box-sizing:border-box}
-html,body{margin:0;height:100%;font-family:'Segoe UI',system-ui,-apple-system,sans-serif;color:var(--ink)}
-body{display:flex;flex-direction:column;background:var(--soft)}
-header{background:var(--bg);color:#fff;padding:9px 18px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
-header h1{font-size:15.5px;margin:0;font-weight:600;letter-spacing:.2px}
-header .sub{font-size:11.5px;color:#94a3b8}
-.badge{background:#1e293b;border:1px solid #334155;border-radius:999px;padding:3px 10px;font-size:11px;color:#cbd5e1}
-.badge b{color:#fff}
+html,body{margin:0;height:100%;font-family:var(--ff);color:var(--ink);-webkit-font-smoothing:antialiased}
+body{display:flex;flex-direction:column;background:
+  radial-gradient(1200px 600px at 18% -10%, #16263d 0%, transparent 60%),
+  radial-gradient(900px 500px at 100% 0%, #1a2030 0%, transparent 55%), var(--bg);}
+.num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
+
+/* header */
+header{padding:11px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;
+  background:linear-gradient(180deg,rgba(13,21,34,.92),rgba(8,13,21,.78));
+  border-bottom:1px solid var(--line);position:relative;backdrop-filter:blur(8px)}
+header::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
+  background:linear-gradient(90deg,transparent,var(--cop) 22%,transparent 70%);opacity:.55}
+.brand{display:flex;align-items:center;gap:12px}
+.brand .mk-logo{width:34px;height:34px;flex:0 0 auto;filter:drop-shadow(0 2px 6px rgba(227,165,102,.35))}
+header h1{font-family:var(--fd);font-size:16px;margin:0;font-weight:600;letter-spacing:.2px;line-height:1.1}
+header h1 b{color:var(--cop);font-weight:700}
+header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .spacer{flex:1}
+.stat{display:flex;flex-direction:column;align-items:flex-end;padding:0 14px;border-left:1px solid var(--line2)}
+.stat .sl{font-size:9.5px;text-transform:uppercase;letter-spacing:1.1px;color:var(--mut);font-weight:600}
+.stat .sv{font-family:var(--fd);font-size:16px;font-weight:600;margin-top:1px}
+.stat.exp .sv{color:var(--exp)} .stat.imp .sv{color:var(--imp)} .stat.tot .sv{color:var(--cop)}
 
 .app{flex:1;display:flex;flex-direction:column;min-height:0}
 .top{flex:1;display:flex;min-height:0}
 
-/* --- sidebar izquierdo: selector por tipo de punto --- */
-.sidebar{width:260px;background:#fff;border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
-.sidebar .sbhead{padding:11px 13px 8px;border-bottom:1px solid var(--line)}
-.sidebar .sbhead b{font-size:12px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut)}
-.sidebar .sblist{flex:1;overflow:auto;padding:4px 0}
-.grp{margin:2px 0}
-.grp .gh{display:flex;align-items:center;gap:8px;padding:7px 12px;cursor:pointer;font-weight:600;font-size:12.5px}
-.grp .gh:hover{background:var(--soft)}
-.grp .gh .lic{width:20px;height:20px;border-radius:50%;border:1.5px solid #fff;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
-.grp .gh .lic svg{width:13px;height:13px}
-.grp .gh .cnt{margin-left:auto;color:var(--mut);font-weight:600;font-size:11px}
-.grp .gh .car{color:var(--mut);transition:transform .15s}
+/* sidebar */
+.sidebar{width:264px;background:linear-gradient(180deg,var(--surface),var(--bg2));border-right:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
+.sbhead{padding:13px 15px 10px;border-bottom:1px solid var(--line2)}
+.sbhead b{font-family:var(--fd);font-size:11px;text-transform:uppercase;letter-spacing:1.4px;color:var(--ink2)}
+.sbhead .hint{margin-top:3px;font-size:10.5px;color:var(--mut)}
+.sblist{flex:1;overflow:auto;padding:6px 0}
+.sblist::-webkit-scrollbar,.tabbody::-webkit-scrollbar,.card::-webkit-scrollbar,.results::-webkit-scrollbar{width:8px;height:8px}
+.sblist::-webkit-scrollbar-thumb,.tabbody::-webkit-scrollbar-thumb,.card::-webkit-scrollbar-thumb,.results::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:8px}
+.grp{margin:1px 8px}
+.grp .gh{display:flex;align-items:center;gap:9px;padding:8px 10px;cursor:pointer;font-weight:550;font-size:12.5px;border-radius:10px;transition:background .15s}
+.grp .gh:hover{background:rgba(255,255,255,.04)}
+.lic{border-radius:50%;border:1.5px solid rgba(255,255,255,.85);display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto;box-shadow:0 1px 4px rgba(0,0,0,.4)}
+.grp .gh .lic{width:22px;height:22px}.grp .gh .lic svg{width:14px;height:14px}
+.grp .gh .cnt{margin-left:auto;color:var(--mut);font-weight:600;font-size:10.5px;background:rgba(255,255,255,.06);padding:1px 8px;border-radius:999px}
+.grp .gh .car{color:var(--mut);transition:transform .18s;font-size:10px;margin-left:6px}
 .grp.collapsed .car{transform:rotate(-90deg)}
 .grp.collapsed .gitems{display:none}
-.gitems .it{display:flex;justify-content:space-between;gap:6px;padding:5px 12px 5px 40px;font-size:12px;cursor:pointer;border-left:3px solid transparent}
-.gitems .it:hover{background:var(--soft)}
-.gitems .it.sel{background:#eef2ff;border-left-color:var(--bg);font-weight:600}
-.gitems .it .v{color:var(--mut);font-variant-numeric:tabular-nums}
+.gitems{padding:2px 0 4px}
+.gitems .it{display:flex;justify-content:space-between;gap:8px;padding:6px 12px 6px 42px;font-size:12px;cursor:pointer;border-left:2px solid transparent;border-radius:0 8px 8px 0;transition:background .12s,color .12s;color:var(--ink2)}
+.gitems .it:hover{background:rgba(255,255,255,.04);color:var(--ink)}
+.gitems .it.sel{background:var(--cop-soft);border-left-color:var(--cop);color:var(--ink);font-weight:600}
+.gitems .it .v{color:var(--mut);font-variant-numeric:tabular-nums;flex:0 0 auto}
+.gitems .it.sel .v{color:var(--cop)}
 
-/* --- mapa --- */
+/* mapa */
 .mapwrap{flex:1;position:relative;min-width:0}
-#map{position:absolute;inset:0;background:#dbeafe}
-.controls{position:absolute;top:10px;left:10px;z-index:600;display:flex;flex-direction:column;gap:8px}
-.seg{background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.15);display:flex;overflow:hidden}
-.seg button{border:0;background:#fff;padding:7px 12px;font-size:12.5px;cursor:pointer;color:var(--mut);font-weight:600}
-.seg button.on{background:var(--bg);color:#fff}
-.seg.small button{padding:5px 10px;font-size:11.5px}
-.legend{background:#fff;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.15);padding:8px 11px;font-size:11.5px;color:var(--mut);max-width:215px}
-.legend .row{display:flex;align-items:center;gap:6px;margin:2px 0}
-.dot{width:11px;height:11px;border-radius:50%;display:inline-block}
-.legend .row .lic{width:19px;height:19px;border-radius:50%;border:1.5px solid #fff;display:inline-flex;align-items:center;justify-content:center;flex:0 0 auto}
-.legend .row .lic svg{width:13px;height:13px}
-.search{position:absolute;top:10px;right:10px;z-index:600}
-.search input{border:0;border-radius:10px;box-shadow:0 1px 6px rgba(0,0,0,.15);padding:8px 12px;font-size:13px;width:210px}
-.results{position:absolute;top:42px;right:0;background:#fff;border-radius:10px;box-shadow:0 4px 16px rgba(0,0,0,.18);max-height:300px;overflow:auto;width:240px;display:none}
-.results div{padding:7px 12px;font-size:12.5px;cursor:pointer;border-bottom:1px solid var(--soft)}
-.results div:hover{background:var(--soft)}
+#map{position:absolute;inset:0;background:#070c14}
+.leaflet-control-zoom a{background:var(--glass)!important;color:var(--ink2)!important;border-color:var(--line)!important;backdrop-filter:blur(6px)}
+.leaflet-control-zoom a:hover{background:var(--surface2)!important;color:var(--ink)!important}
+.leaflet-control-attribution{background:rgba(8,13,21,.6)!important;color:var(--mut)!important;font-size:9.5px}
+.leaflet-control-attribution a{color:var(--ink2)!important}
+.controls{position:absolute;top:12px;left:12px;z-index:600;display:flex;flex-direction:column;gap:9px}
+.seg{background:var(--glass);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);display:flex;overflow:hidden;backdrop-filter:blur(10px)}
+.seg button{border:0;background:transparent;padding:7px 13px;font-size:12px;cursor:pointer;color:var(--mut);font-weight:600;font-family:var(--ff);transition:color .15s,background .15s}
+.seg button:hover{color:var(--ink2)}
+.seg button.on{background:linear-gradient(180deg,var(--cop),var(--cop2));color:#1a1206;text-shadow:0 1px 0 rgba(255,255,255,.25)}
+.seg.small button{padding:5px 11px;font-size:11px}
+.legend{background:var(--glass);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);padding:9px 12px;font-size:11.5px;color:var(--ink2);max-width:218px;backdrop-filter:blur(10px)}
+.legend b{font-family:var(--fd);font-size:10px;text-transform:uppercase;letter-spacing:1px;color:var(--mut);display:block;margin-bottom:5px}
+.legend .row{display:flex;align-items:center;gap:7px;margin:3px 0}
+.dot{width:11px;height:11px;border-radius:50%;display:inline-block;flex:0 0 auto}
+.legend .row .lic{width:20px;height:20px}.legend .row .lic svg{width:13px;height:13px}
+.legend .muted{color:var(--mut)}
+.search{position:absolute;top:12px;right:12px;z-index:600}
+.search input{border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);padding:8px 13px;font-size:12.5px;width:216px;
+  background:var(--glass);color:var(--ink);backdrop-filter:blur(10px);font-family:var(--ff);transition:border-color .15s}
+.search input::placeholder{color:var(--mut)}
+.search input:focus{outline:none;border-color:var(--cop)}
+.results{position:absolute;top:44px;right:0;background:var(--surface);border:1px solid var(--line);border-radius:12px;box-shadow:var(--shadow);max-height:300px;overflow:auto;width:248px;display:none}
+.results div{padding:8px 13px;font-size:12px;cursor:pointer;border-bottom:1px solid var(--line2);color:var(--ink2)}
+.results div:hover{background:var(--surface2);color:var(--ink)}
 .mkwrap{background:none;border:none}
-.mk{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid #fff;
-    box-shadow:0 1px 4px rgba(0,0,0,.35);box-sizing:border-box}
+.mk{display:flex;align-items:center;justify-content:center;border-radius:50%;border:2px solid rgba(255,255,255,.92);
+  box-shadow:0 2px 7px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.25);box-sizing:border-box}
 .mk svg{width:64%;height:64%;display:block}
-.mk.faint{opacity:.30}
-.mk.sel{box-shadow:0 0 0 3px #0f172a,0 2px 9px rgba(0,0,0,.5)}
-.leaflet-tooltip.wt{font-size:12px}
+.mk.faint{opacity:.34}
+.mk.sel{box-shadow:0 0 0 3px var(--cop),0 0 16px rgba(227,165,102,.6),0 2px 9px rgba(0,0,0,.6)}
+.leaflet-tooltip.wt{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow);
+  font-size:11.5px;border-radius:9px;padding:7px 10px;font-family:var(--ff)}
+.leaflet-tooltip.wt b{color:#fff}
+.leaflet-tooltip.wt::before{display:none}
 
-/* barra vertical de zonas (% por macrozona) */
-.zonebar{position:absolute;top:70px;right:12px;bottom:18px;width:128px;z-index:600;background:#fff;
-  border-radius:12px;box-shadow:0 1px 8px rgba(0,0,0,.16);padding:8px 9px;display:flex;flex-direction:column}
-.zonebar .zt{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.4px;color:var(--mut);margin-bottom:5px}
-.zonebar .zcol{flex:1;display:flex;flex-direction:column;gap:2px}
-.zonebar .zseg{flex-grow:1;border-radius:5px;color:#fff;font-size:10.5px;font-weight:700;
-  display:flex;flex-direction:column;justify-content:center;padding:2px 7px;overflow:hidden;cursor:default;min-height:14px}
-.zonebar .zseg small{font-weight:600;opacity:.92;font-size:9px;line-height:1.05}
-.zonebar .zseg.hl{outline:2px solid #0f172a;outline-offset:-2px}
+/* barra de zonas */
+.zonebar{position:absolute;top:74px;right:12px;bottom:20px;width:132px;z-index:600;background:var(--glass);
+  border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:10px 10px;display:flex;flex-direction:column;backdrop-filter:blur(10px)}
+.zonebar .zt{font-family:var(--fd);font-size:9.5px;font-weight:600;text-transform:uppercase;letter-spacing:1px;color:var(--mut);margin-bottom:7px;text-align:center}
+.zonebar .zcol{flex:1;display:flex;flex-direction:column;gap:3px}
+.zonebar .zseg{flex-grow:1;border-radius:7px;color:#0c0c0c;font-weight:700;display:flex;flex-direction:column;justify-content:center;
+  padding:2px 9px;overflow:hidden;min-height:15px;position:relative;transition:transform .15s}
+.zonebar .zseg .zp{font-family:var(--fd);font-size:12px;line-height:1}
+.zonebar .zseg small{font-weight:600;opacity:.85;font-size:8.5px;line-height:1.05;margin-top:1px}
+.zonebar .zseg.hl{outline:2px solid #fff;outline-offset:-2px;transform:translateX(-3px)}
 
-/* info de producto en el mapa */
-.mapinfo{position:absolute;left:10px;bottom:14px;z-index:600;background:#fff;border-radius:11px;
-  box-shadow:0 1px 8px rgba(0,0,0,.16);padding:9px 12px;max-width:300px;font-size:12px}
-.mapinfo .mi-n{font-weight:700;font-size:13px}
-.mapinfo .mi-r{color:var(--mut);font-size:11px;margin-bottom:4px}
-.mapinfo .tag{display:inline-block;font-size:10.5px;border-radius:6px;padding:2px 7px;margin:2px 4px 0 0;font-weight:600}
-.tag.exp{background:#ccfbf1;color:#0f766e}.tag.imp{background:#ffedd5;color:#c2410c}
+/* info producto */
+.mapinfo{position:absolute;left:12px;bottom:16px;z-index:600;background:var(--glass);border:1px solid var(--line);border-radius:13px;
+  box-shadow:var(--shadow);padding:11px 14px;max-width:320px;font-size:12px;backdrop-filter:blur(10px)}
+.mapinfo .mi-n{font-family:var(--fd);font-weight:600;font-size:14px;letter-spacing:.2px}
+.mapinfo .mi-r{color:var(--mut);font-size:10.5px;margin:2px 0 6px;text-transform:uppercase;letter-spacing:.6px}
+.tag{display:inline-block;font-size:10.5px;border-radius:7px;padding:3px 9px;margin:2px 5px 0 0;font-weight:600}
+.tag.exp{background:rgba(45,212,191,.15);color:var(--exp);border:1px solid rgba(45,212,191,.3)}
+.tag.imp{background:rgba(244,123,70,.15);color:var(--imp);border:1px solid rgba(244,123,70,.3)}
 
-/* --- panel inferior --- */
-.panel{height:320px;background:var(--panel);border-top:1px solid var(--line);display:flex;flex-direction:column;min-height:0}
-.panelhead{display:flex;align-items:center;gap:16px;padding:9px 16px 0}
-.ph-id .ptipo{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.6px}
-.ph-id h2{margin:1px 0 0;font-size:17px}
-.ph-id .preg{font-size:11.5px;color:var(--mut)}
-.kpis{display:flex;gap:8px;margin-left:auto}
-.kpi{background:var(--soft);border-radius:9px;padding:6px 12px;min-width:120px}
-.kpi .l{font-size:9.5px;color:var(--mut);text-transform:uppercase;letter-spacing:.4px;font-weight:700}
-.kpi .v{font-size:15px;font-weight:700;margin-top:1px}
-.kpi.exp .v{color:var(--exp)} .kpi.imp .v{color:var(--imp)}
-.tabs{display:flex;gap:2px;padding:6px 12px 0;border-bottom:1px solid var(--line)}
-.tabs button{border:0;background:none;padding:9px 13px;font-size:12.5px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap}
-.tabs button.on{color:var(--ink);border-bottom-color:var(--bg)}
-.tabbody{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;gap:14px;padding:12px 16px}
-.card{flex:0 0 auto;width:288px;height:100%;overflow:auto;border:1px solid var(--line);border-radius:11px;padding:11px 12px;background:#fff}
-.card.wide{width:430px}
-.card h3{font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:var(--mut);margin:0 0 8px}
-.bars .b{margin:5px 0}
-.bars .b .t{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:2px;gap:8px}
+/* panel inferior */
+.panel{height:328px;background:linear-gradient(180deg,var(--surface),var(--bg2));border-top:1px solid var(--line);display:flex;flex-direction:column;min-height:0;box-shadow:0 -12px 30px -18px rgba(0,0,0,.7)}
+.panelhead{display:flex;align-items:center;gap:18px;padding:12px 18px 0}
+.ph-id .ptipo{font-family:var(--fd);font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:1.3px}
+.ph-id h2{font-family:var(--fd);margin:2px 0 0;font-size:19px;font-weight:600;letter-spacing:.2px}
+.ph-id .preg{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-top:2px}
+.kpis{display:flex;gap:10px;margin-left:auto}
+.kpi{background:rgba(255,255,255,.035);border:1px solid var(--line2);border-radius:12px;padding:7px 14px;min-width:128px}
+.kpi .l{font-size:9px;color:var(--mut);text-transform:uppercase;letter-spacing:.9px;font-weight:600}
+.kpi .v{font-family:var(--fd);font-size:16px;font-weight:600;margin-top:2px}
+.kpi.exp .v{color:var(--exp)} .kpi.imp .v{color:var(--imp)} .kpi.tot{background:var(--cop-soft);border-color:rgba(227,165,102,.28)} .kpi.tot .v{color:var(--cop)}
+.tabs{display:flex;gap:4px;padding:10px 14px 0;border-bottom:1px solid var(--line)}
+.tabs button{border:0;background:none;padding:9px 14px;font-size:12.5px;font-weight:600;color:var(--mut);cursor:pointer;border-bottom:2px solid transparent;white-space:nowrap;font-family:var(--ff);transition:color .15s;margin-bottom:-1px}
+.tabs button:hover{color:var(--ink2)}
+.tabs button.on{color:var(--ink);border-bottom-color:var(--cop)}
+.tabbody{flex:1;overflow-x:auto;overflow-y:hidden;display:flex;gap:14px;padding:14px 18px}
+.card{flex:0 0 auto;width:294px;height:100%;overflow:auto;border:1px solid var(--line);border-radius:14px;padding:13px 14px;
+  background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.008))}
+.card.wide{width:436px}
+.card h3{font-family:var(--fd);font-size:10.5px;text-transform:uppercase;letter-spacing:.9px;color:var(--mut);margin:0 0 10px;font-weight:600}
+.bars .b{margin:6px 0}
+.bars .b .t{display:flex;justify-content:space-between;font-size:11.5px;margin-bottom:3px;gap:8px;color:var(--ink2)}
 .bars .b .t span:first-child{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .bars .b .t .pct{color:var(--mut);font-variant-numeric:tabular-nums;flex:0 0 auto}
-.bars .b .track{height:7px;background:var(--soft);border-radius:5px;overflow:hidden}
-.bars .b .fill{height:100%;border-radius:5px}
-.chartbox{position:relative;height:215px}
-.note{font-size:10.5px;color:var(--mut);background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:7px 9px;margin-top:8px}
-.subseg{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:9px}
-.subseg button{border:1px solid var(--line);background:#fff;border-radius:8px;padding:5px 10px;font-size:11.5px;font-weight:600;color:var(--mut);cursor:pointer}
-.subseg button.on{background:var(--bg);color:#fff;border-color:var(--bg)}
-.cmp-pick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px}
-.cmp-pick .chip{font-size:11px;padding:4px 9px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:#fff}
-.cmp-pick .chip.on{background:var(--bg);color:#fff;border-color:var(--bg)}
-.muted{color:var(--mut);font-size:12px}
-footer{background:#fff;border-top:1px solid var(--line);padding:7px 16px;font-size:10.5px;color:var(--mut);line-height:1.45}
-@media (max-width:760px){.sidebar{display:none}.panel{height:50%}}
+.bars .b .track{height:7px;background:rgba(255,255,255,.06);border-radius:6px;overflow:hidden}
+.bars .b .fill{height:100%;border-radius:6px;box-shadow:0 0 10px -2px currentColor}
+.chartbox{position:relative;height:216px}
+.note{font-size:10.5px;color:#f5cba0;background:rgba(227,165,102,.08);border:1px solid rgba(227,165,102,.22);border-radius:10px;padding:8px 10px;margin-top:9px;line-height:1.45}
+.subseg{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
+.subseg button{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:9px;padding:6px 11px;font-size:11.5px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--ff);transition:all .15s}
+.subseg button:hover{border-color:var(--cop)}
+.subseg button.on{background:linear-gradient(180deg,var(--cop),var(--cop2));color:#1a1206;border-color:transparent}
+.cmp-pick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px}
+.cmp-pick .chip{font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:rgba(255,255,255,.03);color:var(--ink2);transition:all .14s}
+.cmp-pick .chip:hover{border-color:var(--cop)}
+.cmp-pick .chip.on{background:linear-gradient(180deg,var(--cop),var(--cop2));color:#1a1206;border-color:transparent;font-weight:600}
+.muted{color:var(--mut);font-size:11.5px;line-height:1.5}
+footer{padding:8px 18px;font-size:10px;color:var(--mut);line-height:1.5;background:var(--bg2);border-top:1px solid var(--line2)}
+footer b{color:var(--ink2)}
+button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var(--cop);outline-offset:2px}
+@media (prefers-reduced-motion:reduce){*{transition:none!important}}
+@media (max-width:760px){.sidebar{display:none}.panel{height:52%}.stat{display:none}}
 </style>
 </head>
 <body>
 <header>
-  <div>
-    <h1>Comercio Exterior de Chile · <span style="color:#38bdf8">2025</span></h1>
-    <div class="sub">Puntos de transferencia de carga — perfil de comercio con el mundo</div>
+  <div class="brand">
+    <svg class="mk-logo" viewBox="0 0 40 40" fill="none">
+      <circle cx="20" cy="20" r="18" stroke="#e3a566" stroke-width="1.4" opacity=".55"/>
+      <circle cx="20" cy="20" r="13" stroke="#4f9bff" stroke-width="1" opacity=".4"/>
+      <path d="M20 3 L23 17 L37 20 L23 23 L20 37 L17 23 L3 20 L17 17 Z" fill="#e3a566"/>
+      <circle cx="20" cy="20" r="2.4" fill="#080d15"/>
+    </svg>
+    <div>
+      <h1>Comercio Exterior de Chile <b>2025</b></h1>
+      <div class="sub">Inteligencia de puntos de transferencia de carga · DUS / DIN — Aduanas</div>
+    </div>
   </div>
   <div class="spacer"></div>
-  <div class="badge" id="badgeExp">Export · <b>—</b></div>
-  <div class="badge" id="badgeImp">Import · <b>—</b></div>
-  <div class="badge" id="badgePts">— puntos</div>
+  <div class="stat exp"><span class="sl">Exportación FOB</span><span class="sv num" id="hExp">—</span></div>
+  <div class="stat imp"><span class="sl">Importación CIF</span><span class="sv num" id="hImp">—</span></div>
+  <div class="stat tot"><span class="sl">Puntos activos</span><span class="sv num" id="hPts">—</span></div>
 </header>
 
 <div class="app">
   <div class="top">
-    <!-- selector izquierdo por tipo de punto -->
     <div class="sidebar">
-      <div class="sbhead"><b>Ir a un punto</b><div class="muted" style="margin-top:2px;font-size:11px">Click → vuela al punto</div></div>
+      <div class="sbhead"><b>Ir a un punto</b><div class="hint">Click → el mapa vuela al terminal</div></div>
       <div class="sblist" id="sblist"></div>
     </div>
 
-    <!-- mapa -->
     <div class="mapwrap">
       <div id="map"></div>
       <div class="controls">
@@ -171,7 +224,6 @@ footer{background:#fff;border-top:1px solid var(--line);padding:7px 16px;font-si
     </div>
   </div>
 
-  <!-- panel inferior con pestañas -->
   <div class="panel">
     <div class="panelhead">
       <div class="ph-id">
@@ -180,9 +232,9 @@ footer{background:#fff;border-top:1px solid var(--line);padding:7px 16px;font-si
         <div class="preg" id="pReg">Chile · todos los puntos</div>
       </div>
       <div class="kpis">
-        <div class="kpi exp"><div class="l">Export FOB</div><div class="v" id="kExp">—</div></div>
-        <div class="kpi imp"><div class="l">Import CIF</div><div class="v" id="kImp">—</div></div>
-        <div class="kpi"><div class="l">Total</div><div class="v" id="kTot">—</div></div>
+        <div class="kpi exp"><div class="l">Export FOB</div><div class="v num" id="kExp">—</div></div>
+        <div class="kpi imp"><div class="l">Import CIF</div><div class="v num" id="kImp">—</div></div>
+        <div class="kpi tot"><div class="l">Comercio total</div><div class="v num" id="kTot">—</div></div>
       </div>
     </div>
     <div class="tabs" id="tabs">
@@ -199,11 +251,21 @@ footer{background:#fff;border-top:1px solid var(--line);padding:7px 16px;font-si
 
 <script src="data_bundle.js"></script>
 <script>
-if(window.Chart){ Chart.defaults.animation=false; Chart.defaults.font.size=10; }
+if(window.Chart){
+  Chart.defaults.font.family="'Inter',system-ui,sans-serif";
+  Chart.defaults.font.size=10;
+  Chart.defaults.color='#b3c0d3';
+  Chart.defaults.borderColor='rgba(255,255,255,.07)';
+  Chart.defaults.animation=false;
+  Chart.defaults.plugins.tooltip.backgroundColor='#15243a';
+  Chart.defaults.plugins.tooltip.borderColor='rgba(255,255,255,.12)';
+  Chart.defaults.plugins.tooltip.borderWidth=1;
+}
 const D = window.DATA;
 const PUNTOS = D.puntos.slice();
 const NAC = D.nacional;
 const byCod = {}; PUNTOS.forEach(p=>byCod[p.cod]=p); byCod[0]=NAC;
+const EXP='#2dd4bf', IMP='#f47b46';
 const fmtUSD = v => {
   if(v==null) return '—';
   const a=Math.abs(v);
@@ -212,14 +274,14 @@ const fmtUSD = v => {
   if(a>=1e3) return '$'+(v/1e3).toFixed(0)+' k';
   return '$'+v.toFixed(0);
 };
-const GCOL={maritimo:'#2563eb',aereo:'#f59e0b',terrestre:'#16a34a',nacional:'#7c3aed'};
+const GCOL={maritimo:'#4f9bff',aereo:'#f0b45e',terrestre:'#46d38a',nacional:'#b581f0'};
 const GLAB={maritimo:'Marítimo',aereo:'Aéreo',terrestre:'Terrestre / fronterizo',nacional:'Nacional'};
 const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
+const PALETTE=['#4f9bff','#f47b46','#2dd4bf','#b581f0','#f0b45e','#46d38a','#f472b6','#38bdf8'];
 const deacc=s=>(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
 
-// macrozonas geográficas de Chile (por latitud, orden Norte→Sur)
 const ZONAS=['Norte Grande','Norte Chico','Zona Central','Zona Sur','Zona Austral'];
-const ZCOL={'Norte Grande':'#b45309','Norte Chico':'#ca8a04','Zona Central':'#2563eb','Zona Sur':'#16a34a','Zona Austral':'#0e7490'};
+const ZCOL={'Norte Grande':'#d98a4a','Norte Chico':'#e3b257','Zona Central':'#5b9cff','Zona Sur':'#46d38a','Zona Austral':'#3fb6c9'};
 function macrozona(lat){
   if(lat==null) return null;
   if(lat>-26) return 'Norte Grande';
@@ -232,10 +294,10 @@ function macrozona(lat){
 let state = { sel:NAC, view:'puntos', metric:'total', tab:'perfil', cmp:new Set(),
               infl:{scope:'nacional',dir:'exp'} };
 
-// ---------------- mapa
+// mapa
 const map = L.map('map',{zoomControl:false,minZoom:2,worldCopyJump:true}).setView([-38,-71],4);
 L.control.zoom({position:'bottomright'}).addTo(map);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png',
+L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
   {attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
 
 const layerPoints = L.layerGroup().addTo(map);
@@ -255,7 +317,6 @@ const REGCENT={};
 
 function pointRadius(p){ const v=p.total||0; return Math.max(5, Math.min(34, Math.sqrt(v/1e6)*0.9)); }
 
-// iconos por tipo
 function glyphKey(tipo){
   const t=deacc(tipo);
   if(t.includes('maritimo')) return 'ancla';
@@ -297,49 +358,51 @@ function drawPoints(){
 }
 function refreshMarkers(){ PUNTOS.forEach(p=>{ const m=markers[p.cod]; if(m) m.setIcon(makeIcon(p)); }); }
 
-// ---------------- choropleth helpers
-function rampWorld(pct){ const stops=[[0,'#eef2ff'],[1,'#c7d2fe'],[5,'#818cf8'],[15,'#4f46e5'],[30,'#3730a3']]; let c=stops[0][1]; for(const [t,col] of stops){ if(pct>=t) c=col; } return c; }
-function rampReg(pct){ const stops=[[0,'#ecfdf5'],[2,'#a7f3d0'],[8,'#34d399'],[20,'#059669'],[40,'#065f46']]; let c=stops[0][1]; for(const [t,col] of stops){ if(pct>=t) c=col; } return c; }
+// choropleth — escala luminosa segun la métrica
+const RAMP={
+  exp:[[0,'#0e2c29'],[1,'#13524a'],[5,'#1c8a78'],[15,'#2dd4bf'],[30,'#8df0e3']],
+  imp:[[0,'#321a10'],[1,'#5e2f18'],[5,'#9c5028'],[15,'#f47b46'],[30,'#ffb78f']]
+};
+function rampMetric(pct){ const k=state.metric==='imp'?'imp':'exp'; let c=RAMP[k][0][1]; for(const[t,col]of RAMP[k]){ if(pct>=t) c=col; } return c; }
 function selCountryShares(){
   const m={}; const s=state.sel; const met=state.metric==='imp'?'imp':'exp';
   if(s.cod===0){ (met==='imp'?D.paises.imp:D.paises.exp).forEach(r=>{ if(r.iso3) m[r.iso3]={pct:r.pct,val:r[met==='imp'?'cif':'fob'],name:r.nombre}; }); }
   else { const arr= met==='imp'? s.top_origenes : s.top_destinos; arr.forEach(r=>{ if(r.iso3) m[r.iso3]={pct:r.pct,val:r.valor,name:r.nombre}; }); }
   return m;
 }
-function buildWorld(){ if(layerWorld) return; layerWorld=L.geoJSON(D.world,{style:{weight:.5,color:'#cbd5e1',fillColor:'#eef2ff',fillOpacity:.9}}); }
+function buildWorld(){ if(layerWorld) return; layerWorld=L.geoJSON(D.world,{style:{weight:.4,color:'rgba(255,255,255,.14)',fillColor:'#101a28',fillOpacity:.85}}); }
 function paintWorld(){
   const sh=selCountryShares();
   layerWorld.eachLayer(ly=>{
     const iso=ly.feature.id; const d=sh[iso];
-    ly.setStyle({fillColor: d?rampWorld(d.pct):'#f8fafc', fillOpacity: d?.92:.5});
+    ly.setStyle({fillColor: d?rampMetric(d.pct):'#0e1726', fillOpacity: d?.95:.55, color: d?'rgba(255,255,255,.28)':'rgba(255,255,255,.10)'});
     const met=state.metric==='imp'?'Importado':'Exportado';
     ly.unbindTooltip();
-    ly.bindTooltip(`<b>${ly.feature.properties.name}</b>`+(d?`<br>${met}: ${fmtUSD(d.val)} · ${d.pct.toFixed(1)}%`:'<br><span style="color:#94a3b8">sin registro</span>'),{className:'wt',sticky:true});
+    ly.bindTooltip(`<b>${ly.feature.properties.name}</b>`+(d?`<br>${met}: ${fmtUSD(d.val)} · ${d.pct.toFixed(1)}%`:'<br><span style="color:#7385a0">sin registro</span>'),{className:'wt',sticky:true});
   });
 }
-function buildRegions(){ if(layerRegions) return; layerRegions=L.geoJSON(D.regiones,{style:{weight:.6,color:'#94a3b8',fillColor:'#f1f5f9',fillOpacity:.6}}); }
+function buildRegions(){ if(layerRegions) return; layerRegions=L.geoJSON(D.regiones,{style:{weight:.5,color:'rgba(255,255,255,.16)',fillColor:'#101a28',fillOpacity:.55}}); }
 function regShares(kind){ const m={}; const arr= kind==='imp'? state.sel.infl_imp : state.sel.infl_exp; (arr||[]).forEach(r=>m[r.cod]={pct:r.pct,val:r.valor,nombre:r.nombre}); return m; }
 function paintRegions(){
   const ex=regShares('exp'), im=regShares('imp');
   const usar = state.metric==='imp' ? im : ex;
   layerRegions.eachLayer(ly=>{
     const cr=ly.feature.properties.codregion; const d=usar[cr];
-    ly.setStyle({fillColor: d?rampReg(d.pct):'#f8fafc', fillOpacity: d?.85:.45});
+    ly.setStyle({fillColor: d?rampMetric(d.pct):'#0e1726', fillOpacity: d?.9:.45, color: d?'rgba(255,255,255,.3)':'rgba(255,255,255,.12)'});
     ly.unbindTooltip();
     ly.bindTooltip(`<b>${ly.feature.properties.nombre}</b>`+
-      `<br><span style="color:#0d9488">Origen export: ${ex[cr]?ex[cr].pct.toFixed(1)+'%':'—'}</span>`+
-      `<br><span style="color:#ea580c">Nacionaliz. import: ${im[cr]?im[cr].pct.toFixed(1)+'%':'—'}</span>`,{className:'wt',sticky:true});
+      `<br><span style="color:${EXP}">Origen export: ${ex[cr]?ex[cr].pct.toFixed(1)+'%':'—'}</span>`+
+      `<br><span style="color:${IMP}">Nacionaliz. import: ${im[cr]?im[cr].pct.toFixed(1)+'%':'—'}</span>`,{className:'wt',sticky:true});
   });
 }
 function drawFlows(){
   layerFlows.clearLayers();
   const s=state.sel; if(s.lat==null) return;
   const W=p=>Math.max(1.2,Math.min(11,Math.sqrt(p)*1.9));
-  (s.infl_exp||[]).forEach(r=>{ const c=REGCENT[r.cod]; if(!c||r.pct<0.5)return; L.polyline([c,[s.lat,s.lon]],{color:'#0d9488',weight:W(r.pct),opacity:.55}).addTo(layerFlows); });
-  (s.infl_imp||[]).forEach(r=>{ const c=REGCENT[r.cod]; if(!c||r.pct<0.5)return; L.polyline([[s.lat,s.lon],c],{color:'#ea580c',weight:W(r.pct),opacity:.45,dashArray:'4 4'}).addTo(layerFlows); });
+  (s.infl_exp||[]).forEach(r=>{ const c=REGCENT[r.cod]; if(!c||r.pct<0.5)return; L.polyline([c,[s.lat,s.lon]],{color:EXP,weight:W(r.pct),opacity:.6}).addTo(layerFlows); });
+  (s.infl_imp||[]).forEach(r=>{ const c=REGCENT[r.cod]; if(!c||r.pct<0.5)return; L.polyline([[s.lat,s.lon],c],{color:IMP,weight:W(r.pct),opacity:.5,dashArray:'4 4'}).addTo(layerFlows); });
 }
 
-// ---------------- vista
 function setView(v){
   state.view=v;
   document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
@@ -357,19 +420,19 @@ function renderLegend(){
     const tipos=[...new Set(PUNTOS.map(p=>p.tipo))].sort();
     el.innerHTML='<b>Tipo de terminal</b>'+tipos.map(t=>{ const g=PUNTOS.find(p=>p.tipo===t).grupo, col=GCOL[g];
       return `<div class="row"><span class="lic" style="background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}</div>`; }).join('')
-      +'<div class="row muted" style="margin-top:4px">Tamaño ∝ comercio total</div>';
+      +'<div class="row muted" style="margin-top:5px">Tamaño ∝ comercio total</div>';
   } else if(state.view==='influencia'){
     el.innerHTML='<b>Área de influencia</b>'+
-      '<div class="row"><span class="dot" style="background:#0d9488"></span>Origen de exportación (real)</div>'+
-      '<div class="row"><span class="dot" style="background:#ea580c"></span>Nacionalización import (aduana)</div>'+
+      `<div class="row"><span class="dot" style="background:${EXP}"></span>Origen de exportación (real)</div>`+
+      `<div class="row"><span class="dot" style="background:${IMP}"></span>Nacionalización import (aduana)</div>`+
       `<div class="row muted">Relleno = % ${state.metric==='imp'?'nacionalización import':'origen export'} por región</div>`;
   } else {
+    const k=state.metric==='imp'?'imp':'exp';
     el.innerHTML='<b>'+(state.metric==='imp'?'% importado desde':'% exportado a')+'</b>'+
-      [[0,'#eef2ff'],[1,'#c7d2fe'],[5,'#818cf8'],[15,'#4f46e5'],[30,'#3730a3']].map(([t,c])=>`<div class="row"><span class="dot" style="background:${c}"></span>≥ ${t}%</div>`).join('');
+      RAMP[k].map(([t,c])=>`<div class="row"><span class="dot" style="background:${c}"></span>≥ ${t}%</div>`).join('');
   }
 }
 
-// ---------------- barra vertical de zonas
 function metricVal(p){ return state.metric==='exp'?p.exp_fob : state.metric==='imp'?p.imp_cif : p.total; }
 function renderZoneBar(){
   const agg={}; ZONAS.forEach(z=>agg[z]=0); let tot=0;
@@ -377,16 +440,12 @@ function renderZoneBar(){
   const selZ = state.sel.lat!=null ? macrozona(state.sel.lat) : null;
   const lab = state.metric==='exp'?'Export':state.metric==='imp'?'Import':'Comercio';
   let html=`<div class="zt">${lab} por zona</div><div class="zcol">`;
-  ZONAS.forEach(z=>{
-    const pct=tot?100*agg[z]/tot:0;
-    html+=`<div class="zseg ${z===selZ?'hl':''}" style="background:${ZCOL[z]};flex-grow:${Math.max(pct,3)}">
-      <span>${pct.toFixed(1)}%</span><small>${z}</small></div>`;
-  });
+  ZONAS.forEach(z=>{ const pct=tot?100*agg[z]/tot:0;
+    html+=`<div class="zseg ${z===selZ?'hl':''}" style="background:${ZCOL[z]};flex-grow:${Math.max(pct,3)}"><span class="zp">${pct.toFixed(1)}%</span><small>${z}</small></div>`; });
   html+='</div>';
   document.getElementById('zonebar').innerHTML=html;
 }
 
-// ---------------- info de producto en el mapa
 function renderMapInfo(){
   const p=state.sel, pr=prodPrincipal(p);
   document.getElementById('mapinfo').innerHTML=
@@ -395,7 +454,6 @@ function renderMapInfo(){
     `<div>${pr.exp?`<span class="tag exp">Exporta: ${pr.exp}</span>`:''}${pr.imp?`<span class="tag imp">Importa: ${pr.imp}</span>`:''}</div>`;
 }
 
-// ---------------- sidebar (selector por tipo)
 function renderSidebar(){
   const tipos=[...new Set(PUNTOS.map(p=>p.tipo))];
   tipos.sort((a,b)=>{
@@ -408,18 +466,15 @@ function renderSidebar(){
     const pts=PUNTOS.filter(p=>p.tipo===t && p.lat!=null).sort((a,b)=>b.total-a.total);
     const g=pts[0].grupo, col=GCOL[g];
     const grp=document.createElement('div'); grp.className='grp';
-    grp.innerHTML=`<div class="gh"><span class="lic" style="background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}<span class="cnt">${pts.length}</span><span class="car">▾</span></div>
-      <div class="gitems">`+pts.map(p=>`<div class="it" data-c="${p.cod}"><span>${p.nombre}</span><span class="v">${fmtUSD(p.total)}</span></div>`).join('')+`</div>`;
+    grp.innerHTML=`<div class="gh"><span class="lic" style="background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}<span class="cnt num">${pts.length}</span><span class="car">▾</span></div>
+      <div class="gitems">`+pts.map(p=>`<div class="it" data-c="${p.cod}"><span>${p.nombre}</span><span class="v num">${fmtUSD(p.total)}</span></div>`).join('')+`</div>`;
     grp.querySelector('.gh').onclick=()=>grp.classList.toggle('collapsed');
     grp.querySelectorAll('.it').forEach(it=>it.onclick=()=>{ const p=byCod[it.dataset.c]; select(p); if(p.lat!=null){ if(state.view==='mundo')setView('puntos'); map.setView([p.lat,p.lon],7);} });
     el.appendChild(grp);
   });
 }
-function markSidebar(){
-  document.querySelectorAll('#sblist .it').forEach(it=>it.classList.toggle('sel',+it.dataset.c===state.sel.cod));
-}
+function markSidebar(){ document.querySelectorAll('#sblist .it').forEach(it=>it.classList.toggle('sel',+it.dataset.c===state.sel.cod)); }
 
-// ---------------- panel
 let charts=[];
 function clearCharts(){ charts.forEach(c=>c.destroy()); charts=[]; }
 function barsHTML(items,color,valuef){
@@ -428,13 +483,13 @@ function barsHTML(items,color,valuef){
   return '<div class="bars">'+items.map(i=>`
     <div class="b"><div class="t"><span>${i.nombre}</span>
     <span class="pct">${valuef?valuef(i):''} ${(i.pct||0).toFixed(1)}%</span></div>
-    <div class="track"><div class="fill" style="width:${100*(i.pct||0)/max}%;background:${color}"></div></div></div>`).join('')+'</div>';
+    <div class="track"><div class="fill" style="width:${100*(i.pct||0)/max}%;background:${color};color:${color}"></div></div></div>`).join('')+'</div>';
 }
 
 function renderPanel(){
   const p=state.sel;
   document.getElementById('pTipo').textContent = p.cod===0?'Total nacional':GLAB[p.grupo];
-  document.getElementById('pTipo').style.color = GCOL[p.grupo]||'#7c3aed';
+  document.getElementById('pTipo').style.color = GCOL[p.grupo]||'#b581f0';
   document.getElementById('pName').textContent = p.nombre;
   document.getElementById('pReg').textContent = p.cod===0?'Chile · todos los puntos':
      (p.lat!=null?macrozona(p.lat):'')+(p.via_dom?' · vía dominante '+p.via_dom:'');
@@ -450,102 +505,94 @@ function renderPanel(){
 
 function renderPerfil(body,p){
   body.innerHTML=`
-   <div class="card"><h3>Destinos de exportación (FOB)</h3>${barsHTML(p.top_destinos,'#0d9488',i=>fmtUSD(i.valor))}</div>
-   <div class="card"><h3>Orígenes de importación (CIF)</h3>${barsHTML(p.top_origenes,'#ea580c',i=>fmtUSD(i.valor))}</div>
-   <div class="card"><h3>Tipo de producto — exportación</h3>${barsHTML(p.top_tipo_exp,'#14b8a6')}
-     <h3 style="margin-top:12px">Tipo de producto — importación</h3>${barsHTML(p.top_tipo_imp,'#fb923c')}</div>
-   <div class="card wide"><h3>Principio 80/20 — productos exportados</h3><div class="chartbox"><canvas id="c8020"></canvas></div></div>`;
+   <div class="card"><h3>Destinos de exportación · FOB</h3>${barsHTML(p.top_destinos,EXP,i=>fmtUSD(i.valor))}</div>
+   <div class="card"><h3>Orígenes de importación · CIF</h3>${barsHTML(p.top_origenes,IMP,i=>fmtUSD(i.valor))}</div>
+   <div class="card"><h3>Tipo de producto · exportación</h3>${barsHTML(p.top_tipo_exp,'#5eead4')}
+     <h3 style="margin-top:14px">Tipo de producto · importación</h3>${barsHTML(p.top_tipo_imp,'#fdba74')}</div>
+   <div class="card wide"><h3>Principio 80/20 · productos exportados</h3><div class="chartbox"><canvas id="c8020"></canvas></div></div>`;
   draw8020(p);
 }
 function draw8020(p){
   const it=(p.top_prod_exp||[]).slice(0,10); if(!it.length) return;
   const ctx=document.getElementById('c8020'); if(!ctx)return;
   charts.push(new Chart(ctx,{data:{labels:it.map(i=>i.nombre.length>24?i.nombre.slice(0,24)+'…':i.nombre),
-    datasets:[{type:'bar',label:'% FOB',data:it.map(i=>i.pct),backgroundColor:'#0d9488',yAxisID:'y'},
-     {type:'line',label:'% acumulado',data:it.map(i=>i.pct_acum),borderColor:'#1e293b',backgroundColor:'#1e293b',yAxisID:'y1',tension:.25,pointRadius:2}]},
+    datasets:[{type:'bar',label:'% FOB',data:it.map(i=>i.pct),backgroundColor:EXP,borderRadius:3,yAxisID:'y'},
+     {type:'line',label:'% acumulado',data:it.map(i=>i.pct_acum),borderColor:'#e3a566',backgroundColor:'#e3a566',yAxisID:'y1',tension:.25,pointRadius:2}]},
     options:{maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},
-      scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9}}},y1:{display:false,max:100}}}}));
+      scales:{x:{ticks:{font:{size:9}},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{font:{size:9}},grid:{display:false}},y1:{display:false,max:100}}}}));
 }
 
 function renderTend(body,p){
   body.innerHTML=`
-   <div class="card wide"><h3>Evolución mensual 2025 — ${p.nombre}</h3><div class="chartbox"><canvas id="cmes"></canvas></div></div>
-   <div class="card wide"><h3>Evolución mensual por terminal (top 8, comercio total)</h3><div class="chartbox"><canvas id="cterm"></canvas></div></div>
+   <div class="card wide"><h3>Evolución mensual 2025 · ${p.nombre}</h3><div class="chartbox"><canvas id="cmes"></canvas></div></div>
+   <div class="card wide"><h3>Evolución mensual por terminal · top 8 (comercio total)</h3><div class="chartbox"><canvas id="cterm"></canvas></div></div>
    <div class="card"><h3>Peso vs valor</h3><div class="chartbox"><canvas id="cpv"></canvas></div></div>`;
+  const gridY={ticks:{font:{size:9},callback:v=>fmtUSD(v)},grid:{color:'rgba(255,255,255,.05)'}};
   charts.push(new Chart(document.getElementById('cmes'),{type:'line',data:{labels:MESES,datasets:[
-    {label:'Export FOB',data:p.mes_exp,borderColor:'#0d9488',backgroundColor:'rgba(13,148,136,.12)',fill:true,tension:.3,pointRadius:2},
-    {label:'Import CIF',data:p.mes_imp,borderColor:'#ea580c',backgroundColor:'rgba(234,88,12,.10)',fill:true,tension:.3,pointRadius:2}
-  ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,font:{size:11}}}},scales:{y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}},x:{ticks:{font:{size:10}}}}}}));
-
-  // evolución por terminal (top 8 con coord, comercio total mensual)
-  const palette=['#2563eb','#ea580c','#0d9488','#7c3aed','#f59e0b','#16a34a','#db2777','#0891b2'];
+    {label:'Export FOB',data:p.mes_exp,borderColor:EXP,backgroundColor:'rgba(45,212,191,.14)',fill:true,tension:.34,pointRadius:2,borderWidth:2},
+    {label:'Import CIF',data:p.mes_imp,borderColor:IMP,backgroundColor:'rgba(244,123,70,.12)',fill:true,tension:.34,pointRadius:2,borderWidth:2}
+  ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,font:{size:11}}}},scales:{y:gridY,x:{ticks:{font:{size:10}},grid:{display:false}}}}}));
   const top=PUNTOS.filter(x=>x.lat!=null).sort((a,b)=>b.total-a.total).slice(0,8);
   charts.push(new Chart(document.getElementById('cterm'),{type:'line',data:{labels:MESES,
-    datasets:top.map((t,i)=>({label:t.nombre,data:t.mes_exp.map((v,m)=>v+t.mes_imp[m]),
-      borderColor:palette[i],backgroundColor:palette[i],tension:.3,pointRadius:0,borderWidth:1.8}))},
-    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:9,font:{size:9.5}}}},
-      scales:{y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}},x:{ticks:{font:{size:10}}}}}}));
-
+    datasets:top.map((t,i)=>({label:t.nombre,data:t.mes_exp.map((v,m)=>v+t.mes_imp[m]),borderColor:PALETTE[i],backgroundColor:PALETTE[i],tension:.34,pointRadius:0,borderWidth:1.8}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:9,font:{size:9.5}}}},scales:{y:gridY,x:{ticks:{font:{size:10}},grid:{display:false}}}}}));
   charts.push(new Chart(document.getElementById('cpv'),{type:'bar',data:{labels:['Export','Import'],datasets:[
-    {label:'Valor (US$)',data:[p.exp_fob,p.imp_cif],backgroundColor:['#0d9488','#ea580c']}]},
-    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtUSD(c.raw)}}},scales:{y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}}}}}));
+    {label:'Valor (US$)',data:[p.exp_fob,p.imp_cif],backgroundColor:[EXP,IMP],borderRadius:4}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtUSD(c.raw)}}},scales:{y:gridY,x:{grid:{display:false}}}}}));
 }
 
 function renderComparar(body){
   const pts=PUNTOS.filter(p=>p.lat!=null).slice(0,40);
-  body.innerHTML=`<div class="card wide"><div class="muted" style="margin-bottom:8px">Elige hasta 5 puntos.</div>
-   <div class="cmp-pick" id="cmpPick"></div><div class="chartbox" style="height:200px"><canvas id="ccmp"></canvas></div></div>
-   <div class="card"><h3>Balance (CIF − FOB)</h3><div class="chartbox"><canvas id="ccmp2"></canvas></div></div>
-   <div class="card wide"><h3>Evolución mensual comparada (total)</h3><div class="chartbox"><canvas id="ccmp3"></canvas></div></div>`;
+  body.innerHTML=`<div class="card wide"><div class="muted" style="margin-bottom:9px">Elige hasta 5 puntos para comparar.</div>
+   <div class="cmp-pick" id="cmpPick"></div><div class="chartbox" style="height:198px"><canvas id="ccmp"></canvas></div></div>
+   <div class="card"><h3>Balance · CIF − FOB</h3><div class="chartbox"><canvas id="ccmp2"></canvas></div></div>
+   <div class="card wide"><h3>Evolución mensual comparada · total</h3><div class="chartbox"><canvas id="ccmp3"></canvas></div></div>`;
   const pick=document.getElementById('cmpPick');
   if(state.cmp.size===0){ [PUNTOS[0],PUNTOS[1],PUNTOS[2]].forEach(p=>p&&state.cmp.add(p.cod)); }
   pts.forEach(p=>{ const c=document.createElement('div'); c.className='chip'+(state.cmp.has(p.cod)?' on':'');
     c.textContent=p.nombre; c.onclick=()=>{ if(state.cmp.has(p.cod)) state.cmp.delete(p.cod); else { if(state.cmp.size>=5)return; state.cmp.add(p.cod);} renderComparar(body);};
     pick.appendChild(c); });
   const sel=[...state.cmp].map(c=>byCod[c]).filter(Boolean);
+  const gridY={ticks:{font:{size:9},callback:v=>fmtUSD(v)},grid:{color:'rgba(255,255,255,.05)'}};
   clearCharts();
   charts.push(new Chart(document.getElementById('ccmp'),{type:'bar',data:{labels:sel.map(p=>p.nombre),datasets:[
-    {label:'Export FOB',data:sel.map(p=>p.exp_fob),backgroundColor:'#0d9488'},
-    {label:'Import CIF',data:sel.map(p=>p.imp_cif),backgroundColor:'#ea580c'}]},
-    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:11,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtUSD(c.raw)}}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}}}}}));
-  charts.push(new Chart(document.getElementById('ccmp2'),{type:'bar',data:{labels:sel.map(p=>p.nombre),datasets:[{label:'Balance',data:sel.map(p=>p.balance),backgroundColor:sel.map(p=>p.balance>=0?'#ea580c':'#0d9488')}]},
-    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtUSD(c.raw)}}},scales:{x:{ticks:{font:{size:9}}},y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}}}}}));
-  const palette=['#2563eb','#ea580c','#0d9488','#7c3aed','#f59e0b'];
-  charts.push(new Chart(document.getElementById('ccmp3'),{type:'line',data:{labels:MESES,datasets:sel.map((t,i)=>({label:t.nombre,data:t.mes_exp.map((v,m)=>v+t.mes_imp[m]),borderColor:palette[i%5],backgroundColor:palette[i%5],tension:.3,pointRadius:0,borderWidth:1.8}))},
-    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:9,font:{size:9.5}}}},scales:{y:{ticks:{font:{size:9},callback:v=>fmtUSD(v)}},x:{ticks:{font:{size:10}}}}}}));
+    {label:'Export FOB',data:sel.map(p=>p.exp_fob),backgroundColor:EXP,borderRadius:3},
+    {label:'Import CIF',data:sel.map(p=>p.imp_cif),backgroundColor:IMP,borderRadius:3}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:11,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtUSD(c.raw)}}},scales:{x:{ticks:{font:{size:9}},grid:{display:false}},y:gridY}}}));
+  charts.push(new Chart(document.getElementById('ccmp2'),{type:'bar',data:{labels:sel.map(p=>p.nombre),datasets:[{label:'Balance',data:sel.map(p=>p.balance),backgroundColor:sel.map(p=>p.balance>=0?IMP:EXP),borderRadius:3}]},
+    options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtUSD(c.raw)}}},scales:{x:{ticks:{font:{size:9}},grid:{display:false}},y:gridY}}}));
+  charts.push(new Chart(document.getElementById('ccmp3'),{type:'line',data:{labels:MESES,datasets:sel.map((t,i)=>({label:t.nombre,data:t.mes_exp.map((v,m)=>v+t.mes_imp[m]),borderColor:PALETTE[i%PALETTE.length],backgroundColor:PALETTE[i%PALETTE.length],tension:.34,pointRadius:0,borderWidth:1.8}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:9,font:{size:9.5}}}},scales:{y:gridY,x:{ticks:{font:{size:10}},grid:{display:false}}}}}));
 }
 
-// ---------------- pestaña Análisis del área de influencia
 function renderInfluencia(body,p){
   const {scope,dir}=state.infl;
-  // datos
   let items, titulo, color;
   if(scope==='nacional'){
     const arr = dir==='imp'? p.infl_imp : p.infl_exp;
     items = (arr||[]).map(r=>({nombre:r.nombre,pct:r.pct,valor:r.valor}));
     titulo = `Regiones de Chile · ${dir==='imp'?'nacionalización de importaciones':'origen de exportaciones'}`;
-    color = dir==='imp'?'#ea580c':'#0d9488';
+    color = dir==='imp'?IMP:EXP;
   } else {
     let arr;
     if(p.cod===0) arr=(dir==='imp'?D.paises.imp:D.paises.exp).slice(0,15).map(r=>({nombre:r.nombre,pct:r.pct,valor:r[dir==='imp'?'cif':'fob']}));
     else arr=(dir==='imp'?p.top_origenes:p.top_destinos).map(r=>({nombre:r.nombre,pct:r.pct,valor:r.valor}));
-    items=arr; titulo=`Países del mundo · ${dir==='imp'?'orígenes de importación':'destinos de exportación'}`; color=dir==='imp'?'#ea580c':'#0d9488';
+    items=arr; titulo=`Países del mundo · ${dir==='imp'?'orígenes de importación':'destinos de exportación'}`; color=dir==='imp'?IMP:EXP;
   }
   body.innerHTML=`
    <div class="card wide">
-     <div class="subseg" id="inflScope"><button data-s="nacional" class="${scope==='nacional'?'on':''}">Influencia nacional (regiones)</button><button data-s="mundial" class="${scope==='mundial'?'on':''}">Influencia mundial (países)</button></div>
+     <div class="subseg" id="inflScope"><button data-s="nacional" class="${scope==='nacional'?'on':''}">Influencia nacional · regiones</button><button data-s="mundial" class="${scope==='mundial'?'on':''}">Influencia mundial · países</button></div>
      <div class="subseg" id="inflDir"><button data-d="exp" class="${dir==='exp'?'on':''}">Exportaciones</button><button data-d="imp" class="${dir==='imp'?'on':''}">Importaciones</button></div>
-     <div class="muted" style="margin-bottom:6px">El mapa se ajusta automáticamente a la selección.</div>
+     <div class="muted">El mapa se ajusta automáticamente a la selección. ${scope==='nacional'?'La vista nacional pinta las regiones de Chile; los flujos conectan cada región con el punto.':'La vista mundial pinta los países socios.'}</div>
    </div>
    <div class="card wide"><h3>${titulo}</h3>${barsHTML(items,color,i=>fmtUSD(i.valor))}</div>
    <div class="card"><h3>Lectura</h3>
-     <div class="muted" style="line-height:1.5">${scope==='nacional'
+     <div class="muted">${scope==='nacional'
         ? (dir==='imp'
            ? 'Región donde se <b>nacionaliza</b> la carga importada por este punto (aduana de tramitación). <b>No</b> es el destino de consumo final: el microdato DIN no lo registra.'
            : 'Región del país <b>de donde proviene</b> la carga exportada por este punto (dato real, COD_REGION_ORIGEN).')
         : (dir==='imp' ? 'Países desde donde se importa la carga que ingresa por este punto.' : 'Países a donde se exporta la carga que sale por este punto.')}</div>
    </div>`;
-  // sincroniza el mapa
   state.metric = dir;
   document.querySelectorAll('#metricSeg button').forEach(b=>b.classList.toggle('on',b.dataset.m===dir));
   setView(scope==='nacional'?'influencia':'mundo');
@@ -554,7 +601,6 @@ function renderInfluencia(body,p){
   body.querySelectorAll('#inflDir button').forEach(b=>b.onclick=()=>{ state.infl.dir=b.dataset.d; renderInfluencia(body,state.sel); });
 }
 
-// ---------------- selección
 function select(p){
   state.sel=p;
   if(state.view==='mundo') paintWorld();
@@ -564,7 +610,6 @@ function select(p){
   renderPanel();
 }
 
-// ---------------- UI wiring
 document.querySelectorAll('#viewSeg button').forEach(b=>b.onclick=()=>{ setView(b.dataset.v); renderZoneBar(); });
 document.querySelectorAll('#metricSeg button').forEach(b=>b.onclick=()=>{
   state.metric=b.dataset.m;
@@ -588,17 +633,15 @@ q.oninput=()=>{
 };
 document.addEventListener('click',e=>{ if(!e.target.closest('.search')) res.style.display='none'; });
 
-// header + footer
-document.getElementById('badgeExp').innerHTML='Export · <b>'+fmtUSD(NAC.exp_fob)+'</b>';
-document.getElementById('badgeImp').innerHTML='Import · <b>'+fmtUSD(NAC.imp_cif)+'</b>';
-document.getElementById('badgePts').textContent=D.meta.n_puntos+' puntos';
+document.getElementById('hExp').textContent=fmtUSD(NAC.exp_fob);
+document.getElementById('hImp').textContent=fmtUSD(NAC.imp_cif);
+document.getElementById('hPts').textContent=D.meta.n_puntos;
 const cu=D.meta.cuadre;
 document.getElementById('foot').innerHTML=
  `<b>Fuente:</b> Servicio Nacional de Aduanas — microdatos DUS (exportaciones) y DIN (importaciones) ${D.meta.anio}; clasificador 2022 v2.0 y tablas de códigos (Anexo 51). Elaboración propia. Coordenadas: referencia geográfica pública. `+
  `<b>Cuadre:</b> suma FOB por punto = ${fmtUSD(cu.suma_fob_puntos)} (${cu.exp_cobertura_pct}% del total nacional); suma CIF = ${fmtUSD(cu.suma_cif_puntos)} (${cu.imp_cobertura_pct}%). `+
  `El área de influencia de importación usa la aduana de nacionalización (no destino final).`;
 
-// init
 drawPoints(); renderSidebar(); renderLegend(); select(NAC); setView('puntos'); renderZoneBar(); renderMapInfo();
 </script>
 </body>

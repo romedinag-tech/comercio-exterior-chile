@@ -690,8 +690,162 @@ def _sum_anual(field):
 nacional["anual"]=dict(years=ANUAL_YEARS, exp_fob=_sum_anual("exp_fob"),
     imp_cif=_sum_anual("imp_cif"), exp_kg=_sum_anual("exp_kg"), imp_kg=_sum_anual("imp_kg"))
 
+# ================= LOTE 2: estadisticas macro + trafico terrestre =================
+print("Procesando estadisticas macro (lote 2)...", flush=True)
+MYEARS = list(range(2012, 2026))
+EX = os.path.join(COMEX, "Exportaciones")
+IM = os.path.join(COMEX, "Importaciones")
+PROD_E1=os.path.join(EX,"expo_prod_monto_2012_2021.xlsx"); PROD_E2=os.path.join(EX,"expo_prod_monto_2022_2025.xlsx")
+PROD_I1=os.path.join(IM,"Importaciones por producto","impo_prod_monto_2012_2021.xlsx"); PROD_I2=os.path.join(IM,"Importaciones por producto","impo_prod_monto_2022_2025.xlsx")
+PP_E1=os.path.join(EX,"expo_paisprod_monto_2012_2021.xlsx"); PP_E2=os.path.join(EX,"expo_paisprod_monto_2022_2025.xlsx")
+CP_1=os.path.join(IM,"impo_contipais_monto_2002_2021.xlsx"); CP_2=os.path.join(IM,"impo_contipais_monto_2022_2025.xlsx")
+RESUMEN=os.path.join(COMEX,"resumen_intercambiocomercial_2002_2025.xlsx")
+TRAF_1=os.path.join(COMEX,"2010_2021_trafico_terrestre_final_v2.xlsx"); TRAF_2=os.path.join(COMEX,"2022_2025_trafico_terrestre_final.xlsx")
+
+NIVEL1_EXP={norm(c["n1_exp"]) for c in CLASIF.values() if c["n1_exp"]}
+NIVEL1_IMP={norm(c["n1_imp"]) for c in CLASIF.values() if c["n1_imp"]}
+
+def _read_named(path, sheet=None):
+    wb=openpyxl.load_workbook(path, read_only=True, data_only=True)
+    ws=wb[sheet] if sheet else wb[wb.sheetnames[0]]
+    rows=list(ws.iter_rows(values_only=True)); wb.close()
+    hdr=None; ycols=[]
+    for i,r in enumerate(rows):
+        yc=[(j,int(c)) for j,c in enumerate(r) if isinstance(c,int) and 1990<c<2030]
+        if len(yc)>=3: hdr=i; ycols=yc; break
+    if hdr is None: return [],[]
+    namecol=min(j for j,_ in ycols)-1
+    out=[]
+    for r in rows[hdr+1:]:
+        if namecol>=len(r): continue
+        nm=r[namecol]
+        if nm is None: continue
+        s=str(nm).strip()
+        if not s or any(t in s for t in ("Fuente","Ir a Listado","Documentos","Declaraciones")): continue
+        out.append((s, {y:fnum(r[j]) for j,y in ycols if j<len(r)}))
+    return [y for _,y in ycols], out
+
+def _serie(vals): return [round(vals.get(y,0.0),1) for y in MYEARS]
+
+def build_prod_evol(f1,f2,nivset):
+    merged={}
+    for f in (f1,f2):
+        for nm,vals in _read_named(f)[1]:
+            merged.setdefault(norm(nm),[nm,{}])[1].update(vals)
+    items=[dict(nombre=raw.strip(), serie=_serie(vals)) for k,(raw,vals) in merged.items() if k in nivset]
+    items=[i for i in items if any(i["serie"])]
+    items.sort(key=lambda i:i["serie"][-1], reverse=True)
+    return items
+
+def build_balanza():
+    _,rows=_read_named(RESUMEN)
+    d={norm(nm):vals for nm,vals in rows}
+    def find(sub):
+        for k,v in d.items():
+            if sub in k: return v
+        return {}
+    exp=find("EXPORTACION"); cif=find("IMPORTACION (CIF")
+    yrs=sorted(y for y in set(list(exp)+list(cif)) if 2002<=y<=2025)
+    return dict(years=yrs, exp_fob=[round(exp.get(y,0),1) for y in yrs],
+                imp_cif=[round(cif.get(y,0),1) for y in yrs],
+                saldo=[round(exp.get(y,0)-cif.get(y,0),1) for y in yrs])
+
+def build_continente_imp():
+    CONT={norm(p["continente"]) for p in PAISES.values() if p.get("continente")}
+    agg={}
+    for f in (CP_1,CP_2):
+        for nm,vals in _read_named(f)[1]:
+            if norm(nm) in CONT:
+                a=agg.setdefault(norm(nm),[nm.strip(),{}]);
+                for y,v in vals.items(): a[1][y]=a[1].get(y,0)+v
+    items=[dict(nombre=raw, serie=_serie(vals)) for raw,vals in agg.values()]
+    items.sort(key=lambda i:i["serie"][-1], reverse=True)
+    return items
+
+def parse_paisprod():
+    name2cont={norm(p["nombre"]):p.get("continente") for p in PAISES.values()}
+    prodset={norm(n) for n,_ in _read_named(PROD_E2)[1]}
+    ctot={}; craw={}; comp={}
+    for f in (PP_E1,PP_E2):
+        cur=None
+        for nm,vals in _read_named(f)[1]:
+            nk=norm(nm)
+            if nk in prodset:
+                if cur and nk in NIVEL1_EXP and 2025 in vals:
+                    comp.setdefault(cur,{})[nm.strip()]=vals.get(2025,0.0)
+            else:
+                cur=nk; craw[cur]=nm.strip()
+                t=ctot.setdefault(cur,{})
+                for y,v in vals.items(): t[y]=t.get(y,0)+v
+    # continente export (serie temporal)
+    cont={}
+    for cnk,vals in ctot.items():
+        co=name2cont.get(cnk)
+        if not co: continue
+        a=cont.setdefault(norm(co),[co,{}])
+        for y,v in vals.items(): a[1][y]=a[1].get(y,0)+v
+    cont_items=[dict(nombre=raw, serie=_serie(vals)) for raw,vals in cont.values()]
+    cont_items.sort(key=lambda i:i["serie"][-1], reverse=True)
+    # top paises con composicion 2025
+    top=sorted(ctot.items(), key=lambda kv:kv[1].get(2025,0), reverse=True)[:8]
+    pp=[]
+    for cnk,vals in top:
+        comps=sorted(comp.get(cnk,{}).items(), key=lambda kv:kv[1], reverse=True)[:6]
+        tot=vals.get(2025,0) or 1
+        pp.append(dict(nombre=craw[cnk], fob=round(vals.get(2025,0),1),
+                       prod=[dict(nombre=pn, valor=round(pv,1), pct=round(100*pv/tot,1)) for pn,pv in comps]))
+    return cont_items, pp
+
+def build_trafico():
+    data={}
+    for path in (TRAF_1,TRAF_2):
+        if not os.path.exists(path): continue
+        wb=openpyxl.load_workbook(path, read_only=True); sheets=wb.sheetnames; wb.close()
+        for metric,kw in (("autos","autom"),("buses","bus"),("camiones","cami"),("carga","carga")):
+            shn=next((s for s in sheets if kw in norm(s).lower()), None)
+            if not shn: continue
+            for nm,vals in _read_named(path, shn)[1]:
+                k=norm(nm)
+                d=data.setdefault(k, {m:{} for m in ("autos","buses","camiones","carga")})
+                for y,v in vals.items(): d[metric][y]=d[metric].get(y,0)+v
+    return data
+
+prod_exp=prod_imp=balanza=cont_imp=cont_exp=paisprod=None; TRAFICO={}
+try: prod_exp=build_prod_evol(PROD_E1,PROD_E2,NIVEL1_EXP); prod_imp=build_prod_evol(PROD_I1,PROD_I2,NIVEL1_IMP)
+except Exception as e: print("  [prod] ", e)
+try: balanza=build_balanza()
+except Exception as e: print("  [balanza] ", e)
+try: cont_imp=build_continente_imp()
+except Exception as e: print("  [cont_imp] ", e)
+try: cont_exp,paisprod=parse_paisprod()
+except Exception as e: print("  [paisprod] ", e)
+try: TRAFICO=build_trafico()
+except Exception as e: print("  [trafico] ", e)
+
+# adjuntar trafico a cada punto terrestre (match por nombre)
+traf_n=0
+for r in registros:
+    if r["grupo"]!="terrestre": continue
+    pk=nkey(r["nombre"])
+    match=None
+    for tk in TRAFICO:
+        if pk==tk or (len(pk)>=5 and (pk in tk or tk in pk)): match=tk; break
+    if match:
+        t=TRAFICO[match]
+        r["trafico"]=dict(years=MYEARS, autos=_serie(t["autos"]), buses=_serie(t["buses"]),
+                          camiones=_serie(t["camiones"]), carga=_serie(t["carga"]))
+        traf_n+=1
+
+MACRO=dict(
+    prod=dict(years=MYEARS, exp=(prod_exp or [])[:8], imp=(prod_imp or [])[:8]),
+    continente=dict(years=MYEARS, imp=cont_imp or [], exp=cont_exp or []),
+    paisprod=paisprod or [],
+    balanza=balanza or {},
+)
+print(f"  prod_exp={len(prod_exp or [])} cont_imp={len(cont_imp or [])} paisprod={len(paisprod or [])} balanza_anios={len((balanza or {}).get('years',[]))} trafico_puntos={traf_n}", flush=True)
+
 bundle = dict(meta=meta, nacional=nacional, puntos=registros, paises=paises_comercio,
-              world=world, regiones=chreg, region_nombres=REGIONES)
+              world=world, regiones=chreg, region_nombres=REGIONES, macro=MACRO)
 with open(os.path.join(HERE,"data_bundle.js"),"w",encoding="utf-8") as f:
     f.write("window.DATA = ")
     json.dump(bundle, f, ensure_ascii=False)

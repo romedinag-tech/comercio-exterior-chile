@@ -28,7 +28,11 @@ Abre `index.html` en un navegador (funciona offline: todos los datos van embebid
 - **Logística & estructura** (por punto, desde el microdato): modo de transporte
   (`COD_VIA_TRANSPORTE`), tipo de carga (`COD_TIPO_CARGA`/`TPO_CARGA`), Incoterm
   (`CLAUSULA_VENTA`/`CL_COMPRA`), concentración HHI de socios y productos, precio implícito
-  US$/kg por producto, y arancel ad-valorem recaudado (`AD_VALOREM_US`).
+  US$/kg por producto, arancel ad-valorem recaudado (`AD_VALOREM_US`), y —para avanzadas
+  fronterizas— **tráfico terrestre** de camiones/buses/autos y carga 2012–2025.
+- **Panorama nacional** (desde reportes agregados de Aduanas): balanza comercial 2002–2025,
+  evolución de exportaciones e importaciones por tipo de producto 2012–2025, participación
+  por continente, y país × tipo de producto (exportación 2025).
 - Buscador de puntos (insensible a acentos) y vista *Total nacional* por defecto.
 
 ## Metodología

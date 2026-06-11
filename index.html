@@ -279,6 +279,7 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
       <button data-t="logistica">Logística &amp; estructura</button>
       <button data-t="comparar">Comparar</button>
       <button data-t="influencia">Análisis del área de influencia</button>
+      <button data-t="panorama">Panorama nacional</button>
     </div>
     <div class="tabbody" id="tabbody"></div>
   </div>
@@ -695,7 +696,38 @@ function renderPanel(){
   else if(state.tab==='tendencias') renderTend(body,p);
   else if(state.tab==='logistica') renderEstructura(body,p);
   else if(state.tab==='comparar') renderComparar(body);
+  else if(state.tab==='panorama') renderPanorama(body);
   else renderInfluencia(body,p);
+}
+function renderPanorama(body){
+  const m=D.macro; if(!m){ body.innerHTML='<div class="card"><div class="muted">Sin datos macro.</div></div>'; return; }
+  body.innerHTML=`
+   <div class="card"><h3>Balanza comercial · 2002–2025</h3><div class="chartbox"><canvas id="cbal"></canvas></div></div>
+   <div class="card"><h3>Exportación por tipo de producto · 2012–2025</h3><div class="chartbox"><canvas id="cpe"></canvas></div></div>
+   <div class="card"><h3>Importación por tipo de producto · 2012–2025</h3><div class="chartbox"><canvas id="cpi"></canvas></div></div>
+   <div class="card"><h3>Importación por continente · 2012–2025</h3><div class="chartbox"><canvas id="ccont"></canvas></div></div>
+   <div class="card wide"><h3>País × tipo de producto · exportación 2025</h3><div class="chartbox"><canvas id="cpp"></canvas></div></div>`;
+  const gy={ticks:{font:{size:9},callback:v=>fmtUSD(v)},grid:{color:'rgba(255,255,255,.05)'}};
+  const gx={ticks:{font:{size:10}},grid:{display:false}};
+  const b=m.balanza;
+  charts.push(new Chart(document.getElementById('cbal'),{type:'line',data:{labels:b.years,datasets:[
+    {label:'Exportación FOB',data:b.exp_fob,borderColor:EXP,backgroundColor:'rgba(45,212,191,.10)',fill:true,tension:.3,pointRadius:0,borderWidth:2},
+    {label:'Importación CIF',data:b.imp_cif,borderColor:IMP,backgroundColor:'rgba(244,123,70,.08)',fill:true,tension:.3,pointRadius:0,borderWidth:2},
+    {label:'Saldo',data:b.saldo,borderColor:'#e3a566',backgroundColor:'#e3a566',tension:.3,pointRadius:0,borderWidth:2,borderDash:[4,3]}
+  ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:11,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtUSD(c.raw)}}},scales:{y:gy,x:gx}}}));
+  const lines=(cid,items)=>charts.push(new Chart(document.getElementById(cid),{type:'line',data:{labels:m.prod.years,
+    datasets:items.map((it,i)=>({label:it.nombre.trim(),data:it.serie,borderColor:PALETTE[i%PALETTE.length],backgroundColor:PALETTE[i%PALETTE.length],tension:.3,pointRadius:0,borderWidth:1.8}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:9,font:{size:9}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtUSD(c.raw)}}},scales:{y:gy,x:gx}}}));
+  lines('cpe',m.prod.exp); lines('cpi',m.prod.imp);
+  charts.push(new Chart(document.getElementById('ccont'),{type:'line',data:{labels:m.continente.years,
+    datasets:m.continente.imp.map((it,i)=>({label:it.nombre,data:it.serie,borderColor:PALETTE[i%PALETTE.length],backgroundColor:PALETTE[i%PALETTE.length],tension:.3,pointRadius:0,borderWidth:1.8}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:9,font:{size:9.5}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtUSD(c.raw)}}},scales:{y:gy,x:gx}}}));
+  // país × producto (barras apiladas)
+  const pps=m.paisprod;
+  const cats=[...new Set(pps.flatMap(p=>p.prod.map(x=>x.nombre.trim())))].slice(0,7);
+  charts.push(new Chart(document.getElementById('cpp'),{type:'bar',data:{labels:pps.map(p=>p.nombre),
+    datasets:cats.map((cat,i)=>({label:cat,data:pps.map(p=>{const f=p.prod.find(x=>x.nombre.trim()===cat);return f?f.valor:0;}),backgroundColor:PALETTE[i%PALETTE.length]}))},
+    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:9,font:{size:9}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+fmtUSD(c.raw)}}},scales:{x:{stacked:true,ticks:{font:{size:9}},grid:{display:false}},y:{stacked:true,ticks:{font:{size:9},callback:v=>fmtUSD(v)},grid:{color:'rgba(255,255,255,.05)'}}}}}));
 }
 function renderEstructura(body,p){
   const e=p.estructura;
@@ -726,7 +758,19 @@ function renderEstructura(body,p){
    <div class="card"><h3>Arancel ad-valorem recaudado · importación</h3>
      <div class="kpis" style="margin:0"><div class="kpi"><div class="l">Total recaudado</div><div class="v num" style="color:var(--cop)">${fmtUSD(e.advalorem)}</div></div>
        <div class="kpi"><div class="l">% del CIF</div><div class="v num">${e.advalorem_pct}%</div></div></div>
-     <div class="muted" style="margin-top:8px">Derecho ad-valorem efectivamente pagado en las importaciones que ingresan por este punto.</div></div>`;
+     <div class="muted" style="margin-top:8px">Derecho ad-valorem efectivamente pagado en las importaciones que ingresan por este punto.</div></div>`+
+   (p.trafico?`<div class="card wide"><h3>Tráfico terrestre · 2012–2025 (avanzada)</h3><div class="chartbox"><canvas id="ctraf"></canvas></div></div>`:'');
+  if(p.trafico){
+    const t=p.trafico;
+    charts.push(new Chart(document.getElementById('ctraf'),{data:{labels:t.years,datasets:[
+      {type:'bar',label:'Camiones',data:t.camiones,backgroundColor:'#4f9bff',yAxisID:'y',borderRadius:2},
+      {type:'bar',label:'Buses',data:t.buses,backgroundColor:'#f0b45e',yAxisID:'y',borderRadius:2},
+      {type:'line',label:'Carga (kt)',data:t.carga.map(v=>v/1e6),borderColor:'#2dd4bf',backgroundColor:'#2dd4bf',yAxisID:'y1',tension:.3,pointRadius:2,borderWidth:2}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},
+      scales:{x:{ticks:{font:{size:10}},grid:{display:false}},
+        y:{position:'left',ticks:{font:{size:9}},grid:{color:'rgba(255,255,255,.05)'},title:{display:true,text:'vehículos',font:{size:9},color:'#7385a0'}},
+        y1:{position:'right',ticks:{font:{size:9},callback:v=>v+' kt'},grid:{display:false}}}}}));
+  }
 }
 
 function renderPerfil(body,p){

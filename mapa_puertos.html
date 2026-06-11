@@ -392,6 +392,7 @@ if(window.Chart){
   Chart.defaults.plugins.tooltip.borderColor='rgba(255,255,255,.12)';
   Chart.defaults.plugins.tooltip.borderWidth=1;
 }
+window.dbgLog = window.dbgLog || (()=>{});
 const D = window.DATA;
 const PUNTOS = D.puntos.slice();
 const NAC = D.nacional;
@@ -496,7 +497,25 @@ L.control.zoom({position:'bottomright'}).addTo(map);
 const tileURL=light=>`https://{s}.basemaps.cartocdn.com/${light?'light_all':'dark_all'}/{z}/{x}/{y}{r}.png`;
 const baseTiles=L.tileLayer(tileURL(false),
   {attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
-const NEUT=()=>document.body.classList.contains('light')?'#dfe7f2':NEUT();
+const NEUT=()=>document.body.classList.contains('light')?'#dfe7f2':'#0e1726';
+
+// ---- modo diagnostico: abrir con ?debug en la URL ----
+if(location.search.includes('debug')){
+  const box=document.createElement('div');
+  box.style.cssText='position:fixed;right:8px;bottom:64px;z-index:9999;background:rgba(0,0,0,.88);color:#7CFC00;'+
+    'font:10px/1.5 monospace;padding:8px 10px;border-radius:8px;max-width:440px;max-height:300px;overflow:auto;white-space:pre-wrap';
+  document.body.appendChild(box);
+  window.dbgLog=(...a)=>{ const t=new Date().toISOString().slice(11,19);
+    box.textContent=(t+'  '+a.join(' ')+'\n'+box.textContent).slice(0,5000); };
+  const who=()=>{ const l=((new Error()).stack||'').split('\n')[3]||''; return l.replace(/^\s+at\s*/,'').slice(0,55); };
+  const sv=map.setView.bind(map), fb=map.fitBounds.bind(map), pt=map.panTo.bind(map);
+  map.setView=(c,z,o)=>{ dbgLog('setView',JSON.stringify(c).slice(0,28),'z'+z,(o&&o.animate===false?'inst':'ANIM'),'<',who()); return sv(c,z,o); };
+  map.fitBounds=(b,o)=>{ dbgLog('fitBounds',(o&&o.animate===false?'inst':'ANIM'),'<',who()); return fb(b,o); };
+  map.panTo=(c,o)=>{ dbgLog('panTo','<',who()); return pt(c,o); };
+  map.on('moveend zoomend',()=>dbgLog('=> z'+map.getZoom()+' ['+map.getCenter().lat.toFixed(1)+','+map.getCenter().lng.toFixed(1)+']'));
+  window.addEventListener('error',e=>dbgLog('ERROR',String(e.message).slice(0,90),'@'+e.lineno));
+  dbgLog('debug ON');
+}
 
 const layerPoints = L.layerGroup().addTo(map);
 const layerFlows  = L.layerGroup();
@@ -1195,7 +1214,7 @@ function renderInfluencia(body,p){
 }
 
 // ejecuta una etapa de render sin que un fallo puntual congele la interaccion
-function safe(label,fn){ try{ fn(); }catch(e){ console.warn('[ui]',label,e); } }
+function safe(label,fn){ try{ fn(); }catch(e){ console.warn('[ui]',label,e); dbgLog('EXC',label,String(e.message).slice(0,80)); } }
 
 function applySelection(){
   if(state.selType==='region'){
@@ -1283,7 +1302,7 @@ document.getElementById('foot').innerHTML=
  `<b>Fuente:</b> Servicio Nacional de Aduanas — microdatos DUS (exportaciones) y DIN (importaciones) ${D.meta.anio}; clasificador 2022 v2.0 y tablas de códigos (Anexo 51). Elaboración propia. Coordenadas: referencia geográfica pública. `+
  `<b>Cuadre:</b> suma FOB por punto = ${fmtUSD(cu.suma_fob_puntos)} (${cu.exp_cobertura_pct}% del total nacional); suma CIF = ${fmtUSD(cu.suma_cif_puntos)} (${cu.imp_cobertura_pct}%). `+
  `El área de influencia de importación usa la aduana de nacionalización (no destino final). `+
- `<b style="color:var(--cop)">build 2026-06-11 14:17 · 0e4178</b>`;
+ `<b style="color:var(--cop)">build 2026-06-11 16:47 · 0e4178</b>`;
 
 // orden del menu de puntos
 document.querySelectorAll('#sbSort button').forEach(b=>b.onclick=()=>{

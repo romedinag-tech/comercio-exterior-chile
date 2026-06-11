@@ -189,6 +189,12 @@ body.light .leaflet-control-attribution{background:rgba(255,255,255,.7)!importan
 .zonebar .zseg .zp{font-family:var(--fd);font-size:12px;line-height:1}
 .zonebar .zseg small{font-weight:600;opacity:.85;font-size:8.5px;line-height:1.05;margin-top:1px}
 .zonebar .zseg.hl{outline:2px solid #fff;outline-offset:-2px;transform:translateX(-3px)}
+.zonebar .zseg .zselfill{position:absolute;left:0;right:0;bottom:0;background:rgba(0,0,0,.36);
+  border-top:2px solid rgba(255,255,255,.95);pointer-events:none}
+.zonebar .zseg .zp,.zonebar .zseg small{position:relative;z-index:1}
+.zselsum{font-size:10px;color:var(--cop);margin:-4px 0 6px;text-align:center;font-weight:600;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.zselsum b{font-family:var(--fd);font-size:11px}
 /* colorbar de % para choropleth */
 .cbarbox{display:flex;gap:8px;height:128px;flex:0 0 auto;margin-bottom:9px}
 .cbar{width:15px;border-radius:7px;border:1px solid var(--line);flex:0 0 auto}
@@ -766,11 +772,29 @@ function metricVal(p){ return state.metric==='exp'?p.exp_fob : state.metric==='i
 function zoneBarsHTML(){
   const agg={}; ZONAS.forEach(z=>agg[z]=0); let tot=0;
   PUNTOS.forEach(p=>{ const z=macrozona(p.lat); if(!z)return; const v=metricVal(p)||0; agg[z]+=v; tot+=v; });
+  // aporte de la seleccion (punto, multi o region) dentro de cada zona
+  const selAgg={}; ZONAS.forEach(z=>selAgg[z]=0); let selTot=0, selLabel=null;
+  if(state.selType==='region' && state.sel && state.sel.grupo==='region'){
+    selLabel=shortReg(state.sel.cod,state.sel.nombre);
+    PUNTOS.forEach(p=>{ if(p.region_ubicacion!==state.sel.cod)return;
+      const z=macrozona(p.lat); if(!z)return; const v=metricVal(p)||0; selAgg[z]+=v; selTot+=v; });
+  } else if(state.selType==='punto' && state.multi.size && !state.multi.has(0)){
+    selLabel=state.sel.multi?`Selección (${state.multi.size} puntos)`:state.sel.nombre;
+    [...state.multi].map(c=>byCod[c]).forEach(p=>{ if(!p||p.lat==null)return;
+      const z=macrozona(p.lat); if(!z)return; const v=metricVal(p)||0; selAgg[z]+=v; selTot+=v; });
+  }
+  const selPct=tot?100*selTot/tot:0;
   const selZ = state.sel.lat!=null ? macrozona(state.sel.lat) : null;
   const lab = state.metric==='exp'?'Export':state.metric==='imp'?'Import':'Comercio';
-  let html=`<div class="zt">${lab} por zona</div><div class="zcol">`;
+  let html=`<div class="zt">${lab} por zona</div>`;
+  if(selLabel) html+=`<div class="zselsum" title="${selLabel}: ${selPct.toFixed(1)}% del ${lab.toLowerCase()} nacional">★ ${selLabel}: <b>${selPct.toFixed(1)}%</b> del país</div>`;
+  html+='<div class="zcol">';
   ZONAS.forEach(z=>{ const pct=tot?100*agg[z]/tot:0;
-    html+=`<div class="zseg ${z===selZ?'hl':''}" style="background:${ZCOL[z]};flex-grow:${Math.max(pct,3)}"><span class="zp">${pct.toFixed(1)}%</span><small>${z}</small></div>`; });
+    const frac=agg[z]>0?Math.min(1,selAgg[z]/agg[z]):0;
+    const hl=(z===selZ)||frac>0;
+    html+=`<div class="zseg ${hl?'hl':''}" style="background:${ZCOL[z]};flex-grow:${Math.max(pct,3)}" title="${z}: ${pct.toFixed(1)}% del país${frac>0?` · la selección es el ${(100*frac).toFixed(1)}% de esta zona`:''}">`+
+      (frac>0?`<div class="zselfill" style="height:${(100*frac).toFixed(1)}%"></div>`:'')+
+      `<span class="zp">${pct.toFixed(1)}%</span><small>${z}</small></div>`; });
   return html+'</div>';
 }
 function cbTitle(){

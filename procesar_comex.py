@@ -1010,15 +1010,19 @@ with open(os.path.join(HERE,"data_bundle.js"),"w",encoding="utf-8") as f:
     f.write(";\n")
 
 # versiona la referencia al bundle en los HTML (cache-busting: evita HTML nuevo + datos viejos)
+# y estampa la insignia de build visible en el pie (diagnostico de version en un vistazo)
+import datetime
 _bhash = hashlib.md5(open(os.path.join(HERE,"data_bundle.js"),"rb").read()).hexdigest()[:10]
+_build = datetime.datetime.now().strftime("%Y-%m-%d %H:%M") + " · " + _bhash[:6]
 for _page in ("index.html", "mapa_puertos.html"):
     _pp = os.path.join(HERE, _page)
     if os.path.exists(_pp):
         _t = open(_pp, encoding="utf-8").read()
         _t2 = re.sub(r'data_bundle\.js(\?v=[a-f0-9]+)?', f'data_bundle.js?v={_bhash}', _t)
+        _t2 = re.sub(r'build (BUILD_TAG|[\d\-]+ [\d:]+ · [a-f0-9]+)', f'build {_build}', _t2)
         if _t2 != _t:
             open(_pp, "w", encoding="utf-8").write(_t2)
-print(f"  bundle v={_bhash} estampada en HTML", flush=True)
+print(f"  bundle v={_bhash} · build '{_build}' estampados en HTML", flush=True)
 
 # ---------------------------------------------------------------- reporte
 print("\n================ CUADRE DE CONTROL ================")

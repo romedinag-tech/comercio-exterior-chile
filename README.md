@@ -64,6 +64,15 @@ cuadra ~99% con el valor derivado del microdato; pequeñas diferencias provienen
 de tipos de operación. La serie nacional es la suma de los puntos (72/74 con histórico;
 sin serie: Isla de Pascua/Punta Delgada y "otros", marginales).
 
+### Serie anual regional (2012–2025)
+Aduanas no publica una serie regional descargable (solo dashboards Power BI), por lo que
+la **tendencia 2012–2025 de cada región** se construye sumando las series anuales oficiales
+de los **terminales ubicados geográficamente en la región** (asignación punto→región por
+point-in-polygon contra el GeoJSON regional; Isla de Pascua/Juan Fernández→Valparaíso,
+Territorio Antártico→Magallanes). Mide la **carga movilizada por los terminales de la
+región** —distinto del *origen* de la carga, que se muestra en las capas de influencia—
+y está disponible en valor (US$ FOB/CIF) y tonelaje.
+
 ### Procesamiento (`procesar_comex.py`)
 1. **Filtros de operación.** Exportación: `COD_TIPO_OPERACION ∈ {200…216}`. Importación:
    `{101…180}` (lista completa en el script).

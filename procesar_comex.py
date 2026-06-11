@@ -230,19 +230,20 @@ def nkey(s):
     return "".join(ch for ch in s if ch.isalnum())
 
 # nombre del punto (tabla Puertos) -> nombre en los archivos agregados (cuando difieren)
+# cada punto puede tener VARIOS nombres segun el archivo (2002-2021 vs 2022-2025)
 ANUAL_ALIASES = {
-    "AEROP. A.M. BENITEZ": "Aeropuerto Arturo Merino Benitez",
-    "AEROP. CERRO MORENO": "Aeropuerto Cerro Moreno",
-    "AEROPUERTO CARRIEL SUR 945": "Aeropuerto Carriel Sur",
-    "AEROP. C.I. DEL CAMPO": "Aeropuerto Carlos Ibanez del Campo",
-    "AEROP. CHACALLUTA": "Aeropuerto Chacalluta",
-    "AEROP. DIEGO ARACENA": "Aeropuerto Diego Aracena",
-    "AEROP. EL TEPUAL": "Aeropuerto El Tepual",
-    "CAP. HUACHIPATO": "Muelle Huachipato",
-    "LOS LIBERTADORES": "Cristo Redentor (Los Libertadores)",
-    "MONTE AYMOND": "Integracion Austral (Monte Aymond)",
-    "PASO JAMA": "Jama",
-    "CHACALLUTA": "Concordia (Chacalluta)",
+    "AEROP. A.M. BENITEZ": ["Aeropuerto Arturo Merino Benitez", "AEROP. A. MERINO BENITEZ"],
+    "AEROP. CERRO MORENO": ["Aeropuerto Cerro Moreno", "AEROP. CERRO MORENO"],
+    "AEROPUERTO CARRIEL SUR 945": ["Aeropuerto Carriel Sur", "AEROP. CARRIEL SUR"],
+    "AEROP. C.I. DEL CAMPO": ["Aeropuerto Carlos Ibanez del Campo", "AEROP. C. IBANEZ DEL CAMPO"],
+    "AEROP. CHACALLUTA": ["Aeropuerto Chacalluta"],
+    "AEROP. DIEGO ARACENA": ["Aeropuerto Diego Aracena"],
+    "AEROP. EL TEPUAL": ["Aeropuerto El Tepual"],
+    "CAP. HUACHIPATO": ["Muelle Huachipato"],
+    "LOS LIBERTADORES": ["Cristo Redentor (Los Libertadores)"],
+    "MONTE AYMOND": ["Integracion Austral (Monte Aymond)"],
+    "PASO JAMA": ["Jama"],
+    "CHACALLUTA": ["Concordia (Chacalluta)"],
 }
 
 def read_pto_year(path):
@@ -297,11 +298,16 @@ def load_anual():
     return dict(ex_fob=ex_fob, im_cif=im_cif, ex_kg=ex_kg, im_kg=im_kg)
 
 def anual_for(nombre, ANUAL):
-    al = ANUAL_ALIASES.get(norm(nombre))
-    key = nkey(al) if al else nkey(nombre)
+    # busca bajo el nombre original Y el alias: los archivos 2002-2021 y 2022-2025
+    # usan nomenclaturas distintas (p.ej. "AEROP.A.M.BENITEZ" vs "Aeropuerto Arturo Merino Benitez")
+    als = ANUAL_ALIASES.get(norm(nombre), [])
+    keys = {nkey(nombre)} | {nkey(a) for a in als}
     def serie(src):
-        s = ANUAL[src].get(key, {})
-        return [round(s.get(y, 0.0), 1) for y in ANUAL_YEARS]
+        m = {}
+        for k in keys:
+            for y, v in ANUAL[src].get(k, {}).items():
+                m[y] = max(m.get(y, 0.0), v)   # rangos de anios disjuntos; max evita doble conteo
+        return [round(m.get(y, 0.0), 1) for y in ANUAL_YEARS]
     e = serie("ex_fob"); i = serie("im_cif")
     if not any(e) and not any(i):
         return None
@@ -595,6 +601,43 @@ sum_cif = sum(r["imp_cif"] for r in registros)
 # ---------------------------------------------------------------- perfil por REGION
 port_coord = {r["cod"]: (r["lat"], r["lon"]) for r in registros}
 
+# ubicacion geografica de cada punto -> region (point-in-polygon sobre el geojson regional)
+_GEO_REG = json.load(open(os.path.join(ASSETS, "chile_regiones.geojson"), encoding="latin-1"))
+
+def _pip(lon, lat, ring):
+    inside = False; j = len(ring) - 1
+    for i in range(len(ring)):
+        xi, yi = ring[i][0], ring[i][1]; xj, yj = ring[j][0], ring[j][1]
+        if (yi > lat) != (yj > lat) and lon < (xj - xi) * (lat - yi) / (yj - yi) + xi:
+            inside = not inside
+        j = i
+    return inside
+
+def _polys(g):
+    return g["coordinates"] if g["type"] == "MultiPolygon" else [g["coordinates"]]
+
+def punto_region(lat, lon):
+    if lat is None: return None
+    for f in _GEO_REG["features"]:
+        for poly in _polys(f["geometry"]):
+            if _pip(lon, lat, poly[0]):
+                return f["properties"]["codregion"]
+    # fallback: region con vertice mas cercano (puertos costeros que caen fuera del poligono)
+    best, bd = None, 1e18
+    for f in _GEO_REG["features"]:
+        for poly in _polys(f["geometry"]):
+            for x, y in poly[0][::4]:
+                d = (x - lon) ** 2 + (y - lat) ** 2
+                if d < bd: bd, best = d, f["properties"]["codregion"]
+    return best
+
+# puntos insulares / antarticos que el poligono continental no cubre
+REGION_UBIC_OVERRIDE = {"ISLA DE PASCUA": 5, "JUAN FERNANDEZ": 5, "TERRITORIO ANTARTICO": 12}
+
+for r in registros:
+    ov = next((v for k, v in REGION_UBIC_OVERRIDE.items() if k in norm(r["nombre"])), None)
+    r["region_ubicacion"] = ov if ov is not None else punto_region(r["lat"], r["lon"])
+
 def top_puntos(counter, total, k=10):
     out=[]
     for pc, v in counter.most_common(k):
@@ -603,6 +646,20 @@ def top_puntos(counter, total, k=10):
         out.append(dict(cod=pc, nombre=info.get("nombre", f"PUNTO_{pc}"), lat=la, lon=lo,
                         valor=round(v,1), pct=round(100*v/total,2) if total else 0))
     return out
+
+# serie anual regional = suma de las series de los terminales UBICADOS en la region
+def anual_region(rc):
+    pts = [r for r in registros if r.get("region_ubicacion") == rc and r.get("anual")]
+    if not pts: return None
+    def ssum(field):
+        acc = [0.0] * len(ANUAL_YEARS)
+        for r in pts:
+            for i, v in enumerate(r["anual"][field]): acc[i] += v
+        return [round(x, 1) for x in acc]
+    return dict(years=ANUAL_YEARS, exp_fob=ssum("exp_fob"), imp_cif=ssum("imp_cif"),
+                exp_kg=ssum("exp_kg"), imp_kg=ssum("imp_kg"),
+                nota="Carga movilizada por los terminales ubicados en la región",
+                n_terminales=len(pts))
 
 regiones_perfil=[]
 for rc in sorted(regs):
@@ -625,9 +682,9 @@ for rc in sorted(regs):
         top_puntos_imp=top_puntos(reg_ptos_imp[rc], d["cif"]),
         mes_exp=[round(x,1) for x in d["mes_exp"]],
         mes_imp=[round(x,1) for x in d["mes_imp"]],
-        anual=None, estructura=estructura(d),
+        anual=anual_region(rc), estructura=estructura(d),
     ))
-print(f"  regiones con perfil: {len(regiones_perfil)}", flush=True)
+print(f"  regiones con perfil: {len(regiones_perfil)}  con serie anual: {sum(1 for r in regiones_perfil if r['anual'])}", flush=True)
 
 # ---------------------------------------------------------------- paises_comercio (nacional)
 paises_comercio = dict(

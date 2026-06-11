@@ -202,8 +202,14 @@ header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .subseg button{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:9px;padding:6px 11px;font-size:11.5px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--ff);transition:all .15s}
 .subseg button:hover{border-color:var(--cop)}
 .subseg button.on{background:linear-gradient(180deg,var(--cop),var(--cop2));color:#1a1206;border-color:transparent}
-.cmpgrp{margin-bottom:10px}
-.cmpgh{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:var(--ink2);margin-bottom:5px}
+.cmpgrp{margin-bottom:8px;border:1px solid var(--line2);border-radius:10px;padding:6px 8px}
+.cmpgh{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;user-select:none}
+.cmpgh:hover{color:var(--ink)}
+.cmpgh .cnt{margin-left:auto;color:var(--mut);font-size:10px;background:rgba(255,255,255,.06);padding:1px 7px;border-radius:999px}
+.cmpgh .car{color:var(--mut);transition:transform .15s;font-size:9px;margin-left:5px}
+.cmpgrp.closed .car{transform:rotate(-90deg)}
+.cmpgrp.closed .cmp-pick{display:none}
+.cmpgrp .cmp-pick{margin:7px 0 2px}
 .cmp-pick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px}
 .cmp-pick .chip{font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:rgba(255,255,255,.03);color:var(--ink2);transition:all .14s}
 .cmp-pick .chip:hover{border-color:var(--cop)}
@@ -961,16 +967,16 @@ function draw8020(p){
 function renderTend(body,p){
   const unit=state.anualUnit||'valor';
   const a=p.anual;
+  const regNota = (a && a.nota) ? `<div class="muted" style="margin-top:6px">${a.nota} (${a.n_terminales} terminales). Fuente: series anuales por puerto, Servicio Nacional de Aduanas.</div>` : '';
   const anualCard = a
-    ? `<div class="card"><h3>Carga por año · 2012–2025
+    ? `<div class="card wide"><h3>Carga por año · 2012–2025
          <span class="un"><span class="subseg" style="display:inline-flex;margin:0" id="anUnit">
            <button data-u="valor" class="${unit==='valor'?'on':''}">US$</button>
            <button data-u="peso" class="${unit==='peso'?'on':''}">Ton</button></span></span></h3>
-       <div class="chartbox"><canvas id="canual"></canvas></div></div>`
+       <div class="chartbox"><canvas id="canual"></canvas></div>${regNota}</div>`
     : `<div class="card"><h3>Carga por año · 2012–2025</h3><div class="muted">Sin serie histórica para este punto.</div></div>`;
   body.innerHTML=anualCard+`
    <div class="card"><h3>Evolución mensual 2025 · ${p.nombre}</h3><div class="chartbox"><canvas id="cmes"></canvas></div></div>
-   <div class="card"><h3>Mensual por terminal · top 8 (total)</h3><div class="chartbox"><canvas id="cterm"></canvas></div></div>
    <div class="card"><h3>Peso vs valor 2025</h3><div class="chartbox"><canvas id="cpv"></canvas></div></div>`;
   const gridY={ticks:{font:{size:9},callback:v=>fmtUSD(v)},grid:{color:'rgba(255,255,255,.05)'}};
   if(a){
@@ -988,10 +994,6 @@ function renderTend(body,p){
     {label:'Export FOB',data:p.mes_exp,borderColor:EXP,backgroundColor:'rgba(45,212,191,.14)',fill:true,tension:.34,pointRadius:2,borderWidth:2},
     {label:'Import CIF',data:p.mes_imp,borderColor:IMP,backgroundColor:'rgba(244,123,70,.12)',fill:true,tension:.34,pointRadius:2,borderWidth:2}
   ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:12,font:{size:11}}}},scales:{y:gridY,x:{ticks:{font:{size:10}},grid:{display:false}}}}}));
-  const top=PUNTOS.filter(x=>x.lat!=null).sort((a,b)=>b.total-a.total).slice(0,8);
-  charts.push(new Chart(document.getElementById('cterm'),{type:'line',data:{labels:MESES,
-    datasets:top.map((t,i)=>({label:t.nombre,data:t.mes_exp.map((v,m)=>v+t.mes_imp[m]),borderColor:PALETTE[i],backgroundColor:PALETTE[i],tension:.34,pointRadius:0,borderWidth:1.8}))},
-    options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:9,font:{size:9.5}}}},scales:{y:gridY,x:{ticks:{font:{size:10}},grid:{display:false}}}}}));
   charts.push(new Chart(document.getElementById('cpv'),{type:'bar',data:{labels:['Export','Import'],datasets:[
     {label:'Valor (US$)',data:[p.exp_fob,p.imp_cif],backgroundColor:[EXP,IMP],borderRadius:4}]},
     options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>fmtUSD(c.raw)}}},scales:{y:gridY,x:{grid:{display:false}}}}}));
@@ -1001,16 +1003,26 @@ function renderComparar(body){
   if(state.cmp.size===0){ [PUNTOS[0],PUNTOS[1],PUNTOS[2]].forEach(p=>p&&state.cmp.add(p.cod)); }
   const sumT=t=>PUNTOS.filter(p=>p.tipo===t).reduce((s,p)=>s+p.total,0);
   const tipos=[...new Set(PUNTOS.filter(p=>p.lat!=null).map(p=>p.tipo))].sort((a,b)=>sumT(b)-sumT(a));
-  const selBox=`<div class="card"><h3>Puntos a comparar · máx 5</h3>`+tipos.map(t=>{
+  if(!state.cmpOpen){ state.cmpOpen=new Set(
+      tipos.filter(t=>PUNTOS.some(p=>p.tipo===t&&state.cmp.has(p.cod)))); }
+  const selBox=`<div class="card"><h3>Puntos a comparar · máx 5</h3>
+    <div class="muted" style="margin-bottom:8px">Despliega un tipo de punto y elige sus terminales.</div>`+tipos.map(t=>{
       const pts=PUNTOS.filter(p=>p.tipo===t&&p.lat!=null).sort((a,b)=>b.total-a.total);
       const col=GCOL[pts[0].grupo];
-      return `<div class="cmpgrp"><div class="cmpgh"><span class="lic" style="width:16px;height:16px;background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}</div>
+      const nSel=pts.filter(p=>state.cmp.has(p.cod)).length;
+      const open=state.cmpOpen.has(t);
+      return `<div class="cmpgrp ${open?'':'closed'}" data-t="${t}">
+        <div class="cmpgh"><span class="lic" style="width:16px;height:16px;background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}
+          <span class="cnt num">${nSel?nSel+' · ':''}${pts.length}</span><span class="car">▾</span></div>
         <div class="cmp-pick">`+pts.map(p=>`<div class="chip${state.cmp.has(p.cod)?' on':''}" data-c="${p.cod}">${p.nombre}</div>`).join('')+`</div></div>`;
     }).join('')+`</div>`;
   body.innerHTML=selBox+`
    <div class="card"><h3>Comercio · FOB vs CIF</h3><div class="chartbox"><canvas id="ccmp"></canvas></div></div>
    <div class="card"><h3>Balance · CIF − FOB</h3><div class="chartbox"><canvas id="ccmp2"></canvas></div></div>
    <div class="card"><h3>Evolución mensual · total</h3><div class="chartbox"><canvas id="ccmp3"></canvas></div></div>`;
+  body.querySelectorAll('.cmpgh').forEach(h=>h.onclick=()=>{ const t=h.parentElement.dataset.t;
+    if(state.cmpOpen.has(t)) state.cmpOpen.delete(t); else state.cmpOpen.add(t);
+    h.parentElement.classList.toggle('closed'); });
   body.querySelectorAll('.chip').forEach(c=>c.onclick=()=>{ const cod=+c.dataset.c;
     if(state.cmp.has(cod)) state.cmp.delete(cod); else { if(state.cmp.size>=5) return; state.cmp.add(cod);} renderComparar(body); });
   const sel=[...state.cmp].map(c=>byCod[c]).filter(Boolean);

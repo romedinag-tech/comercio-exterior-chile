@@ -28312,8 +28312,8 @@
  {
   "cod": 945,
   "nombre": "AEROPUERTO CARRIEL SUR 945",
-  "tipo": "Puerto marítimo",
-  "grupo": "maritimo",
+  "tipo": "Aeropuerto",
+  "grupo": "aereo",
   "zona": "América del Sur",
   "lat": -36.77,
   "lon": -73.06,

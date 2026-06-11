@@ -39,6 +39,54 @@ header h1{font-family:var(--fd);font-size:16px;margin:0;font-weight:600;letter-s
 header h1 b{color:var(--cop);font-weight:700}
 header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
 .spacer{flex:1}
+.uitools{display:flex;gap:7px;align-items:center;margin-right:6px}
+.iconbtn{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:9px;color:var(--ink2);
+  width:31px;height:31px;cursor:pointer;font-size:14px;line-height:1;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.iconbtn:hover{border-color:var(--cop);color:var(--ink)}
+.iconbtn.on{background:var(--cop-soft);color:var(--cop);border-color:var(--cop)}
+.seg.tiny button{padding:3px 8px;font-size:10px}
+#sbSort{margin:7px 0 3px;display:inline-flex}
+
+/* ---- auto-ocultar paneles ---- */
+.top{position:relative}
+body.autohide .sidebar{position:absolute;left:0;top:0;bottom:0;z-index:680;
+  transform:translateX(calc(-100% + 10px));transition:transform .25s;box-shadow:10px 0 26px -12px rgba(0,0,0,.55)}
+body.autohide .sidebar:hover{transform:none}
+body.autohide .sidebar::after{content:"";position:absolute;right:0;top:0;bottom:0;width:10px;
+  background:linear-gradient(90deg,transparent,rgba(227,165,102,.25))}
+body.autohide .regionbar{position:absolute;top:var(--hdrh,58px);left:0;right:0;z-index:670;
+  transform:translateY(calc(-100% + 9px));transition:transform .25s;box-shadow:0 12px 26px -12px rgba(0,0,0,.55)}
+body.autohide .regionbar:hover{transform:none}
+body.autohide .regionbar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9px;
+  background:linear-gradient(180deg,transparent,rgba(227,165,102,.25))}
+
+/* ---- tema claro ---- */
+body.light{
+  --bg:#eef2f8; --bg2:#e7ecf4; --surface:#ffffff; --surface2:#eef2f8; --glass:rgba(255,255,255,.9);
+  --line:rgba(15,23,42,.14); --line2:rgba(15,23,42,.08);
+  --ink:#10203a; --ink2:#33455f; --mut:#5b6b82;
+  background:#eef2f8;
+}
+body.light header{background:linear-gradient(180deg,#ffffff,#f1f5fa)}
+body.light .iconbtn{background:rgba(15,23,42,.04)}
+body.light .sidebar{background:linear-gradient(180deg,#ffffff,#eef2f8)}
+body.light .panel{background:linear-gradient(180deg,#fbfcfe,#eef2f8)}
+body.light .regionbar,body.light footer{background:#e7ecf4}
+body.light #map{background:#d9e3f0}
+body.light .card{background:#ffffff}
+body.light .bars .b .track{background:rgba(15,23,42,.08)}
+body.light .kpi{background:rgba(15,23,42,.045)}
+body.light .kpi.tot{background:var(--cop-soft)}
+body.light .grp .gh:hover,body.light .gitems .it:hover{background:rgba(15,23,42,.05)}
+body.light .grp .gh .cnt,body.light .cmpgh .cnt{background:rgba(15,23,42,.08)}
+body.light .subseg button,body.light .chip,body.light .rchip,body.light .cmpgrp{background:#ffffff}
+body.light .results,body.light .leaflet-tooltip.wt{background:#ffffff;color:var(--ink)}
+body.light .search input{background:rgba(255,255,255,.95);color:var(--ink)}
+body.light .sblist::-webkit-scrollbar-thumb,body.light .tabbody::-webkit-scrollbar-thumb,
+body.light .card::-webkit-scrollbar-thumb,body.light .results::-webkit-scrollbar-thumb,
+body.light .regionbar::-webkit-scrollbar-thumb{background:rgba(15,23,42,.22)}
+body.light .leaflet-control-zoom a{background:rgba(255,255,255,.92)!important;color:#33455f!important}
+body.light .leaflet-control-attribution{background:rgba(255,255,255,.7)!important;color:#5b6b82!important}
 .stat{display:flex;flex-direction:column;align-items:flex-end;padding:0 14px;border-left:1px solid var(--line2)}
 .stat .sl{font-size:9.5px;text-transform:uppercase;letter-spacing:1.1px;color:var(--mut);font-weight:600}
 .stat .sv{font-family:var(--fd);font-size:16px;font-weight:600;margin-top:1px}
@@ -237,6 +285,10 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
     </div>
   </div>
   <div class="spacer"></div>
+  <div class="uitools">
+    <button class="iconbtn" id="btnHide" title="Auto-ocultar paneles: el menú izquierdo y el de regiones se esconden y aparecen al acercar el cursor">⇤</button>
+    <button class="iconbtn" id="btnTheme" title="Cambiar entre tema oscuro y claro">☀</button>
+  </div>
   <div class="stat exp"><span class="sl">Exportación FOB</span><span class="sv num" id="hExp">—</span></div>
   <div class="stat imp"><span class="sl">Importación CIF</span><span class="sv num" id="hImp">—</span></div>
   <div class="stat tot"><span class="sl">Puntos activos</span><span class="sv num" id="hPts">—</span></div>
@@ -247,7 +299,13 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
 <div class="app">
   <div class="top">
     <div class="sidebar">
-      <div class="sbhead"><b>Ir a un punto</b><div class="hint">Click → ver punto · Ctrl+Click → comparar varios</div></div>
+      <div class="sbhead"><b>Ir a un punto</b>
+        <div class="seg tiny" id="sbSort">
+          <button data-s="demanda" class="on" title="De mayor a menor comercio">Demanda</button>
+          <button data-s="geo" title="De norte a sur">N→S</button>
+          <button data-s="abc" title="Alfabético">A–Z</button>
+        </div>
+        <div class="hint">Click → ver punto · Ctrl+Click → comparar varios</div></div>
       <div class="sblist" id="sblist"></div>
     </div>
 
@@ -429,8 +487,10 @@ function mergeRecs(list){
 // mapa
 const map = L.map('map',{zoomControl:false,minZoom:1.5,zoomSnap:.5,worldCopyJump:true}).setView([-38,-71],4);
 L.control.zoom({position:'bottomright'}).addTo(map);
-L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
+const tileURL=light=>`https://{s}.basemaps.cartocdn.com/${light?'light_all':'dark_all'}/{z}/{x}/{y}{r}.png`;
+const baseTiles=L.tileLayer(tileURL(false),
   {attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
+const NEUT=()=>document.body.classList.contains('light')?'#dfe7f2':NEUT();
 
 const layerPoints = L.layerGroup().addTo(map);
 const layerFlows  = L.layerGroup();
@@ -512,20 +572,20 @@ function selCountryShares(){
   else { const arr= met==='imp'? s.top_origenes : s.top_destinos; arr.forEach(r=>{ if(r.iso3) m[r.iso3]={pct:r.pct,val:r.valor,name:r.nombre}; }); }
   return m;
 }
-function buildWorld(){ if(layerWorld) return; layerWorld=L.geoJSON(D.world,{style:{weight:.4,color:'rgba(255,255,255,.14)',fillColor:'#101a28',fillOpacity:.85}}); }
+function buildWorld(){ if(layerWorld) return; layerWorld=L.geoJSON(D.world,{style:{weight:.4,color:'rgba(255,255,255,.14)',fillColor:NEUT(),fillOpacity:.85}}); }
 function paintWorld(){
   const sh=selCountryShares();
   const choro=isChoro();
   layerWorld.eachLayer(ly=>{
     const iso=ly.feature.id; const d=sh[iso];
-    ly.setStyle({fillColor: (!choro||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: !choro?.5:(d?.95:.55), color:'rgba(255,255,255,.12)'});
+    ly.setStyle({fillColor: (!choro||!d)?NEUT():rampMetric(d.pct), fillOpacity: !choro?.5:(d?.95:.55), color:'rgba(255,255,255,.12)'});
     const met=state.metric==='imp'?'Importado':'Exportado';
     ly.unbindTooltip();
     ly.bindTooltip(`<b>${ly.feature.properties.name}</b>`+(d?`<br>${met}: ${fmtUSD(d.val)} · ${d.pct.toFixed(1)}%`:'<br><span style="color:#7385a0">sin registro</span>'),{className:'wt',sticky:true});
   });
 }
 function buildRegions(){ if(layerRegions) return;
-  layerRegions=L.geoJSON(D.regiones,{style:{weight:.5,color:'rgba(255,255,255,.16)',fillColor:'#101a28',fillOpacity:.55},
+  layerRegions=L.geoJSON(D.regiones,{style:{weight:.5,color:'rgba(255,255,255,.16)',fillColor:NEUT(),fillOpacity:.55},
     onEachFeature:(f,ly)=>ly.on('click',()=>selectRegion(f.properties.codregion))}); }
 function regShares(kind){ const m={}; const arr= kind==='imp'? state.sel.infl_imp : state.sel.infl_exp; (arr||[]).forEach(r=>m[r.cod]={pct:r.pct,val:r.valor,nombre:r.nombre}); return m; }
 function paintRegions(){
@@ -534,7 +594,7 @@ function paintRegions(){
     layerRegions.eachLayer(ly=>{
       const cr=ly.feature.properties.codregion; const isSel=cr===state.sel.cod;
       const col=state.metric==='imp'?IMP:EXP;
-      ly.setStyle({fillColor:isSel?col:'#0e1726', fillOpacity:isSel?.5:.35,
+      ly.setStyle({fillColor:isSel?col:NEUT(), fillOpacity:isSel?.5:.35,
         color:isSel?'rgba(255,255,255,.55)':'rgba(255,255,255,.12)', weight:isSel?1.4:.5});
       ly.unbindTooltip();
       const rr=byReg[cr];
@@ -548,7 +608,7 @@ function paintRegions(){
   const usar = state.metric==='imp' ? im : ex;
   layerRegions.eachLayer(ly=>{
     const cr=ly.feature.properties.codregion; const d=usar[cr];
-    ly.setStyle({fillColor: (!choro||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: !choro?.4:(d?.9:.45), color:'rgba(255,255,255,.14)', weight:.5});
+    ly.setStyle({fillColor: (!choro||!d)?NEUT():rampMetric(d.pct), fillOpacity: !choro?.4:(d?.9:.45), color:'rgba(255,255,255,.14)', weight:.5});
     ly.unbindTooltip();
     ly.bindTooltip(`<b>${ly.feature.properties.nombre}</b>`+
       `<br><span style="color:${EXP}">Origen export: ${ex[cr]?ex[cr].pct.toFixed(1)+'%':'—'}</span>`+
@@ -777,6 +837,11 @@ function renderMapInfo(){
     `<div>${pr.exp?`<span class="tag exp">Exporta: ${pr.exp}</span>`:''}${pr.imp?`<span class="tag imp">Importa: ${pr.imp}</span>`:''}</div>`;
 }
 
+const SB_SORTERS={
+  demanda:(a,b)=>b.total-a.total,
+  geo:(a,b)=>((b.lat??-99)-(a.lat??-99)),          // norte (lat mayor) primero
+  abc:(a,b)=>a.nombre.localeCompare(b.nombre,'es'),
+};
 function renderSidebar(){
   const tipos=[...new Set(PUNTOS.map(p=>p.tipo))];
   tipos.sort((a,b)=>{
@@ -786,7 +851,7 @@ function renderSidebar(){
   });
   const el=document.getElementById('sblist'); el.innerHTML='';
   tipos.forEach(t=>{
-    const pts=PUNTOS.filter(p=>p.tipo===t && p.lat!=null).sort((a,b)=>b.total-a.total);
+    const pts=PUNTOS.filter(p=>p.tipo===t && p.lat!=null).sort(SB_SORTERS[state.sbSort||'demanda']);
     const g=pts[0].grupo, col=GCOL[g];
     const grp=document.createElement('div'); grp.className='grp';
     grp.innerHTML=`<div class="gh"><span class="lic" style="background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}<span class="cnt num">${pts.length}</span><span class="car">▾</span></div>
@@ -1183,6 +1248,53 @@ document.getElementById('foot').innerHTML=
  `<b>Cuadre:</b> suma FOB por punto = ${fmtUSD(cu.suma_fob_puntos)} (${cu.exp_cobertura_pct}% del total nacional); suma CIF = ${fmtUSD(cu.suma_cif_puntos)} (${cu.imp_cobertura_pct}%). `+
  `El área de influencia de importación usa la aduana de nacionalización (no destino final).`;
 
+// orden del menu de puntos
+document.querySelectorAll('#sbSort button').forEach(b=>b.onclick=()=>{
+  state.sbSort=b.dataset.s;
+  document.querySelectorAll('#sbSort button').forEach(x=>x.classList.toggle('on',x===b));
+  renderSidebar(); markSidebar();
+  try{localStorage.setItem('dx_sbsort',state.sbSort);}catch(e){}
+});
+
+// auto-ocultar paneles (menu superior e izquierdo aparecen con el cursor)
+const btnHide=document.getElementById('btnHide');
+function setAutohide(on){
+  state.autohide=on;
+  document.body.classList.toggle('autohide',on);
+  btnHide.classList.toggle('on',on);
+  document.documentElement.style.setProperty('--hdrh',document.querySelector('header').offsetHeight+'px');
+  try{localStorage.setItem('dx_autohide',on?'1':'0');}catch(e){}
+  setTimeout(()=>map.invalidateSize(),280);
+}
+btnHide.onclick=()=>setAutohide(!state.autohide);
+window.addEventListener('resize',()=>{ if(state.autohide)
+  document.documentElement.style.setProperty('--hdrh',document.querySelector('header').offsetHeight+'px'); });
+
+// tema claro / oscuro
+const btnTheme=document.getElementById('btnTheme');
+function applyChartTheme(light){
+  if(!window.Chart) return;
+  Chart.defaults.color = light?'#33455f':'#b3c0d3';
+  Chart.defaults.borderColor = light?'rgba(15,23,42,.09)':'rgba(255,255,255,.07)';
+  Chart.defaults.plugins.tooltip.backgroundColor = light?'#ffffff':'#15243a';
+  Chart.defaults.plugins.tooltip.titleColor = light?'#10203a':'#eaf1fb';
+  Chart.defaults.plugins.tooltip.bodyColor = light?'#33455f':'#b3c0d3';
+  Chart.defaults.plugins.tooltip.borderColor = light?'rgba(15,23,42,.16)':'rgba(255,255,255,.12)';
+}
+function setTheme(light){
+  document.body.classList.toggle('light',light);
+  btnTheme.classList.toggle('on',light);
+  btnTheme.textContent = light?'☾':'☀';
+  btnTheme.title = light?'Cambiar a tema oscuro':'Cambiar a tema claro';
+  baseTiles.setUrl(tileURL(light));
+  applyChartTheme(light);
+  if(layerWorld && state.view==='mundo') paintWorld();
+  if(layerRegions && state.view==='influencia') paintRegions();
+  updateColumns(); renderLegend(); renderZoneBar(); renderPanel();
+  try{localStorage.setItem('dx_theme',light?'light':'dark');}catch(e){}
+}
+btnTheme.onclick=()=>setTheme(!document.body.classList.contains('light'));
+
 // redimensionar panel inferior
 (function(){
   const rz=document.getElementById('resizer'); let drag=false;
@@ -1198,7 +1310,19 @@ document.getElementById('foot').innerHTML=
 
 map.on('move zoom viewreset resize zoomend moveend',()=>{ if(isColumns()) drawColumns(); });
 
+// restaurar preferencias de interfaz
+try{
+  const ss=localStorage.getItem('dx_sbsort');
+  if(ss && SB_SORTERS[ss]){ state.sbSort=ss;
+    document.querySelectorAll('#sbSort button').forEach(x=>x.classList.toggle('on',x.dataset.s===ss)); }
+}catch(e){}
+
 drawPoints(); renderSidebar(); renderLegend(); select(NAC); setView('puntos'); renderZoneBar(); renderMapInfo();
+
+try{
+  if(localStorage.getItem('dx_theme')==='light') setTheme(true);
+  if(localStorage.getItem('dx_autohide')==='1') setAutohide(true);
+}catch(e){}
 </script>
 </body>
 </html>

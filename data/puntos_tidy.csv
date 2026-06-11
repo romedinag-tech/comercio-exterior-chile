@@ -45,7 +45,7 @@
 941;GREGORIO;Puerto marítimo;maritimo;América del Sur;-52.62;-70.2;0.0;27460255.6;27460255.6;0.0;65024137.0;27460255.6;;Argentina;;Combustibles y lubricantes minerales
 943;PUERTO WILLIAMS;Puerto marítimo;maritimo;América del Sur;-54.93;-67.61;18717298.4;5397505.9;24114804.3;11913554.0;1495600.0;-13319792.6;Aprovisionamiento (Rancho) de naves y aeronaves extranjeras y de maderas para estibar mercancías cargadas en puertos chilenos;Argentina;Rancho de naves;Resto No combustibles
 936;NATALES;Puerto marítimo;maritimo;América del Sur;-51.73;-72.51;18908363.6;161.2;18908524.7;896838.2;0.0;-18908202.4;Aprovisionamiento (Rancho) de naves y aeronaves extranjeras y de maderas para estibar mercancías cargadas en puertos chilenos;China;Rancho de naves;Resto No combustibles
-945;AEROPUERTO CARRIEL SUR 945;Puerto marítimo;maritimo;América del Sur;-36.77;-73.06;2210025.8;7597341.1;9807366.9;558100.5;1163168.1;5387315.4;Argentina;Finlandia;Resto No minería;Maquinarias, aparatos y sus partes
+945;AEROPUERTO CARRIEL SUR 945;Aeropuerto;aereo;América del Sur;-36.77;-73.06;2210025.8;7597341.1;9807366.9;558100.5;1163168.1;5387315.4;Argentina;Finlandia;Resto No minería;Maquinarias, aparatos y sus partes
 982;SAN SEBASTIÁN;Avanzada fronteriza;terrestre;América del Sur;-53.32;-68.62;5665021.3;2351260.2;8016281.5;597100.7;46684.3;-3313761.1;Estados Unidos de América;Argentina;Productos del mar;Resto No combustibles
 938;PUERTO ANDINO;Puerto marítimo;maritimo;América del Sur;-41.48;-72.94;0.0;4018039.1;4018039.1;0.0;17991000.0;4018039.1;;China;;Resto No combustibles
 964;SAN FRANCISCO;Avanzada fronteriza;terrestre;América del Sur;-26.9;-68.27;3902100.9;38358.3;3940459.2;4600973.0;947.5;-3863742.6;Argentina;China;Resto No minería;Resto No combustibles

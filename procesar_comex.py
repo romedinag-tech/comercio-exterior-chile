@@ -179,7 +179,12 @@ def load_dicts():
     for r in sheet("Puertos").iter_rows(min_row=6, values_only=True):
         cod = fint(r[1])
         if cod is None: continue
-        puertos[cod] = dict(nombre=r[2], tipo=r[3], cod_pais=fint(r[4]),
+        tipo = r[3]
+        # correccion de fuente: el SNA clasifica "AEROPUERTO CARRIEL SUR 945" como
+        # "Puerto maritimo"; si el nombre dice aeropuerto, se trata como tal
+        if isinstance(r[2], str) and "AEROP" in norm(r[2]) and tipo and "MARITIMO" in norm(tipo):
+            tipo = "Aeropuerto"
+        puertos[cod] = dict(nombre=r[2], tipo=tipo, cod_pais=fint(r[4]),
                             pais=r[5], zona=r[6])
     paises = {}
     for r in sheet("Pais").iter_rows(min_row=6, values_only=True):

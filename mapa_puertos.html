@@ -968,13 +968,31 @@ function draw8020(p){
 function renderTend(body,p){
   const unit=state.anualUnit||'valor';
   const a=p.anual;
-  const regNota = (a && a.nota) ? `<div class="muted" style="margin-top:6px">${a.nota} (${a.n_terminales} terminales). Fuente: series anuales por puerto, Servicio Nacional de Aduanas.</div>` : '';
+  const isReg = p.grupo==='region';
+  const anualTitle = isReg ? 'Movimiento de carga de los terminales de la región · 2012–2025' : 'Carga por año · 2012–2025';
+  let nota='';
+  if(a){
+    const sE=a.exp_fob.at(-1), sI=a.imp_cif.at(-1);
+    if(isReg){
+      nota=`<div class="note" style="margin-top:7px">Esta serie mide la carga <b>movilizada por los ${a.n_terminales} terminales ubicados</b> en la región
+        (2025: ${fmtUSD(sE)} exp · ${fmtUSD(sI)} imp). Los KPI de arriba miden la carga <b>originada / nacionalizada</b> en la región
+        (${fmtUSD(p.exp_fob)} exp · ${fmtUSD(p.imp_cif)} imp): son lentes distintos y no tienen por qué coincidir
+        — p. ej., los puertos de una región también mueven carga de regiones vecinas.</div>`;
+    } else {
+      const dE=p.exp_fob?Math.abs(sE-p.exp_fob)/p.exp_fob:0, dI=p.imp_cif?Math.abs(sI-p.imp_cif)/p.imp_cif:0;
+      if(dE>0.015||dI>0.015){
+        nota=`<div class="muted" style="margin-top:6px">La serie proviene del reporte anual oficial por puerto (operaciones ajustadas con
+          documentos modificatorios), por lo que su 2025 (${fmtUSD(sE)} exp · ${fmtUSD(sI)} imp) difiere levemente del
+          microdato filtrado de los KPI (${fmtUSD(p.exp_fob)} · ${fmtUSD(p.imp_cif)}). Ambas cifras son oficiales de Aduanas.</div>`;
+      }
+    }
+  }
   const anualCard = a
-    ? `<div class="card wide"><h3>Carga por año · 2012–2025
+    ? `<div class="card wide"><h3>${anualTitle}
          <span class="un"><span class="subseg" style="display:inline-flex;margin:0" id="anUnit">
            <button data-u="valor" class="${unit==='valor'?'on':''}">US$</button>
            <button data-u="peso" class="${unit==='peso'?'on':''}">Ton</button></span></span></h3>
-       <div class="chartbox"><canvas id="canual"></canvas></div>${regNota}</div>`
+       <div class="chartbox"><canvas id="canual"></canvas></div>${nota}</div>`
     : `<div class="card"><h3>Carga por año · 2012–2025</h3><div class="muted">Sin serie histórica para este punto.</div></div>`;
   body.innerHTML=anualCard+`
    <div class="card"><h3>Evolución mensual 2025 · ${p.nombre}</h3><div class="chartbox"><canvas id="cmes"></canvas></div></div>

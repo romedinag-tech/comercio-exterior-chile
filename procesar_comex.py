@@ -796,6 +796,28 @@ def parse_paisprod():
                        prod=[dict(nombre=pn, valor=round(pv,1), pct=round(100*pv/tot,1)) for pn,pv in comps]))
     return cont_items, pp
 
+TRAF_YEARS=list(range(2010,2026))
+def _read_trafico(path, sheet):
+    wb=openpyxl.load_workbook(path, read_only=True, data_only=True)
+    ws=wb[sheet]; rows=list(ws.iter_rows(values_only=True)); wb.close()
+    hdr=None; ycols=[]
+    for i,r in enumerate(rows):
+        yc=[(j,int(c)) for j,c in enumerate(r) if isinstance(c,int) and 1990<c<2030]
+        if len(yc)>=3: hdr=i; ycols=yc; break
+    if hdr is None: return []
+    namecol=min(j for j,_ in ycols)-1; flucol=namecol-2
+    out=[]; curflu=None
+    for r in rows[hdr+1:]:
+        if namecol>=len(r): continue
+        fl=r[flucol] if 0<=flucol<len(r) else None
+        if isinstance(fl,str) and fl.strip(): curflu=fl.strip()
+        nm=r[namecol]
+        if nm is None: continue
+        s=str(nm).strip()
+        if not s or any(t in s for t in ("Fuente","Ir a","Total")): continue
+        out.append((s, curflu, {y:fnum(r[j]) for j,y in ycols if j<len(r)}))
+    return out
+
 def build_trafico():
     data={}
     for path in (TRAF_1,TRAF_2):
@@ -804,11 +826,15 @@ def build_trafico():
         for metric,kw in (("autos","autom"),("buses","bus"),("camiones","cami"),("carga","carga")):
             shn=next((s for s in sheets if kw in norm(s).lower()), None)
             if not shn: continue
-            for nm,vals in _read_named(path, shn)[1]:
-                k=norm(nm)
-                d=data.setdefault(k, {m:{} for m in ("autos","buses","camiones","carga")})
+            for nm,flu,vals in _read_trafico(path, shn):
+                k=nkey(nm)
+                d=data.setdefault(k, dict(raw=nm, autos={}, buses={}, camiones={}, carga={}, cam_ing={}, cam_sal={}))
                 for y,v in vals.items(): d[metric][y]=d[metric].get(y,0)+v
+                if metric=="camiones":
+                    tgt = d["cam_ing"] if (flu and "ING" in norm(flu)) else d["cam_sal"]
+                    for y,v in vals.items(): tgt[y]=tgt.get(y,0)+v
     return data
+def _serieY(vals): return [round(vals.get(y,0.0),1) for y in TRAF_YEARS]
 
 prod_exp=prod_imp=balanza=cont_imp=cont_exp=paisprod=None; TRAFICO={}
 try: prod_exp=build_prod_evol(PROD_E1,PROD_E2,NIVEL1_EXP); prod_imp=build_prod_evol(PROD_I1,PROD_I2,NIVEL1_IMP)
@@ -822,18 +848,21 @@ except Exception as e: print("  [paisprod] ", e)
 try: TRAFICO=build_trafico()
 except Exception as e: print("  [trafico] ", e)
 
-# adjuntar trafico a cada punto terrestre (match por nombre)
+# adjuntar trafico a cada punto terrestre (match por nombre normalizado)
 traf_n=0
 for r in registros:
     if r["grupo"]!="terrestre": continue
-    pk=nkey(r["nombre"])
-    match=None
+    pk=nkey(r["nombre"]); match=None
     for tk in TRAFICO:
-        if pk==tk or (len(pk)>=5 and (pk in tk or tk in pk)): match=tk; break
+        if pk==tk: match=tk; break
+    if not match:
+        for tk in TRAFICO:
+            if len(pk)>=5 and (pk in tk or tk in pk): match=tk; break
     if match:
         t=TRAFICO[match]
-        r["trafico"]=dict(years=MYEARS, autos=_serie(t["autos"]), buses=_serie(t["buses"]),
-                          camiones=_serie(t["camiones"]), carga=_serie(t["carga"]))
+        r["trafico"]=dict(years=TRAF_YEARS, raw=t["raw"],
+            camiones_ing=_serieY(t["cam_ing"]), camiones_sal=_serieY(t["cam_sal"]),
+            autos=_serieY(t["autos"]), buses=_serieY(t["buses"]), carga=_serieY(t["carga"]))
         traf_n+=1
 
 MACRO=dict(

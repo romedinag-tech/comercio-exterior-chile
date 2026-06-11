@@ -759,17 +759,24 @@ function renderEstructura(body,p){
      <div class="kpis" style="margin:0"><div class="kpi"><div class="l">Total recaudado</div><div class="v num" style="color:var(--cop)">${fmtUSD(e.advalorem)}</div></div>
        <div class="kpi"><div class="l">% del CIF</div><div class="v num">${e.advalorem_pct}%</div></div></div>
      <div class="muted" style="margin-top:8px">Derecho ad-valorem efectivamente pagado en las importaciones que ingresan por este punto.</div></div>`+
-   (p.trafico?`<div class="card wide"><h3>Tráfico terrestre · 2012–2025 (avanzada)</h3><div class="chartbox"><canvas id="ctraf"></canvas></div></div>`:'');
+   (p.trafico?`<div class="card wide"><h3>Camiones por ${p.trafico.raw||p.nombre} · ingreso / salida 2010–2025</h3>
+       <div class="chartbox"><canvas id="ctraf"></canvas></div><div class="muted" id="ctrafnote" style="margin-top:6px"></div></div>
+     <div class="card"><h3>Carga terrestre · kt/año 2010–2025</h3><div class="chartbox"><canvas id="ctcarga"></canvas></div></div>`:'');
   if(p.trafico){
-    const t=p.trafico;
-    charts.push(new Chart(document.getElementById('ctraf'),{data:{labels:t.years,datasets:[
-      {type:'bar',label:'Camiones',data:t.camiones,backgroundColor:'#4f9bff',yAxisID:'y',borderRadius:2},
-      {type:'bar',label:'Buses',data:t.buses,backgroundColor:'#f0b45e',yAxisID:'y',borderRadius:2},
-      {type:'line',label:'Carga (kt)',data:t.carga.map(v=>v/1e6),borderColor:'#2dd4bf',backgroundColor:'#2dd4bf',yAxisID:'y1',tension:.3,pointRadius:2,borderWidth:2}
-    ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:10,font:{size:10}}}},
-      scales:{x:{ticks:{font:{size:10}},grid:{display:false}},
-        y:{position:'left',ticks:{font:{size:9}},grid:{color:'rgba(255,255,255,.05)'},title:{display:true,text:'vehículos',font:{size:9},color:'#7385a0'}},
-        y1:{position:'right',ticks:{font:{size:9},callback:v=>v+' kt'},grid:{display:false}}}}}));
+    const t=p.trafico, nfmt=v=>v.toLocaleString('es-CL');
+    const total=t.camiones_ing.map((v,i)=>v+t.camiones_sal[i]);
+    charts.push(new Chart(document.getElementById('ctraf'),{type:'line',data:{labels:t.years,datasets:[
+      {label:'Ingreso a Chile',data:t.camiones_ing,borderColor:'#4f9bff',backgroundColor:'#4f9bff',tension:.25,pointRadius:2,borderWidth:2},
+      {label:'Salida de Chile',data:t.camiones_sal,borderColor:'#f47b46',backgroundColor:'#f47b46',tension:.25,pointRadius:2,borderWidth:2},
+      {label:'Total (ambos sentidos)',data:total,borderColor:'#9aa7bd',backgroundColor:'#9aa7bd',borderDash:[5,4],tension:.25,pointRadius:0,borderWidth:1.6}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{labels:{boxWidth:11,font:{size:10}}},tooltip:{callbacks:{label:c=>c.dataset.label+': '+nfmt(c.raw)}}},
+      scales:{x:{ticks:{font:{size:9.5}},grid:{display:false}},y:{ticks:{font:{size:9},callback:nfmt},grid:{color:'rgba(255,255,255,.05)'},title:{display:true,text:'N° camiones / año',font:{size:9},color:'#7385a0'}}}}}));
+    let pk=0; t.camiones_ing.forEach((v,i)=>{ if(v>t.camiones_ing[pk]) pk=i; });
+    document.getElementById('ctrafnote').innerHTML=`Peak de ingresos: <b style="color:#4f9bff">${t.years[pk]}</b> con <b>${nfmt(t.camiones_ing[pk])}</b> camiones · Fuente: Servicio Nacional de Aduanas (tráfico terrestre por avanzada).`;
+    charts.push(new Chart(document.getElementById('ctcarga'),{type:'line',data:{labels:t.years,datasets:[
+      {label:'Carga (kt/año)',data:t.carga.map(v=>v/1e6),borderColor:'#2dd4bf',backgroundColor:'rgba(45,212,191,.12)',fill:true,tension:.3,pointRadius:2,borderWidth:2}
+    ]},options:{maintainAspectRatio:false,plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>c.raw.toFixed(0)+' kt'}}},
+      scales:{x:{ticks:{font:{size:9.5}},grid:{display:false}},y:{ticks:{font:{size:9},callback:v=>v+' kt'},grid:{color:'rgba(255,255,255,.05)'}}}}}));
   }
 }
 

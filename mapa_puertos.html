@@ -323,6 +323,7 @@ if(window.Chart){
   Chart.defaults.color='#b3c0d3';
   Chart.defaults.borderColor='rgba(255,255,255,.07)';
   Chart.defaults.animation=false;
+  Chart.defaults.scales.linear.beginAtZero=true;   // magnitudes siempre desde 0 (evita lecturas engañosas)
   Chart.defaults.plugins.tooltip.backgroundColor='#15243a';
   Chart.defaults.plugins.tooltip.borderColor='rgba(255,255,255,.12)';
   Chart.defaults.plugins.tooltip.borderWidth=1;

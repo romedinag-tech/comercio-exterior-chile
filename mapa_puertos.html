@@ -279,6 +279,7 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
       <button data-t="logistica">Logística &amp; estructura</button>
       <button data-t="comparar">Comparar</button>
       <button data-t="influencia">Análisis del área de influencia</button>
+      <button data-t="terrestre">Flujo de carga terrestre</button>
       <button data-t="panorama">Panorama nacional</button>
     </div>
     <div class="tabbody" id="tabbody"></div>
@@ -696,6 +697,7 @@ function renderPanel(){
   else if(state.tab==='tendencias') renderTend(body,p);
   else if(state.tab==='logistica') renderEstructura(body,p);
   else if(state.tab==='comparar') renderComparar(body);
+  else if(state.tab==='terrestre') renderTerrestre(body,p);
   else if(state.tab==='panorama') renderPanorama(body);
   else renderInfluencia(body,p);
 }
@@ -758,12 +760,26 @@ function renderEstructura(body,p){
    <div class="card"><h3>Arancel ad-valorem recaudado · importación</h3>
      <div class="kpis" style="margin:0"><div class="kpi"><div class="l">Total recaudado</div><div class="v num" style="color:var(--cop)">${fmtUSD(e.advalorem)}</div></div>
        <div class="kpi"><div class="l">% del CIF</div><div class="v num">${e.advalorem_pct}%</div></div></div>
-     <div class="muted" style="margin-top:8px">Derecho ad-valorem efectivamente pagado en las importaciones que ingresan por este punto.</div></div>`+
-   (p.trafico?`<div class="card wide"><h3>Camiones por ${p.trafico.raw||p.nombre} · ingreso / salida 2010–2025</h3>
+     <div class="muted" style="margin-top:8px">Derecho ad-valorem efectivamente pagado en las importaciones que ingresan por este punto.</div></div>`;
+}
+function renderTerrestre(body,p){
+  const nfmt=v=>v.toLocaleString('es-CL');
+  const passes=PUNTOS.filter(x=>x.trafico).map(x=>({p:x,tot:x.trafico.camiones_ing.at(-1)+x.trafico.camiones_sal.at(-1)})).sort((a,b)=>b.tot-a.tot);
+  const has=!!p.trafico;
+  body.innerHTML=`
+   <div class="card"><h3>Pasos fronterizos por camiones · total 2025</h3><div class="chartbox"><canvas id="ctrank"></canvas></div>
+     <div class="muted" style="margin-top:6px">Click en una barra para ver su detalle.</div></div>
+   ${has?`<div class="card wide"><h3>Camiones por ${p.trafico.raw||p.nombre} · ingreso / salida 2010–2025</h3>
        <div class="chartbox"><canvas id="ctraf"></canvas></div><div class="muted" id="ctrafnote" style="margin-top:6px"></div></div>
-     <div class="card"><h3>Carga terrestre · kt/año 2010–2025</h3><div class="chartbox"><canvas id="ctcarga"></canvas></div></div>`:'');
-  if(p.trafico){
-    const t=p.trafico, nfmt=v=>v.toLocaleString('es-CL');
+     <div class="card"><h3>Carga terrestre · kt/año 2010–2025</h3><div class="chartbox"><canvas id="ctcarga"></canvas></div></div>`
+     :`<div class="card wide"><h3>Detalle por paso</h3><div class="muted">Selecciona un paso fronterizo (en el ranking, el mapa o el buscador) para ver su flujo de camiones por sentido y su carga.</div></div>`}`;
+  charts.push(new Chart(document.getElementById('ctrank'),{type:'bar',data:{labels:passes.map(x=>x.p.nombre),
+    datasets:[{label:'Camiones 2025',data:passes.map(x=>x.tot),backgroundColor:passes.map(x=>x.p.cod===p.cod?'#e3a566':'#46d38a'),borderRadius:3}]},
+    options:{maintainAspectRatio:false,indexAxis:'y',plugins:{legend:{display:false},tooltip:{callbacks:{label:c=>nfmt(c.raw)+' camiones'}}},
+      onClick:(ev,els)=>{ if(els.length) select(passes[els[0].index].p); },
+      scales:{x:{ticks:{font:{size:9},callback:nfmt},grid:{color:'rgba(255,255,255,.05)'}},y:{ticks:{font:{size:9}},grid:{display:false}}}}}));
+  if(has){
+    const t=p.trafico;
     const total=t.camiones_ing.map((v,i)=>v+t.camiones_sal[i]);
     charts.push(new Chart(document.getElementById('ctraf'),{type:'line',data:{labels:t.years,datasets:[
       {label:'Ingreso a Chile',data:t.camiones_ing,borderColor:'#4f9bff',backgroundColor:'#4f9bff',tension:.25,pointRadius:2,borderWidth:2},

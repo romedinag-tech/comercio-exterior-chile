@@ -379,7 +379,7 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
 
 <footer id="foot"></footer>
 
-<script src="data_bundle.js"></script>
+<script src="data_bundle.js?v=0e4178b35b"></script>
 <script>
 if(window.Chart){
   Chart.defaults.font.family="'Inter',system-ui,sans-serif";
@@ -740,14 +740,16 @@ function applyRepr(){
 function setView(v){
   state.view=v;
   document.querySelectorAll('#viewSeg button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));
-  renderReprControl();  // fija un repr válido para la vista ANTES de pintar
+  safe('repr',renderReprControl);  // fija un repr válido para la vista ANTES de pintar
   [layerPoints,layerFlows,layerSymbols].forEach(l=>map.removeLayer(l));
   if(layerRegions) map.removeLayer(layerRegions);
   if(layerWorld) map.removeLayer(layerWorld);
-  if(v==='puntos'){ layerPoints.addTo(map); refreshMarkers(); map.setView([-38,-71],4); }
-  else if(v==='influencia'){ buildRegions(); layerRegions.addTo(map); paintRegions(); layerFlows.addTo(map); drawFlows(); layerPoints.addTo(map); refreshMarkers(); fitInfluencia(); }
-  else if(v==='mundo'){ buildWorld(); layerWorld.addTo(map); paintWorld(); map.fitBounds([[-58,-168],[74,178]]); }
-  updateSymbols(); updateColumns(); renderLegend();
+  safe('vista',()=>{
+    if(v==='puntos'){ layerPoints.addTo(map); refreshMarkers(); map.setView([-38,-71],4); }
+    else if(v==='influencia'){ buildRegions(); layerRegions.addTo(map); paintRegions(); layerFlows.addTo(map); drawFlows(); layerPoints.addTo(map); refreshMarkers(); fitInfluencia(); }
+    else if(v==='mundo'){ buildWorld(); layerWorld.addTo(map); paintWorld(); try{map.fitBounds([[-58,-168],[74,178]]);}catch(e){map.setView([15,-30],2);} }
+  });
+  safe('capas',()=>{ updateSymbols(); updateColumns(); }); safe('leyenda',renderLegend);
 }
 function renderLegend(){
   const el=document.getElementById('legend');
@@ -1192,6 +1194,9 @@ function renderInfluencia(body,p){
   body.querySelectorAll('#inflDir button').forEach(b=>b.onclick=()=>{ state.infl.dir=b.dataset.d; renderInfluencia(body,state.sel); });
 }
 
+// ejecuta una etapa de render sin que un fallo puntual congele la interaccion
+function safe(label,fn){ try{ fn(); }catch(e){ console.warn('[ui]',label,e); } }
+
 function applySelection(){
   if(state.selType==='region'){
     const r=byReg[state.regionSel];
@@ -1202,11 +1207,12 @@ function applySelection(){
     const list=[...state.multi].map(c=>byCod[c]).filter(Boolean);
     state.sel=list.length?mergeRecs(list):NAC;
   }
-  if(state.view==='mundo') paintWorld();
-  if(state.view==='influencia'){ paintRegions(); drawFlows(); fitInfluencia(); }
-  updateSymbols(); updateColumns();
-  refreshMarkers(); markSidebar(); renderRegionBar(); renderZoneBar(); renderMapInfo();
-  renderPanel();
+  safe('mundo',()=>{ if(state.view==='mundo') paintWorld(); });
+  safe('influencia',()=>{ if(state.view==='influencia'){ paintRegions(); drawFlows(); fitInfluencia(); } });
+  safe('capas',()=>{ updateSymbols(); updateColumns(); });
+  safe('marcadores',refreshMarkers); safe('sidebar',markSidebar); safe('regiones',renderRegionBar);
+  safe('zonas',renderZoneBar); safe('mapinfo',renderMapInfo);
+  safe('panel',renderPanel);
 }
 function select(p,additive){
   state.selType='punto'; state.regionSel=null;
@@ -1235,9 +1241,14 @@ function fitInfluencia(){
     ((state.metric==='imp'?state.sel.infl_imp:state.sel.infl_exp)||[]).forEach(r=>{
       const c=REGCENT[r.cod]; if(c&&r.pct>=1)pts.push(c); });
   }
-  if(pts.length>=2) map.fitBounds(L.latLngBounds(pts).pad(.2),{paddingTopLeft:[290,64],paddingBottomRight:[215,26]});
-  else if(pts.length===1) map.setView(pts[0],5);
-  else map.setView([-38,-71],4);
+  try{
+    const sz=map.getSize();
+    const pTL=[Math.min(290,Math.round(sz.x*.24)),Math.min(64,Math.round(sz.y*.18))];
+    const pBR=[Math.min(215,Math.round(sz.x*.20)),Math.min(26,Math.round(sz.y*.08))];
+    if(pts.length>=2) map.fitBounds(L.latLngBounds(pts).pad(.2),{paddingTopLeft:pTL,paddingBottomRight:pBR});
+    else if(pts.length===1) map.setView(pts[0],5);
+    else map.setView([-38,-71],4);
+  }catch(e){ map.setView([-38,-71],4); }
 }
 
 document.querySelectorAll('#viewSeg button').forEach(b=>b.onclick=()=>{ setView(b.dataset.v); renderZoneBar(); });

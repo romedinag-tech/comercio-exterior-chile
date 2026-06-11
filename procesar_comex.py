@@ -19,7 +19,7 @@ referencia geografica (tabla del spec). Los puntos sin coordenada se listan, no 
 Fuente: Servicio Nacional de Aduanas, microdatos DUS/DIN 2025; clasificador 2022 v2.0 y
 tablas de codigos del Servicio. Elaboracion propia.
 """
-import csv, json, unicodedata, sys, os
+import csv, json, unicodedata, sys, os, re, hashlib
 from collections import defaultdict, Counter
 import openpyxl
 import warnings
@@ -1008,6 +1008,17 @@ with open(os.path.join(HERE,"data_bundle.js"),"w",encoding="utf-8") as f:
     f.write("window.DATA = ")
     json.dump(bundle, f, ensure_ascii=False)
     f.write(";\n")
+
+# versiona la referencia al bundle en los HTML (cache-busting: evita HTML nuevo + datos viejos)
+_bhash = hashlib.md5(open(os.path.join(HERE,"data_bundle.js"),"rb").read()).hexdigest()[:10]
+for _page in ("index.html", "mapa_puertos.html"):
+    _pp = os.path.join(HERE, _page)
+    if os.path.exists(_pp):
+        _t = open(_pp, encoding="utf-8").read()
+        _t2 = re.sub(r'data_bundle\.js(\?v=[a-f0-9]+)?', f'data_bundle.js?v={_bhash}', _t)
+        if _t2 != _t:
+            open(_pp, "w", encoding="utf-8").write(_t2)
+print(f"  bundle v={_bhash} estampada en HTML", flush=True)
 
 # ---------------------------------------------------------------- reporte
 print("\n================ CUADRE DE CONTROL ================")

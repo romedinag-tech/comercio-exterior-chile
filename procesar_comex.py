@@ -338,6 +338,10 @@ def new_port():
                 mes_exp=[0.0]*12, mes_imp=[0.0]*12)
 
 ports = defaultdict(new_port)
+# perfil por REGION (export: COD_REGION_ORIGEN real; import: region de la aduana de nacionalizacion)
+regs = defaultdict(new_port)
+reg_ptos_exp = defaultdict(Counter)   # region -> punto de salida -> fob
+reg_ptos_imp = defaultdict(Counter)   # region -> punto de entrada -> cif
 nat = dict(fob=0.0, cif=0.0, peso_exp=0.0, peso_imp=0.0,
            dest=Counter(), orig=Counter(),
            mes_exp=[0.0]*12, mes_imp=[0.0]*12,
@@ -387,6 +391,17 @@ with open(EXPO, encoding="latin-1", newline="") as f:
         if via is not None: nat["via_exp"][via] += fob
         if tcar: nat["tc_exp"][tcar] += fob
         if clau is not None: nat["cl_exp"][clau] += fob
+        if region is not None:
+            rg = regs[region]
+            rg["fob"] += fob; rg["peso_exp"] += peso
+            if mes and 1 <= mes <= 12: rg["mes_exp"][mes-1] += fob
+            if pais is not None: rg["dest"][pais] += fob
+            if n1: rg["texp"][n1] += fob
+            if n2: rg["pexp"][n2] += fob; rg["pexp_kg"][n2] += peso
+            if via is not None: rg["via_exp"][via] += fob
+            if tcar: rg["tc_exp"][tcar] += fob
+            if clau is not None: rg["cl_exp"][clau] += fob
+            reg_ptos_exp[region][port] += fob
 print(f"  filas={n}  export-ops puntos CL={kept}  FOB nacional(all)={nat_fob_all:,.0f}", flush=True)
 
 # ---------------------------------------------------------------- IMPORTACIONES
@@ -430,7 +445,18 @@ with open(IMPO, encoding="latin-1", newline="") as f:
         if tcar: nat["tc_imp"][tcar] += cif
         if clau is not None: nat["cl_imp"][clau] += cif
         reg = ADUANA_REGION.get(aduana)
-        if reg is not None: nat["reg_imp"][reg] += cif
+        if reg is not None:
+            nat["reg_imp"][reg] += cif
+            rg = regs[reg]
+            rg["cif"] += cif; rg["peso_imp"] += peso; rg["advalorem"] += adval
+            if mes and 1 <= mes <= 12: rg["mes_imp"][mes-1] += cif
+            if pais is not None: rg["orig"][pais] += cif
+            if n1: rg["timp"][n1] += cif
+            if n2: rg["pimp"][n2] += cif; rg["pimp_kg"][n2] += peso
+            if via is not None: rg["via_imp"][via] += cif
+            if tcar: rg["tc_imp"][tcar] += cif
+            if clau is not None: rg["cl_imp"][clau] += cif
+            reg_ptos_imp[reg][port] += cif
         if n % 300000 == 0: print(f"    ...{n} filas", flush=True)
 print(f"  filas={n}  import-ops puntos CL={kept}  CIF nacional(all)={nat_cif_all:,.0f}", flush=True)
 
@@ -565,6 +591,43 @@ for cod in sorted(ports):
 registros.sort(key=lambda r: r["total"], reverse=True)
 sum_fob = sum(r["exp_fob"] for r in registros)
 sum_cif = sum(r["imp_cif"] for r in registros)
+
+# ---------------------------------------------------------------- perfil por REGION
+port_coord = {r["cod"]: (r["lat"], r["lon"]) for r in registros}
+
+def top_puntos(counter, total, k=10):
+    out=[]
+    for pc, v in counter.most_common(k):
+        info = PUERTOS.get(pc) or {}
+        la, lo = port_coord.get(pc, (None, None))
+        out.append(dict(cod=pc, nombre=info.get("nombre", f"PUNTO_{pc}"), lat=la, lon=lo,
+                        valor=round(v,1), pct=round(100*v/total,2) if total else 0))
+    return out
+
+regiones_perfil=[]
+for rc in sorted(regs):
+    d = regs[rc]
+    rtotal = d["fob"] + d["cif"]
+    if rtotal <= 0: continue
+    regiones_perfil.append(dict(
+        cod=rc, nombre=region_nombre(rc), tipo="Región", grupo="region",
+        lat=None, lon=None, coord_src=None,
+        exp_fob=round(d["fob"],1), imp_cif=round(d["cif"],1), total=round(rtotal,1),
+        peso_exp=round(d["peso_exp"],1), peso_imp=round(d["peso_imp"],1),
+        balance=round(d["cif"]-d["fob"],1), via_dom=via_dominante(d),
+        top_destinos=top_pais(d["dest"], d["fob"]),
+        top_origenes=top_pais(d["orig"], d["cif"]),
+        top_tipo_exp=top_tipo(d["texp"], d["fob"]),
+        top_tipo_imp=top_tipo(d["timp"], d["cif"]),
+        top_prod_exp=top_prod(d["pexp"], d["fob"]),
+        top_prod_imp=top_prod(d["pimp"], d["cif"]),
+        top_puntos_exp=top_puntos(reg_ptos_exp[rc], d["fob"]),
+        top_puntos_imp=top_puntos(reg_ptos_imp[rc], d["cif"]),
+        mes_exp=[round(x,1) for x in d["mes_exp"]],
+        mes_imp=[round(x,1) for x in d["mes_imp"]],
+        anual=None, estructura=estructura(d),
+    ))
+print(f"  regiones con perfil: {len(regiones_perfil)}", flush=True)
 
 # ---------------------------------------------------------------- paises_comercio (nacional)
 paises_comercio = dict(
@@ -873,8 +936,12 @@ MACRO=dict(
 )
 print(f"  prod_exp={len(prod_exp or [])} cont_imp={len(cont_imp or [])} paisprod={len(paisprod or [])} balanza_anios={len((balanza or {}).get('years',[]))} trafico_puntos={traf_n}", flush=True)
 
+with open(os.path.join(DATA,"regiones_perfil.json"),"w",encoding="utf-8") as f:
+    json.dump(regiones_perfil, f, ensure_ascii=False, indent=1)
+
 bundle = dict(meta=meta, nacional=nacional, puntos=registros, paises=paises_comercio,
-              world=world, regiones=chreg, region_nombres=REGIONES, macro=MACRO)
+              world=world, regiones=chreg, region_nombres=REGIONES, macro=MACRO,
+              regiones_perfil=regiones_perfil)
 with open(os.path.join(HERE,"data_bundle.js"),"w",encoding="utf-8") as f:
     f.write("window.DATA = ")
     json.dump(bundle, f, ensure_ascii=False)

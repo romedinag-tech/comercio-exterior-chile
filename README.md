@@ -34,6 +34,16 @@ Abre `index.html` en un navegador (funciona offline: todos los datos van embebid
   evolución de exportaciones e importaciones por tipo de producto 2012–2025, participación
   por continente, y país × tipo de producto (exportación 2025).
 - Buscador de puntos (insensible a acentos) y vista *Total nacional* por defecto.
+- **Análisis por región** (panel superior): perfil completo de cada región de Chile —
+  cuánto exporta/importa, de qué tipo de producto, con qué socios, y **por qué puntos
+  sale/entra su carga** (cruce región × punto desde el microdato). Exportación usa la
+  región de origen real (`COD_REGION_ORIGEN`); importación, la región de la aduana de
+  nacionalización (proxy). El cuadre región↔puntos es exacto. También se puede
+  seleccionar una región haciendo click en su polígono en la vista de influencia.
+- **Selección múltiple de puntos** (Ctrl/Cmd/Shift + click en el mapa o el listado):
+  agrega los perfiles de varios terminales —útil para puertos vecinos como San Vicente +
+  Lirquén + Coronel— y todas las pestañas muestran el agregado (HHI y precio por producto
+  se omiten porque requieren el universo completo de operaciones por punto).
 
 ## Metodología
 

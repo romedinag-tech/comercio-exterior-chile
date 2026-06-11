@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>Dinámicas Comercio Exterior de Chile · Puntos de transferencia de carga</title>
+<title>Dinámicas de Comercio Exterior de Chile</title>
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
@@ -106,7 +106,26 @@ header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:2px}
   box-shadow:0 2px 7px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.25);box-sizing:border-box}
 .mk svg{width:64%;height:64%;display:block}
 .mk.faint{opacity:.34}
-.mk.sel{box-shadow:0 0 0 3px var(--cop),0 0 16px rgba(227,165,102,.6),0 2px 9px rgba(0,0,0,.6)}
+.mk.sel{box-shadow:0 0 0 3px var(--cop),0 0 16px rgba(227,165,102,.6),0 2px 9px rgba(0,0,0,.6);
+  animation:selpulse 1.7s ease-out infinite}
+@keyframes selpulse{
+  0%{box-shadow:0 0 0 3px var(--cop),0 0 0 0 rgba(227,165,102,.55),0 2px 9px rgba(0,0,0,.6)}
+  70%{box-shadow:0 0 0 3px var(--cop),0 0 0 14px rgba(227,165,102,0),0 2px 9px rgba(0,0,0,.6)}
+  100%{box-shadow:0 0 0 3px var(--cop),0 0 0 0 rgba(227,165,102,0),0 2px 9px rgba(0,0,0,.6)}
+}
+@media (prefers-reduced-motion:reduce){.mk.sel{animation:none}}
+/* panel superior de regiones */
+.regionbar{display:flex;gap:6px;overflow-x:auto;padding:7px 14px 8px;background:var(--bg2);
+  border-bottom:1px solid var(--line);align-items:stretch;flex:0 0 auto}
+.regionbar::-webkit-scrollbar{height:6px}
+.regionbar::-webkit-scrollbar-thumb{background:rgba(255,255,255,.12);border-radius:6px}
+.rchip{flex:0 0 auto;cursor:pointer;border:1px solid var(--line);border-radius:9px;padding:4px 10px 5px;
+  background:rgba(255,255,255,.03);transition:border-color .15s,background .15s;text-align:left}
+.rchip .rn{font-size:10px;font-weight:600;color:var(--ink2);white-space:nowrap;letter-spacing:.3px}
+.rchip .rv{font-family:var(--fd);font-size:10.5px;color:var(--mut);margin-top:1px}
+.rchip:hover{border-color:var(--cop)}
+.rchip.on{background:var(--cop-soft);border-color:var(--cop)}
+.rchip.on .rn,.rchip.on .rv{color:var(--cop)}
 .leaflet-tooltip.wt{background:var(--surface);color:var(--ink);border:1px solid var(--line);box-shadow:var(--shadow);
   font-size:11.5px;border-radius:9px;padding:7px 10px;font-family:var(--ff)}
 .leaflet-tooltip.wt b{color:#fff}
@@ -207,8 +226,8 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
       <circle cx="20" cy="20" r="2.4" fill="#080d15"/>
     </svg>
     <div>
-      <h1>Dinámicas Comercio Exterior de Chile <b>2025</b></h1>
-      <div class="sub">Inteligencia de puntos de transferencia de carga · DUS / DIN — Aduanas</div>
+      <h1>Dinámicas de Comercio Exterior de <b>Chile</b></h1>
+      <div class="sub">Inteligencia de puntos de transferencia de carga · DUS / DIN 2025 — Aduanas</div>
     </div>
   </div>
   <div class="spacer"></div>
@@ -217,10 +236,12 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
   <div class="stat tot"><span class="sl">Puntos activos</span><span class="sv num" id="hPts">—</span></div>
 </header>
 
+<div class="regionbar" id="regionbar" title="Análisis por región: click en una región para ver su perfil completo"></div>
+
 <div class="app">
   <div class="top">
     <div class="sidebar">
-      <div class="sbhead"><b>Ir a un punto</b><div class="hint">Click → el mapa vuela al terminal</div></div>
+      <div class="sbhead"><b>Ir a un punto</b><div class="hint">Click → ver punto · Ctrl+Click → comparar varios</div></div>
       <div class="sblist" id="sblist"></div>
     </div>
 
@@ -304,6 +325,15 @@ const D = window.DATA;
 const PUNTOS = D.puntos.slice();
 const NAC = D.nacional;
 const byCod = {}; PUNTOS.forEach(p=>byCod[p.cod]=p); byCod[0]=NAC;
+const REGS=(D.regiones_perfil||[]).slice();
+REGS.forEach(r=>{ r.nombre=(r.nombre||'').replace('DEL DEL','DEL'); });
+const byReg={}; REGS.forEach(r=>byReg[r.cod]=r);
+const REG_NS=[15,1,2,3,4,5,13,6,7,16,8,9,14,10,11,12];   // orden norte -> sur
+function shortReg(cod,nombre){
+  if(cod===0) return 'ORIGEN NO DECLARADO';
+  if(cod===20) return 'REEXPORTACIONES';
+  return (nombre||'').replace(/^REGI[ÓO]N (DE LA |DE LOS |DEL DEL |DEL |DE )?/,'');
+}
 const EXP='#2dd4bf', IMP='#f47b46';
 const fmtUSD = v => {
   if(v==null) return '—';
@@ -321,8 +351,8 @@ const fmtTon = v => {
   if(a>=1e3) return (v/1e3).toFixed(0)+' t';
   return v.toFixed(0)+' kg';
 };
-const GCOL={maritimo:'#4f9bff',aereo:'#f0b45e',terrestre:'#46d38a',nacional:'#b581f0'};
-const GLAB={maritimo:'Marítimo',aereo:'Aéreo',terrestre:'Terrestre / fronterizo',nacional:'Nacional'};
+const GCOL={maritimo:'#4f9bff',aereo:'#f0b45e',terrestre:'#46d38a',nacional:'#b581f0',region:'#e3a566'};
+const GLAB={maritimo:'Marítimo',aereo:'Aéreo',terrestre:'Terrestre / fronterizo',nacional:'Nacional',region:'Región'};
 const MESES=['Ene','Feb','Mar','Abr','May','Jun','Jul','Ago','Sep','Oct','Nov','Dic'];
 const PALETTE=['#4f9bff','#f47b46','#2dd4bf','#b581f0','#f0b45e','#46d38a','#f472b6','#38bdf8'];
 const deacc=s=>(s||'').normalize('NFD').replace(/[̀-ͯ]/g,'').toLowerCase();
@@ -339,10 +369,58 @@ function macrozona(lat){
 }
 
 let state = { sel:NAC, view:'puntos', metric:'total', tab:'perfil', cmp:new Set(),
-              infl:{scope:'nacional',dir:'exp'}, repr:'coropleta' };
+              infl:{scope:'nacional',dir:'exp'}, repr:'coropleta',
+              selType:'punto', multi:new Set([0]), regionSel:null, regionPorts:null };
+
+// ---- fusión de registros (selección múltiple de puntos) ----
+function mTop(list,key,tot,k){
+  const m=new Map();
+  list.forEach(p=>(p[key]||[]).forEach(it=>{
+    const id=it.cod!=null?it.cod:it.nombre; const cur=m.get(id);
+    if(cur) cur.valor=(cur.valor||0)+(it.valor||0); else m.set(id,{...it});
+  }));
+  return [...m.values()].sort((a,b)=>(b.valor||0)-(a.valor||0)).slice(0,k)
+    .map(it=>({...it,pct:tot?+(100*(it.valor||0)/tot).toFixed(2):0}));
+}
+function recalcAcum(arr){ let a=0; return arr.map(it=>{a+=it.pct;return {...it,pct_acum:+a.toFixed(2)};}); }
+function mergeRecs(list){
+  if(list.length===1) return list[0];
+  const sum=k=>list.reduce((s,p)=>s+(+p[k]||0),0);
+  const exp=sum('exp_fob'), cif=sum('imp_cif');
+  const mSer=k=>{ const base=list.find(p=>p[k]); if(!base)return null;
+    const out=Array(base[k].length).fill(0); list.forEach(p=>(p[k]||[]).forEach((v,i)=>out[i]+=v)); return out; };
+  const anual = list.every(p=>p.anual) ? (()=>{ const y=list[0].anual.years;
+    const f=k=>{const o=Array(y.length).fill(0);list.forEach(p=>p.anual[k].forEach((v,i)=>o[i]+=v));return o;};
+    return {years:y,exp_fob:f('exp_fob'),imp_cif:f('imp_cif'),exp_kg:f('exp_kg'),imp_kg:f('imp_kg')};})() : null;
+  const eL=list.map(p=>p.estructura).filter(Boolean);
+  const mE2=(key,tot)=>{ const m=new Map(); eL.forEach(e=>(e[key]||[]).forEach(it=>{
+      const cur=m.get(it.nombre); if(cur)cur.valor+=it.valor||0; else m.set(it.nombre,{...it}); }));
+    return [...m.values()].sort((a,b)=>b.valor-a.valor).map(it=>({...it,pct:tot?+(100*it.valor/tot).toFixed(2):0})); };
+  const adval=eL.reduce((s,e)=>s+(e.advalorem||0),0);
+  const estr = eL.length===list.length ? {
+    via_exp:mE2('via_exp',exp), via_imp:mE2('via_imp',cif),
+    tcarga_exp:mE2('tcarga_exp',exp), tcarga_imp:mE2('tcarga_imp',cif),
+    incoterm_exp:mE2('incoterm_exp',exp), incoterm_imp:mE2('incoterm_imp',cif),
+    hhi:null, precio_exp:[], precio_imp:[],
+    usd_kg_exp:(sum('peso_exp')>0? +(exp/sum('peso_exp')).toFixed(2):null),
+    usd_kg_imp:(sum('peso_imp')>0? +(cif/sum('peso_imp')).toFixed(2):null),
+    advalorem:adval, advalorem_pct: cif? +(100*adval/cif).toFixed(2):0
+  } : null;
+  return { cod:-1, multi:true, nombre:list.map(p=>p.nombre).join(' + '),
+    tipo:`Selección múltiple · ${list.length} puntos`, grupo:list[0].grupo,
+    lat:list[0].lat, lon:list[0].lon,
+    exp_fob:exp, imp_cif:cif, total:exp+cif,
+    peso_exp:sum('peso_exp'), peso_imp:sum('peso_imp'), balance:cif-exp, via_dom:null,
+    top_destinos:mTop(list,'top_destinos',exp,8), top_origenes:mTop(list,'top_origenes',cif,8),
+    top_tipo_exp:mTop(list,'top_tipo_exp',exp,8), top_tipo_imp:mTop(list,'top_tipo_imp',cif,8),
+    top_prod_exp:recalcAcum(mTop(list,'top_prod_exp',exp,12)),
+    top_prod_imp:recalcAcum(mTop(list,'top_prod_imp',cif,12)),
+    infl_exp:mTop(list,'infl_exp',exp,16), infl_imp:mTop(list,'infl_imp',cif,16),
+    mes_exp:mSer('mes_exp'), mes_imp:mSer('mes_imp'), anual, estructura:estr };
+}
 
 // mapa
-const map = L.map('map',{zoomControl:false,minZoom:2,worldCopyJump:true}).setView([-38,-71],4);
+const map = L.map('map',{zoomControl:false,minZoom:1.5,zoomSnap:.5,worldCopyJump:true}).setView([-38,-71],4);
 L.control.zoom({position:'bottomright'}).addTo(map);
 L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png',
   {attribution:'© OpenStreetMap © CARTO',subdomains:'abcd',maxZoom:19}).addTo(map);
@@ -381,14 +459,18 @@ const GLYPHS={
   contenedor:c=>`<svg viewBox="0 0 24 24" fill="#fff"><rect x="2.4" y="13" width="7" height="7.6" rx="1"/><rect x="10" y="13" width="7" height="7.6" rx="1"/><rect x="6.3" y="4.9" width="7" height="7.6" rx="1"/><g stroke="${c}" stroke-width="1.1"><line x1="4.7" y1="13.7" x2="4.7" y2="19.9"/><line x1="7.1" y1="13.7" x2="7.1" y2="19.9"/><line x1="12.3" y1="13.7" x2="12.3" y2="19.9"/><line x1="14.7" y1="13.7" x2="14.7" y2="19.9"/><line x1="8.6" y1="5.6" x2="8.6" y2="11.8"/><line x1="11" y1="5.6" x2="11" y2="11.8"/></g></svg>`,
 };
 function badgeDiameter(p,faint){ let d=2*pointRadius(p); d=Math.max(20,Math.min(46,d)); return Math.round(faint?d*0.74:d); }
+function isSelectedPoint(p){
+  if(state.selType==='region') return !!(state.regionPorts && state.regionPorts.has(p.cod));
+  return state.multi.has(p.cod);
+}
 function makeIcon(p){
   if(state.view==='puntos' && state.repr==='columnas'){
-    const sel=state.sel&&state.sel.cod===p.cod; const dd=sel?16:12;
+    const sel=isSelectedPoint(p); const dd=sel?16:12;
     return L.divIcon({html:`<div class="mkdot" style="background:${GCOL[p.grupo]}${sel?';box-shadow:0 0 0 3px var(--cop)':''}"></div>`,
       className:'mkwrap',iconSize:[dd,dd],iconAnchor:[dd/2,dd/2]});
   }
-  const faint = state.view==='influencia' && !(state.sel && state.sel.cod===p.cod);
-  const sel   = state.sel && state.sel.cod===p.cod && state.view!=='mundo';
+  const faint = state.view==='influencia' && !isSelectedPoint(p);
+  const sel   = isSelectedPoint(p) && state.view!=='mundo';
   const d=badgeDiameter(p,faint), col=GCOL[p.grupo];
   const html=`<div class="mk ${faint?'faint':''} ${sel?'sel':''}" style="width:${d}px;height:${d}px;background:${col}">${GLYPHS[glyphKey(p.tipo)](col)}</div>`;
   return L.divIcon({html,className:'mkwrap',iconSize:[d,d],iconAnchor:[d/2,d/2]});
@@ -403,8 +485,8 @@ function drawPoints(){
     if(p.lat==null) return;
     const m=L.marker([p.lat,p.lon],{icon:makeIcon(p)});
     const pr=prodPrincipal(p);
-    m.on('click',()=>select(p));
-    m.bindTooltip(`<b>${p.nombre}</b><br>${p.tipo} · ${fmtUSD(p.total)}`+
+    m.on('click',e=>{ const oe=e.originalEvent||{}; select(p, oe.ctrlKey||oe.metaKey||oe.shiftKey); });
+    m.bindTooltip(`<b>${p.nombre}</b><br>${p.tipo} · ${fmtUSD(p.total)}<br><span style="color:#7385a0">Ctrl+click: sumar a la selección</span>`+
       (pr.exp?`<br>Exporta: ${pr.exp}`:'')+(pr.imp?`<br>Importa: ${pr.imp}`:''),{className:'wt'});
     m.addTo(layerPoints); markers[p.cod]=m;
   });
@@ -435,25 +517,50 @@ function paintWorld(){
     ly.bindTooltip(`<b>${ly.feature.properties.name}</b>`+(d?`<br>${met}: ${fmtUSD(d.val)} · ${d.pct.toFixed(1)}%`:'<br><span style="color:#7385a0">sin registro</span>'),{className:'wt',sticky:true});
   });
 }
-function buildRegions(){ if(layerRegions) return; layerRegions=L.geoJSON(D.regiones,{style:{weight:.5,color:'rgba(255,255,255,.16)',fillColor:'#101a28',fillOpacity:.55}}); }
+function buildRegions(){ if(layerRegions) return;
+  layerRegions=L.geoJSON(D.regiones,{style:{weight:.5,color:'rgba(255,255,255,.16)',fillColor:'#101a28',fillOpacity:.55},
+    onEachFeature:(f,ly)=>ly.on('click',()=>selectRegion(f.properties.codregion))}); }
 function regShares(kind){ const m={}; const arr= kind==='imp'? state.sel.infl_imp : state.sel.infl_exp; (arr||[]).forEach(r=>m[r.cod]={pct:r.pct,val:r.valor,nombre:r.nombre}); return m; }
 function paintRegions(){
+  const choro=isChoro();
+  if(state.selType==='region'){
+    layerRegions.eachLayer(ly=>{
+      const cr=ly.feature.properties.codregion; const isSel=cr===state.sel.cod;
+      const col=state.metric==='imp'?IMP:EXP;
+      ly.setStyle({fillColor:isSel?col:'#0e1726', fillOpacity:isSel?.5:.35,
+        color:isSel?'rgba(255,255,255,.55)':'rgba(255,255,255,.12)', weight:isSel?1.4:.5});
+      ly.unbindTooltip();
+      const rr=byReg[cr];
+      ly.bindTooltip(`<b>${ly.feature.properties.nombre}</b>`+
+        (rr?`<br><span style="color:${EXP}">Exporta: ${fmtUSD(rr.exp_fob)}</span><br><span style="color:${IMP}">Importa: ${fmtUSD(rr.imp_cif)}</span>`:'<br><span style="color:#7385a0">sin registro</span>')+
+        `<br><span style="color:#7385a0">Click: analizar esta región</span>`,{className:'wt',sticky:true});
+    });
+    return;
+  }
   const ex=regShares('exp'), im=regShares('imp');
   const usar = state.metric==='imp' ? im : ex;
-  const choro=isChoro();
   layerRegions.eachLayer(ly=>{
     const cr=ly.feature.properties.codregion; const d=usar[cr];
-    ly.setStyle({fillColor: (!choro||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: !choro?.4:(d?.9:.45), color:'rgba(255,255,255,.14)'});
+    ly.setStyle({fillColor: (!choro||!d)?'#0e1726':rampMetric(d.pct), fillOpacity: !choro?.4:(d?.9:.45), color:'rgba(255,255,255,.14)', weight:.5});
     ly.unbindTooltip();
     ly.bindTooltip(`<b>${ly.feature.properties.nombre}</b>`+
       `<br><span style="color:${EXP}">Origen export: ${ex[cr]?ex[cr].pct.toFixed(1)+'%':'—'}</span>`+
-      `<br><span style="color:${IMP}">Nacionaliz. import: ${im[cr]?im[cr].pct.toFixed(1)+'%':'—'}</span>`,{className:'wt',sticky:true});
+      `<br><span style="color:${IMP}">Nacionaliz. import: ${im[cr]?im[cr].pct.toFixed(1)+'%':'—'}</span>`+
+      `<br><span style="color:#7385a0">Click: analizar esta región</span>`,{className:'wt',sticky:true});
   });
 }
 function drawFlows(){
   layerFlows.clearLayers();
-  const s=state.sel; if(s.lat==null) return;
   const W=p=>Math.max(1.2,Math.min(11,Math.sqrt(p)*1.9));
+  if(state.selType==='region'){
+    const c=REGCENT[state.sel.cod]; if(!c) return;
+    (state.sel.top_puntos_exp||[]).forEach(t=>{ if(t.lat==null||t.pct<0.5)return;
+      L.polyline([c,[t.lat,t.lon]],{color:EXP,weight:W(t.pct),opacity:.6}).addTo(layerFlows); });
+    (state.sel.top_puntos_imp||[]).forEach(t=>{ if(t.lat==null||t.pct<0.5)return;
+      L.polyline([[t.lat,t.lon],c],{color:IMP,weight:W(t.pct),opacity:.5,dashArray:'4 4'}).addTo(layerFlows); });
+    return;
+  }
+  const s=state.sel; if(s.lat==null) return;
   (s.infl_exp||[]).forEach(r=>{ const c=REGCENT[r.cod]; if(!c||r.pct<0.5)return; L.polyline([c,[s.lat,s.lon]],{color:EXP,weight:W(r.pct),opacity:.6}).addTo(layerFlows); });
   (s.infl_imp||[]).forEach(r=>{ const c=REGCENT[r.cod]; if(!c||r.pct<0.5)return; L.polyline([[s.lat,s.lon],c],{color:IMP,weight:W(r.pct),opacity:.5,dashArray:'4 4'}).addTo(layerFlows); });
 }
@@ -461,6 +568,10 @@ function drawFlows(){
 // símbolos proporcionales (forma cartográfica alternativa)
 function geoItems(){
   if(state.view==='influencia'){
+    if(state.selType==='region'){
+      const arr=(state.metric==='imp'?state.sel.top_puntos_imp:state.sel.top_puntos_exp)||[];
+      return arr.filter(t=>t.lat!=null).map(t=>({nombre:t.nombre,val:t.valor,pct:t.pct,c:[t.lat,t.lon]}));
+    }
     const arr=(state.metric==='imp'?state.sel.infl_imp:state.sel.infl_exp)||[];
     return arr.map(r=>({nombre:r.nombre,val:r.valor,pct:r.pct,c:REGCENT[r.cod]}));
   } else if(state.view==='mundo'){
@@ -561,8 +672,8 @@ function setView(v){
   if(layerRegions) map.removeLayer(layerRegions);
   if(layerWorld) map.removeLayer(layerWorld);
   if(v==='puntos'){ layerPoints.addTo(map); refreshMarkers(); map.setView([-38,-71],4); }
-  else if(v==='influencia'){ buildRegions(); layerRegions.addTo(map); paintRegions(); layerFlows.addTo(map); drawFlows(); layerPoints.addTo(map); refreshMarkers(); map.setView([-38,-71],4); }
-  else if(v==='mundo'){ buildWorld(); layerWorld.addTo(map); paintWorld(); map.setView([8,70],2); }
+  else if(v==='influencia'){ buildRegions(); layerRegions.addTo(map); paintRegions(); layerFlows.addTo(map); drawFlows(); layerPoints.addTo(map); refreshMarkers(); fitInfluencia(); }
+  else if(v==='mundo'){ buildWorld(); layerWorld.addTo(map); paintWorld(); map.fitBounds([[-58,-168],[74,178]]); }
   updateSymbols(); updateColumns(); renderLegend();
 }
 function renderLegend(){
@@ -595,25 +706,34 @@ function zoneBarsHTML(){
     html+=`<div class="zseg ${z===selZ?'hl':''}" style="background:${ZCOL[z]};flex-grow:${Math.max(pct,3)}"><span class="zp">${pct.toFixed(1)}%</span><small>${z}</small></div>`; });
   return html+'</div>';
 }
+function cbTitle(){
+  const imp=state.metric==='imp';
+  if(state.view==='mundo') return imp?'Origen mundial de las importaciones':'Destino mundial de las exportaciones';
+  if(state.selType==='region') return imp?'Puntos de entrada de las importaciones':'Puntos de salida de las exportaciones';
+  return imp?'Destino regional de las importaciones':'Origen regional de las exportaciones';
+}
 function topItemsHTML(){
-  const isWorld=state.view==='mundo'; const capwho=isWorld?'países':'regiones';
+  const isWorld=state.view==='mundo';
+  const isReg=state.selType==='region' && !isWorld;
+  const capwho=isWorld?'países':(isReg?'puntos':'regiones');
+  const quien=state.selType==='region'?'de la región':(state.sel.cod===0?'nacional':(state.sel.multi?'de la selección':'del punto'));
   let tops;
   if(isWorld){ const sh=selCountryShares(); tops=Object.values(sh).sort((a,b)=>b.pct-a.pct).slice(0,6).map(d=>({n:d.name,pct:d.pct})); }
+  else if(isReg){ const arr=(state.metric==='imp'?state.sel.top_puntos_imp:state.sel.top_puntos_exp)||[]; tops=arr.filter(r=>r.pct>0).slice(0,6).map(r=>({n:r.nombre,pct:r.pct})); }
   else { const arr=(state.metric==='imp'?state.sel.infl_imp:state.sel.infl_exp)||[]; tops=arr.filter(r=>r.pct>0).slice(0,6).map(r=>({n:r.nombre,pct:r.pct})); }
-  return `<div class="ctop"><div class="ccap">Top ${capwho} · ${state.sel.cod===0?'nacional':'del punto'}</div>
+  return `<div class="ctop"><div class="ccap">Top ${capwho} · ${quien}</div>
       ${tops.length?tops.map(d=>`<div class="ci"><span title="${d.n}">${d.n}</span><span class="p num">${d.pct.toFixed(1)}%</span></div>`).join(''):'<div class="muted">Sin datos.</div>'}</div>`;
 }
 function colorbarHTML(){
   const k=state.metric==='imp'?'imp':'exp'; const stops=RAMP[k];
   const grad=`linear-gradient(to top, ${stops.map((s,i)=>`${s[1]} ${Math.round(i/(stops.length-1)*100)}%`).join(',')})`;
-  const titulo = state.metric==='imp'?'% importación':'% exportación';
   const ticks=[...stops].map(s=>s[0]).reverse();
-  return `<div class="zt">${titulo}</div>
+  return `<div class="zt">${cbTitle()}</div>
     <div class="cbarbox"><div class="cbar" style="background:${grad}"></div>
       <div class="cticks">${ticks.map((t,i)=>`<span>${i===0?'≥':''}${t}%</span>`).join('')}</div></div>`+topItemsHTML();
 }
 function sizeLegendHTML(){
-  const titulo = state.metric==='imp'?'Importación · US$' : 'Exportación · US$';
+  const titulo = cbTitle();
   const col=state.metric==='imp'?IMP:EXP;
   const items=geoItems().filter(i=>i.c&&i.val>0); const max=Math.max(1,...items.map(i=>i.val));
   const vals=[max, max/3, max/9].filter((v,i,a)=>v>0 && a.indexOf(v)===i);
@@ -665,11 +785,28 @@ function renderSidebar(){
     grp.innerHTML=`<div class="gh"><span class="lic" style="background:${col}">${GLYPHS[glyphKey(t)](col)}</span>${t}<span class="cnt num">${pts.length}</span><span class="car">▾</span></div>
       <div class="gitems">`+pts.map(p=>`<div class="it" data-c="${p.cod}"><span>${p.nombre}</span><span class="v num">${fmtUSD(p.total)}</span></div>`).join('')+`</div>`;
     grp.querySelector('.gh').onclick=()=>grp.classList.toggle('collapsed');
-    grp.querySelectorAll('.it').forEach(it=>it.onclick=()=>{ const p=byCod[it.dataset.c]; select(p); if(p.lat!=null && state.view==='puntos') map.setView([p.lat,p.lon],7); });
+    grp.querySelectorAll('.it').forEach(it=>it.onclick=e=>{ const p=byCod[it.dataset.c]; const add=e.ctrlKey||e.metaKey||e.shiftKey;
+      select(p,add); if(!add && p.lat!=null && state.view==='puntos') map.setView([p.lat,p.lon],7); });
     el.appendChild(grp);
   });
 }
-function markSidebar(){ document.querySelectorAll('#sblist .it').forEach(it=>it.classList.toggle('sel',+it.dataset.c===state.sel.cod)); }
+function markSidebar(){ document.querySelectorAll('#sblist .it').forEach(it=>it.classList.toggle('sel', state.selType==='punto' && state.multi.has(+it.dataset.c))); }
+
+// ---- panel superior: análisis por región ----
+function renderRegionBar(){
+  const el=document.getElementById('regionbar'); if(!el) return;
+  const order=REG_NS.filter(c=>byReg[c]);
+  const extras=REGS.map(r=>r.cod).filter(c=>!REG_NS.includes(c));
+  let html=`<div class="rchip ${state.selType==='punto'&&state.multi.has(0)?'on':''}" data-r="nac" title="Perfil nacional completo"><div class="rn">CHILE · TOTAL</div><div class="rv num">${fmtUSD(NAC.total)}</div></div>`;
+  order.concat(extras).forEach(c=>{ const r=byReg[c];
+    html+=`<div class="rchip ${state.selType==='region'&&state.regionSel===c?'on':''}" data-r="${c}" title="${r.nombre}"><div class="rn">${shortReg(c,r.nombre)}</div><div class="rv num">${fmtUSD(r.total)}</div></div>`; });
+  el.innerHTML=html;
+  el.querySelectorAll('.rchip').forEach(ch=>ch.onclick=()=>{
+    const v=ch.dataset.r;
+    if(v==='nac'){ state.selType='punto'; state.regionSel=null; state.multi=new Set([0]); applySelection(); }
+    else selectRegion(+v);
+  });
+}
 
 let charts=[];
 function clearCharts(){ charts.forEach(c=>c.destroy()); charts=[]; }
@@ -684,10 +821,12 @@ function barsHTML(items,color,valuef){
 
 function renderPanel(){
   const p=state.sel;
-  document.getElementById('pTipo').textContent = p.cod===0?'Total nacional':GLAB[p.grupo];
+  document.getElementById('pTipo').textContent = p.cod===0?'Total nacional':(p.multi?'Selección múltiple':GLAB[p.grupo]);
   document.getElementById('pTipo').style.color = GCOL[p.grupo]||'#b581f0';
   document.getElementById('pName').textContent = p.nombre;
   document.getElementById('pReg').textContent = p.cod===0?'Chile · todos los puntos':
+     p.grupo==='region'?'Análisis territorial por región':
+     p.multi?p.tipo:
      (p.lat!=null?macrozona(p.lat):'')+(p.via_dom?' · vía dominante '+p.via_dom:'');
   document.getElementById('kExp').textContent=fmtUSD(p.exp_fob);
   document.getElementById('kImp').textContent=fmtUSD(p.imp_cif);
@@ -751,12 +890,13 @@ function renderEstructura(body,p){
    <div class="card">${dual('Tipo de carga · exportación',e.tcarga_exp,EXP,'Tipo de carga · importación',e.tcarga_imp,IMP)}</div>
    <div class="card">${dual('Incoterm · exportación',e.incoterm_exp,EXP,'Incoterm · importación',e.incoterm_imp,IMP)}</div>
    <div class="card"><h3>Concentración · índice HHI</h3>
-     <div class="bars">${hhiRow('Destinos (export)',hh.destinos)}${hhiRow('Orígenes (import)',hh.origenes)}${hhiRow('Productos export',hh.prod_exp)}${hhiRow('Productos import',hh.prod_imp)}</div>
-     <div class="muted" style="margin-top:6px">0–10.000. &lt;1.500 diversificado · 1.500–2.500 moderado · &gt;2.500 concentrado.</div></div>
+     ${hh?`<div class="bars">${hhiRow('Destinos (export)',hh.destinos)}${hhiRow('Orígenes (import)',hh.origenes)}${hhiRow('Productos export',hh.prod_exp)}${hhiRow('Productos import',hh.prod_imp)}</div>
+     <div class="muted" style="margin-top:6px">0–10.000. &lt;1.500 diversificado · 1.500–2.500 moderado · &gt;2.500 concentrado.</div>`
+     :`<div class="muted">No disponible para selección múltiple: el HHI se calcula sobre el universo completo de operaciones de cada punto.</div>`}</div>
    <div class="card"><h3>Precio implícito · US$/kg</h3>
      <div class="kpis" style="margin:0 0 9px"><div class="kpi exp"><div class="l">Export US$/kg</div><div class="v num">${e.usd_kg_exp??'—'}</div></div>
        <div class="kpi imp"><div class="l">Import US$/kg</div><div class="v num">${e.usd_kg_imp??'—'}</div></div></div>
-     <h3>Top productos exportados</h3>${precioList(e.precio_exp)}</div>
+     <h3>Top productos exportados</h3>${(e.precio_exp&&e.precio_exp.length)?precioList(e.precio_exp):'<div class="muted">Detalle por producto no disponible para selección múltiple.</div>'}</div>
    <div class="card"><h3>Arancel ad-valorem recaudado · importación</h3>
      <div class="kpis" style="margin:0"><div class="kpi"><div class="l">Total recaudado</div><div class="v num" style="color:var(--cop)">${fmtUSD(e.advalorem)}</div></div>
        <div class="kpi"><div class="l">% del CIF</div><div class="v num">${e.advalorem_pct}%</div></div></div>
@@ -797,11 +937,14 @@ function renderTerrestre(body,p){
 }
 
 function renderPerfil(body,p){
+  const regCard = p.grupo==='region'
+    ? `<div class="card"><h3>Puntos de salida · exportaciones de la región</h3>${barsHTML(p.top_puntos_exp,EXP,i=>fmtUSD(i.valor))}
+       <h3 style="margin-top:14px">Puntos de entrada · importaciones</h3>${barsHTML(p.top_puntos_imp,IMP,i=>fmtUSD(i.valor))}</div>` : '';
   body.innerHTML=`
    <div class="card"><h3>Destinos de exportación · FOB</h3>${barsHTML(p.top_destinos,EXP,i=>fmtUSD(i.valor))}</div>
    <div class="card"><h3>Orígenes de importación · CIF</h3>${barsHTML(p.top_origenes,IMP,i=>fmtUSD(i.valor))}</div>
    <div class="card"><h3>Tipo de producto · exportación</h3>${barsHTML(p.top_tipo_exp,'#5eead4')}
-     <h3 style="margin-top:14px">Tipo de producto · importación</h3>${barsHTML(p.top_tipo_imp,'#fdba74')}</div>
+     <h3 style="margin-top:14px">Tipo de producto · importación</h3>${barsHTML(p.top_tipo_imp,'#fdba74')}</div>`+regCard+`
    <div class="card wide"><h3>Principio 80/20 · productos exportados</h3><div class="chartbox"><canvas id="c8020"></canvas></div></div>`;
   draw8020(p);
 }
@@ -887,15 +1030,21 @@ function renderInfluencia(body,p){
   const {scope,dir}=state.infl;
   let items, titulo, color;
   if(scope==='nacional'){
-    const arr = dir==='imp'? p.infl_imp : p.infl_exp;
-    items = (arr||[]).map(r=>({nombre:r.nombre,pct:r.pct,valor:r.valor}));
-    titulo = `Regiones de Chile · ${dir==='imp'?'nacionalización de importaciones':'origen de exportaciones'}`;
+    if(state.selType==='region'){
+      const arr = dir==='imp'? p.top_puntos_imp : p.top_puntos_exp;
+      items = (arr||[]).map(r=>({nombre:r.nombre,pct:r.pct,valor:r.valor}));
+      titulo = dir==='imp'?'Puntos de entrada de las importaciones de la región':'Puntos de salida de las exportaciones de la región';
+    } else {
+      const arr = dir==='imp'? p.infl_imp : p.infl_exp;
+      items = (arr||[]).map(r=>({nombre:r.nombre,pct:r.pct,valor:r.valor}));
+      titulo = dir==='imp'?'Destino regional de las importaciones':'Origen regional de las exportaciones';
+    }
     color = dir==='imp'?IMP:EXP;
   } else {
     let arr;
     if(p.cod===0) arr=(dir==='imp'?D.paises.imp:D.paises.exp).slice(0,15).map(r=>({nombre:r.nombre,pct:r.pct,valor:r[dir==='imp'?'cif':'fob']}));
     else arr=(dir==='imp'?p.top_origenes:p.top_destinos).map(r=>({nombre:r.nombre,pct:r.pct,valor:r.valor}));
-    items=arr; titulo=`Países del mundo · ${dir==='imp'?'orígenes de importación':'destinos de exportación'}`; color=dir==='imp'?IMP:EXP;
+    items=arr; titulo=dir==='imp'?'Origen mundial de las importaciones':'Destino mundial de las exportaciones'; color=dir==='imp'?IMP:EXP;
   }
   body.innerHTML=`
    <div class="card wide">
@@ -906,9 +1055,13 @@ function renderInfluencia(body,p){
    <div class="card wide"><h3>${titulo}</h3>${barsHTML(items,color,i=>fmtUSD(i.valor))}</div>
    <div class="card"><h3>Lectura</h3>
      <div class="muted">${scope==='nacional'
-        ? (dir==='imp'
-           ? 'Región donde se <b>nacionaliza</b> la carga importada por este punto (aduana de tramitación). <b>No</b> es el destino de consumo final: el microdato DIN no lo registra.'
-           : 'Región del país <b>de donde proviene</b> la carga exportada por este punto (dato real, COD_REGION_ORIGEN).')
+        ? (state.selType==='region'
+           ? (dir==='imp'
+              ? 'Puntos de transferencia por los que <b>entra</b> la carga importada que se nacionaliza en esta región.'
+              : 'Puntos de transferencia por los que <b>sale</b> la carga exportada que se origina en esta región.')
+           : (dir==='imp'
+              ? 'Región donde se <b>nacionaliza</b> la carga importada por este punto (aduana de tramitación). <b>No</b> es el destino de consumo final: el microdato DIN no lo registra.'
+              : 'Región del país <b>de donde proviene</b> la carga exportada por este punto (dato real, COD_REGION_ORIGEN).'))
         : (dir==='imp' ? 'Países desde donde se importa la carga que ingresa por este punto.' : 'Países a donde se exporta la carga que sale por este punto.')}</div>
    </div>`;
   state.metric = dir;
@@ -919,14 +1072,52 @@ function renderInfluencia(body,p){
   body.querySelectorAll('#inflDir button').forEach(b=>b.onclick=()=>{ state.infl.dir=b.dataset.d; renderInfluencia(body,state.sel); });
 }
 
-function select(p){
-  state.sel=p;
+function applySelection(){
+  if(state.selType==='region'){
+    const r=byReg[state.regionSel];
+    state.sel=r||NAC;
+    state.regionPorts=r?new Set([...(r.top_puntos_exp||[]),...(r.top_puntos_imp||[])].map(t=>t.cod)):null;
+  } else {
+    state.regionPorts=null;
+    const list=[...state.multi].map(c=>byCod[c]).filter(Boolean);
+    state.sel=list.length?mergeRecs(list):NAC;
+  }
   if(state.view==='mundo') paintWorld();
-  if(state.view==='influencia'){ paintRegions(); drawFlows(); }
+  if(state.view==='influencia'){ paintRegions(); drawFlows(); fitInfluencia(); }
   updateSymbols(); updateColumns();
-  refreshMarkers(); markSidebar(); renderZoneBar(); renderMapInfo();
-  if(p.lat!=null && state.view!=='mundo') map.panTo([p.lat,p.lon]);
+  refreshMarkers(); markSidebar(); renderRegionBar(); renderZoneBar(); renderMapInfo();
   renderPanel();
+}
+function select(p,additive){
+  state.selType='punto'; state.regionSel=null;
+  if(p.cod===0 || state.multi.has(0)) additive=false;
+  if(additive){
+    if(state.multi.has(p.cod)){ state.multi.delete(p.cod); if(!state.multi.size) state.multi.add(p.cod); }
+    else state.multi.add(p.cod);
+  } else state.multi=new Set([p.cod]);
+  applySelection();
+  if(!additive && p.lat!=null && state.view==='puntos') map.panTo([p.lat,p.lon]);
+}
+function selectRegion(rc){
+  if(!byReg[rc]) return;
+  state.selType='region'; state.regionSel=rc; state.multi=new Set();
+  applySelection();
+  if(state.view==='puntos'){ const c=REGCENT[rc]; if(c) map.setView(c,6); }
+}
+function fitInfluencia(){
+  const pts=[];
+  if(state.selType==='region'){
+    const c=REGCENT[state.sel.cod]; if(c)pts.push(c);
+    [...(state.sel.top_puntos_exp||[]),...(state.sel.top_puntos_imp||[])].forEach(t=>{
+      if(t.lat!=null && t.pct>=1) pts.push([t.lat,t.lon]); });
+  } else {
+    [...state.multi].map(c=>byCod[c]).forEach(p=>{ if(p&&p.lat!=null)pts.push([p.lat,p.lon]); });
+    ((state.metric==='imp'?state.sel.infl_imp:state.sel.infl_exp)||[]).forEach(r=>{
+      const c=REGCENT[r.cod]; if(c&&r.pct>=1)pts.push(c); });
+  }
+  if(pts.length>=2) map.fitBounds(L.latLngBounds(pts).pad(.2),{paddingTopLeft:[290,64],paddingBottomRight:[215,26]});
+  else if(pts.length===1) map.setView(pts[0],5);
+  else map.setView([-38,-71],4);
 }
 
 document.querySelectorAll('#viewSeg button').forEach(b=>b.onclick=()=>{ setView(b.dataset.v); renderZoneBar(); });
@@ -934,7 +1125,7 @@ document.querySelectorAll('#metricSeg button').forEach(b=>b.onclick=()=>{
   state.metric=b.dataset.m;
   document.querySelectorAll('#metricSeg button').forEach(x=>x.classList.toggle('on',x===b));
   if(state.view==='mundo'){paintWorld();renderLegend();}
-  if(state.view==='influencia'){paintRegions();renderLegend();}
+  if(state.view==='influencia'){paintRegions();drawFlows();fitInfluencia();renderLegend();}
   updateSymbols(); updateColumns(); renderZoneBar();
 });
 document.querySelectorAll('#tabs button').forEach(b=>b.onclick=()=>{

@@ -273,11 +273,75 @@ footer{padding:8px 18px;font-size:10px;color:var(--mut);line-height:1.5;backgrou
 footer b{color:var(--ink2)}
 button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var(--cop);outline-offset:2px}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
-@media (max-width:760px){.sidebar{display:none}.panel{height:52%}.stat{display:none}}
+
+/* =================== TABLET / iPad (≤1024px) =================== */
+.btn-menu{display:none}
+.sb-backdrop{display:none}
+@media (max-width:1024px){
+  /* header compacto (evita que se parta en dos lineas) */
+  header{padding:7px 12px;gap:10px;flex-wrap:nowrap}
+  header h1{font-size:14px;white-space:nowrap}
+  header .sub{display:none}
+  .btn-menu{display:inline-flex}
+  #btnHide{display:none}                 /* el auto-ocultar por hover no aplica en pantalla tactil */
+  .uitools{margin-right:2px}
+  .stat{padding:0 7px}
+  .stat .sl{font-size:8px;letter-spacing:.5px}
+  .stat .sv{font-size:13px}
+  .brand .sub{display:none}
+
+  /* sidebar -> cajon deslizante (overlay) que libera el ancho del mapa */
+  .sidebar{position:fixed;left:0;top:var(--hdrh,54px);bottom:0;width:min(300px,84vw);z-index:700;
+    transform:translateX(-100%);transition:transform .25s ease;box-shadow:16px 0 40px -14px rgba(0,0,0,.72)}
+  body.sb-open .sidebar{transform:none}
+  .sb-backdrop{position:fixed;left:0;right:0;bottom:0;top:var(--hdrh,54px);z-index:695;
+    background:rgba(0,0,0,.45);opacity:0;pointer-events:none;transition:opacity .2s}
+  body.sb-open .sb-backdrop{display:block;opacity:1;pointer-events:auto}
+  body.autohide .regionbar{position:static;transform:none;box-shadow:none}  /* neutraliza autohide */
+  .regionbar{padding:5px 10px 6px}
+
+  /* controles del mapa compactos + sin leyenda (gana espacio, los iconos/tooltips bastan) */
+  .controls{top:8px;left:8px;gap:7px;max-width:64vw}
+  .ctl-cap{font-size:7.5px;margin:0 0 2px 2px}
+  .seg button{padding:7px 9px;font-size:11px}
+  .seg.small button,.seg.tiny button{padding:5px 7px;font-size:10px}
+  .legend{display:none}
+  .search input{width:150px}
+  .results{width:200px}
+
+  /* barra de zonas mas angosta; top:52 la deja bajo el buscador (que va arriba-derecha) */
+  .zonebar{width:124px;top:52px;bottom:12px;padding:8px 8px}
+  .zonebar .zt{font-size:8px;margin-bottom:5px}
+  .zonebar .zseg .zp{font-size:11px}
+  .mapinfo{max-width:200px;left:8px;bottom:10px;padding:8px 10px;font-size:11px}
+  .mapinfo .mi-n{font-size:12px}
+
+  /* alturas: el mapa recupera altura, el panel flexiona y se puede arrastrar */
+  .top{flex:1 1 auto;min-height:40vh}
+  .panel{height:var(--panelh,48vh)}
+  .panelhead{flex-wrap:wrap;gap:7px 12px;padding:8px 12px 0}
+  .ph-id h2{font-size:16px}
+  .kpis{margin-left:0;gap:7px;flex:1 1 100%}
+  .kpi{min-width:0;flex:1 1 0;padding:6px 9px}
+  .kpi .l{font-size:8px}.kpi .v{font-size:14px}
+  .tabs{overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch;padding:8px 10px 0}
+  .tabs button{flex:0 0 auto;padding:9px 11px;font-size:12px}
+  .tabbody{grid-template-columns:repeat(auto-fit,minmax(248px,1fr));gap:12px;padding:12px}
+  .card.wide,.card.full{grid-column:auto}
+  .chartbox{height:216px}
+}
+/* iPad/movil estrecho en vertical (≤640px) */
+@media (max-width:640px){
+  .stat{display:none}
+  .controls{max-width:76vw}
+  .zonebar{width:108px}
+  .tabbody{grid-template-columns:1fr}
+}
 </style>
 </head>
 <body>
 <header>
+  <button class="iconbtn btn-menu" id="btnMenu" title="Mostrar / ocultar el menú de puntos" aria-label="Menú de puntos">☰</button>
   <div class="brand">
     <svg class="mk-logo" viewBox="0 0 40 40" fill="none">
       <circle cx="20" cy="20" r="18" stroke="#e3a566" stroke-width="1.4" opacity=".55"/>
@@ -304,6 +368,7 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
 
 <div class="app">
   <div class="top">
+    <div class="sb-backdrop" id="sbBackdrop"></div>
     <div class="sidebar">
       <div class="sbhead"><b>Ir a un punto</b>
         <div class="seg tiny" id="sbSort">
@@ -1302,7 +1367,7 @@ document.getElementById('foot').innerHTML=
  `<b>Fuente:</b> Servicio Nacional de Aduanas — microdatos DUS (exportaciones) y DIN (importaciones) ${D.meta.anio}; clasificador 2022 v2.0 y tablas de códigos (Anexo 51). Elaboración propia. Coordenadas: referencia geográfica pública. `+
  `<b>Cuadre:</b> suma FOB por punto = ${fmtUSD(cu.suma_fob_puntos)} (${cu.exp_cobertura_pct}% del total nacional); suma CIF = ${fmtUSD(cu.suma_cif_puntos)} (${cu.imp_cobertura_pct}%). `+
  `El área de influencia de importación usa la aduana de nacionalización (no destino final). `+
- `<b style="color:var(--cop)">build 2026-06-11 16:47 · 0e4178</b>`;
+ `<b style="color:var(--cop)">build 2026-06-23 11:28 · 0e4178</b>`;
 
 // orden del menu de puntos
 document.querySelectorAll('#sbSort button').forEach(b=>b.onclick=()=>{
@@ -1325,6 +1390,27 @@ function setAutohide(on){
 btnHide.onclick=()=>setAutohide(!state.autohide);
 window.addEventListener('resize',()=>{ if(state.autohide)
   document.documentElement.style.setProperty('--hdrh',document.querySelector('header').offsetHeight+'px'); });
+
+// --- cajón de puntos para tablet / iPad (≤1024px, táctil) ---
+const mqTablet = window.matchMedia('(max-width:1024px)');
+const btnMenu = document.getElementById('btnMenu');
+const sbBackdrop = document.getElementById('sbBackdrop');
+function setHdrH(){ document.documentElement.style.setProperty('--hdrh',document.querySelector('header').offsetHeight+'px'); }
+function closeDrawer(){ document.body.classList.remove('sb-open'); }
+function toggleDrawer(){ setHdrH(); document.body.classList.toggle('sb-open'); }
+if(btnMenu) btnMenu.onclick=toggleDrawer;
+if(sbBackdrop) sbBackdrop.onclick=closeDrawer;
+// al elegir un punto en el cajón, ciérralo para ver el mapa (la selección ya ocurrió por burbujeo)
+document.getElementById('sblist').addEventListener('click',()=>{ if(mqTablet.matches) closeDrawer(); });
+function syncTablet(){
+  setHdrH();
+  if(mqTablet.matches){ document.body.classList.remove('autohide'); }  // hover-autohide no aplica en touch
+  else { closeDrawer(); }
+  setTimeout(()=>map.invalidateSize(),60);
+}
+mqTablet.addEventListener('change',syncTablet);
+window.addEventListener('resize',setHdrH);
+window.addEventListener('orientationchange',()=>setTimeout(syncTablet,180));
 
 // tema claro / oscuro
 const btnTheme=document.getElementById('btnTheme');
@@ -1377,8 +1463,9 @@ drawPoints(); renderSidebar(); renderLegend(); select(NAC); setView('puntos'); r
 
 try{
   if(localStorage.getItem('dx_theme')==='light') setTheme(true);
-  if(localStorage.getItem('dx_autohide')==='1') setAutohide(true);
+  if(localStorage.getItem('dx_autohide')==='1' && !mqTablet.matches) setAutohide(true);
 }catch(e){}
+syncTablet();   // ajusta el cajón/alturas si se abrió en iPad o ventana angosta
 </script>
 </body>
 </html>

@@ -277,7 +277,9 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
 /* =================== TABLET / iPad (≤1024px) =================== */
 .btn-menu{display:none}
 .sb-backdrop{display:none}
-@media (max-width:1024px){
+/* aplica a pantallas angostas Y a cualquier dispositivo tactil (iPad en horizontal
+   mide >1024px pero igual necesita el layout movil para evitar el bug de WebKit) */
+@media (max-width:1024px), (hover:none) and (pointer:coarse){
   /* header compacto (evita que se parta en dos lineas) */
   header{padding:7px 12px;gap:10px;flex-wrap:nowrap}
   header h1{font-size:14px;white-space:nowrap}
@@ -316,14 +318,16 @@ button:focus-visible,input:focus-visible,.it:focus-visible{outline:2px solid var
   .mapinfo{max-width:200px;left:8px;bottom:10px;padding:8px 10px;font-size:11px}
   .mapinfo .mi-n{font-size:12px}
 
-  /* LAYOUT EN FLUJO VERTICAL SCROLLEABLE (robusto en iOS Safari: evita el colapso a 0
-     de las cadenas de altura flex con height:100%, que apila las secciones) */
-  html,body{height:auto;min-height:100%}
-  body{display:block;overflow-y:auto;-webkit-overflow-scrolling:touch}
+  /* LAYOUT EN FLUJO VERTICAL SCROLLEABLE (robusto en iOS/WebKit: evita el colapso a 0
+     de las cadenas de altura flex con height:100%, que apila las secciones).
+     Sin overflow/-webkit-overflow-scrolling en el body: hace scroll el documento y el
+     position:fixed del cajon se queda fijo de verdad. */
+  html{height:auto}
+  body{height:auto;min-height:100vh;display:block}
   header{position:sticky;top:0}
   .app{display:block;flex:none;min-height:0}
   .top{display:block;flex:none;min-height:0}
-  .mapwrap{height:62vh;min-height:340px}
+  .mapwrap{height:60vh;min-height:320px}
   .resizer{display:none}
   .panel{display:block;height:auto;min-height:0;box-shadow:none}
   .tabbody{height:auto;overflow:visible}
@@ -1376,7 +1380,7 @@ document.getElementById('foot').innerHTML=
  `<b>Fuente:</b> Servicio Nacional de Aduanas — microdatos DUS (exportaciones) y DIN (importaciones) ${D.meta.anio}; clasificador 2022 v2.0 y tablas de códigos (Anexo 51). Elaboración propia. Coordenadas: referencia geográfica pública. `+
  `<b>Cuadre:</b> suma FOB por punto = ${fmtUSD(cu.suma_fob_puntos)} (${cu.exp_cobertura_pct}% del total nacional); suma CIF = ${fmtUSD(cu.suma_cif_puntos)} (${cu.imp_cobertura_pct}%). `+
  `El área de influencia de importación usa la aduana de nacionalización (no destino final). `+
- `<b style="color:var(--cop)">build 2026-06-23 11:37 · 0e4178</b>`;
+ `<b style="color:var(--cop)">build 2026-06-23 16:29 · 0e4178</b>`;
 
 // orden del menu de puntos
 document.querySelectorAll('#sbSort button').forEach(b=>b.onclick=()=>{
@@ -1401,7 +1405,7 @@ window.addEventListener('resize',()=>{ if(state.autohide)
   document.documentElement.style.setProperty('--hdrh',document.querySelector('header').offsetHeight+'px'); });
 
 // --- cajón de puntos para tablet / iPad (≤1024px, táctil) ---
-const mqTablet = window.matchMedia('(max-width:1024px)');
+const mqTablet = window.matchMedia('(max-width:1024px), (hover:none) and (pointer:coarse)');
 const btnMenu = document.getElementById('btnMenu');
 const sbBackdrop = document.getElementById('sbBackdrop');
 function setHdrH(){ document.documentElement.style.setProperty('--hdrh',document.querySelector('header').offsetHeight+'px'); }

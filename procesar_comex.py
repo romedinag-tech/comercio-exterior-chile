@@ -30,7 +30,17 @@ csv.field_size_limit(10_000_000)
 # ---------------------------------------------------------------- rutas
 HERE   = os.path.dirname(os.path.abspath(__file__))
 STUDY  = os.path.dirname(HERE)
-COMEX  = os.path.join(STUDY, "Antecedentes", "Estadisticas COMEX")
+
+# Resolver PORTABLE de la carpeta de datos crudos (para que el build funcione aunque
+# esta carpeta se copie/mueva). Usa la primera de estas ubicaciones que exista:
+_COMEX_CANDIDATOS = [
+    os.path.join(STUDY, "Antecedentes", "Estadisticas COMEX"),            # ubicación original (Estudio/…)
+    os.path.join(HERE, "datos_fuente", "Estadisticas COMEX"),             # datos locales junto al script
+    os.path.join(HERE, "Antecedentes", "Estadisticas COMEX"),
+    os.environ.get("COMEX_DIR", ""),                                      # override por variable de entorno
+    r"C:\Users\Rodrigo\Análisis RMG\Puerto Calbuco\Estudio Demanda Futura Puerto Industrial\Antecedentes\Estadisticas COMEX",
+]
+COMEX = next((p for p in _COMEX_CANDIDATOS if p and os.path.isdir(p)), _COMEX_CANDIDATOS[0])
 EXPO   = os.path.join(COMEX, "Exportaciones", "salidas2025", "Salidas2025.csv")
 IMPO   = os.path.join(COMEX, "Importaciones", "Por lugar e ingreso", "ingresos_2025", "ingresos_2025.csv")
 TABLAS = os.path.join(COMEX, "Exportaciones", "tablas_de_codigos.xlsx")

@@ -10,23 +10,36 @@
 <script src="https://unpkg.com/leaflet.markercluster@1.5.3/dist/leaflet.markercluster.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Source+Serif+4:opsz,wght@8..60,400;8..60,500;8..60,600;8..60,700&family=Inter:wght@400;500;600;700&family=IBM+Plex+Mono:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root{
   color-scheme:dark;
-  /* --- superficies / tinta / líneas (MODO OSCURO, por defecto) --- */
-  --paper:#0B1020; --bg:#0B1020; --bg2:#0d1526; --surface:#121A30; --surface2:#1a2542; --glass:rgba(16,24,45,.72);
-  --line:#233152; --line2:rgba(255,255,255,.055);
-  --ink:#EAF0FB; --ink2:#aab6cf; --mut:#79859f;
-  /* --- semánticas comunes a ambos modos --- */
-  --navy:#16365a; --accent:#1F6FEB; --accent2:#1657c7; --accent-soft:rgba(31,111,235,.17);
-  --sea:#3B82F6; --land:#F4B740; --air:#34E1C4; --nac:#9aa6da; --region:#c99be6;
-  --exp:#4C93E0; --imp:#E06A78;               /* divergente accesible (aclarado para fondo oscuro) */
-  --map-neutral:#152036;                       /* relleno neutro de países/regiones en el mapa */
-  /* alias retro-compatibles: el accent institucional sustituye al cobre anterior */
+  /* --- superficies: near-black cálido (sistema "Panorama", modo oscuro por defecto) --- */
+  --paper:#0a0d13; --bg:#0a0d13; --bg2:#0d1119; --surface:#151c27; --surface2:#1a212c;
+  --glass:rgba(21,28,39,.82); --card-grad:linear-gradient(180deg,#1a212c 0%,#11161f 100%);
+  --line:#232c3a; --line2:#2b3547;
+  --ink:#e9eef5; --ink2:#aeb7c6; --mut:#8a93a5; --mut2:#6b7382;
+  /* --- acento = NARANJA LED (interacción/selección); firma del modo oscuro --- */
+  --accent:#ff6a1a; --accent2:#ff9d2f; --accent-soft:rgba(255,106,26,.16); --on-ink:#1a1206;
+  --led:0 0 6px rgba(255,150,40,.85),0 0 16px rgba(255,106,26,.55),0 0 30px rgba(255,106,26,.30);
+  --halo:0 0 10px 1px rgba(255,122,30,.55),0 0 22px 3px rgba(255,106,26,.28);
+  --navy:#16365a;
+  /* --- tipos de punto: paleta fría (el naranja queda reservado a la interacción) --- */
+  --sea:#5b83b0; --air:#3F8E86; --land:#D9A63C; --nac:#8a86c9; --region:#b06fb0;
+  /* --- flujo divergente exp/imp (aclarado para fondo oscuro) --- */
+  --exp:#5b9bd8; --imp:#d9576a;
+  --map-neutral:#141a24;                        /* relleno neutro de países/regiones en el mapa */
+  /* --- escala de elevación (3 niveles) + tarjeta con volumen --- */
+  --sh-sm:0 1px 2px rgba(0,0,0,.5);
+  --sh:0 8px 22px rgba(0,0,0,.55),0 2px 6px rgba(0,0,0,.5);
+  --sh-lg:0 20px 44px rgba(0,0,0,.62);
+  --card-3d:inset 0 1px 0 rgba(255,255,255,.06),inset 0 -18px 30px rgba(0,0,0,.28),0 18px 34px -12px rgba(0,0,0,.7),0 6px 12px -6px rgba(0,0,0,.55);
+  --shadow:var(--sh);                           /* alias legado (usado en muchas reglas) */
+  /* --- escala de radio --- */
+  --r-sm:10px; --r:14px; --r-lg:18px;
+  /* --- alias retro-compatible: el cobre anterior queda mapeado al accent --- */
   --cop:var(--accent); --cop2:var(--accent2); --cop-soft:var(--accent-soft);
-  --r:14px; --shadow:0 16px 44px -18px rgba(0,0,0,.72);
-  --font-display:'Fraunces',Georgia,'Times New Roman',serif;
+  --font-display:'Source Serif 4',Georgia,'Times New Roman',serif;
   --font-ui:'Inter',system-ui,-apple-system,sans-serif;
   --font-data:'IBM Plex Mono',ui-monospace,SFMono-Regular,monospace;
   --ff:var(--font-ui); --fd:var(--font-display);
@@ -34,8 +47,8 @@
 *{box-sizing:border-box}
 html,body{margin:0;height:100%;font-family:var(--ff);color:var(--ink);-webkit-font-smoothing:antialiased}
 body{display:flex;flex-direction:column;background:
-  radial-gradient(1200px 620px at 16% -12%, #14243f 0%, transparent 60%),
-  radial-gradient(900px 520px at 100% 0%, #141b30 0%, transparent 55%), var(--bg);}
+  radial-gradient(760px 440px at 88% -10%, rgba(255,106,26,.11) 0%, transparent 60%),
+  radial-gradient(900px 520px at 8% -10%, rgba(91,131,176,.07) 0%, transparent 55%), var(--bg);}
 .num{font-variant-numeric:tabular-nums;font-feature-settings:"tnum" 1}
 
 /* header */
@@ -45,7 +58,7 @@ header{padding:11px 20px;display:flex;align-items:center;gap:16px;flex-wrap:wrap
 header::after{content:"";position:absolute;left:0;right:0;bottom:-1px;height:1px;
   background:linear-gradient(90deg,transparent,var(--accent) 22%,transparent 70%);opacity:.6}
 .brand{display:flex;align-items:center;gap:12px}
-.brand .mk-logo{width:34px;height:34px;flex:0 0 auto;filter:drop-shadow(0 2px 7px rgba(31,111,235,.4))}
+.brand .mk-logo{width:34px;height:34px;flex:0 0 auto;filter:drop-shadow(0 2px 7px rgba(255,106,26,.45))}
 header h1{font-family:var(--fd);font-size:18px;margin:0;font-weight:500;letter-spacing:-.1px;line-height:1.05}
 header h1 b{color:var(--accent);font-weight:600}
 header .sub{font-size:11px;color:var(--mut);letter-spacing:.3px;margin-top:3px;font-family:var(--font-ui)}
@@ -71,15 +84,21 @@ body.autohide .regionbar:hover{transform:none}
 body.autohide .regionbar::after{content:"";position:absolute;left:0;right:0;bottom:0;height:9px;
   background:linear-gradient(180deg,transparent,rgba(227,165,102,.25))}
 
-/* ---- tema claro (mismos tokens, otros valores) ---- */
+/* ---- tema claro: institucional (acento AZUL; el naranja LED es firma solo del oscuro) ---- */
 body.light{
   color-scheme:light;
-  --paper:#FBFBFD; --bg:#FBFBFD; --bg2:#eef2f8; --surface:#FFFFFF; --surface2:#eef2f8; --glass:rgba(255,255,255,.9);
-  --line:#E3E8EF; --line2:rgba(15,23,42,.06);
-  --ink:#0E2338; --ink2:#3a4a63; --mut:#5b6b82;
-  --accent-soft:rgba(31,111,235,.12);
-  --exp:#2166AC; --imp:#B2182B;                /* valores exactos del brief (AA sobre claro) */
+  --paper:#FBFBFD; --bg:#FBFBFD; --bg2:#F4F6F9; --surface:#FFFFFF; --surface2:#F4F6F9; --glass:rgba(255,255,255,.92);
+  --card-grad:linear-gradient(180deg,#ffffff 0%,#f7f9fc 100%);
+  --line:#E3E8EF; --line2:#D6DEE9;
+  --ink:#0E2338; --ink2:#4A5A70; --mut:#4A5A70; --mut2:#7C8AA0;
+  --accent:#1F6FEB; --accent2:#1657c7; --accent-soft:rgba(31,111,235,.12); --on-ink:#ffffff;
+  --led:0 0 0 1px rgba(31,111,235,.35); --halo:0 0 0 3px rgba(31,111,235,.18);
+  --exp:#2166AC; --imp:#B2182B;                /* divergente exacto (AA sobre claro) */
   --map-neutral:#dfe7f2;
+  --sh-sm:0 1px 2px rgba(14,35,56,.05);
+  --sh:0 1px 3px rgba(14,35,56,.06),0 8px 24px rgba(14,35,56,.06);
+  --sh-lg:0 14px 40px rgba(14,35,56,.12);
+  --card-3d:0 1px 3px rgba(14,35,56,.06),0 10px 30px rgba(14,35,56,.08);
   background:var(--paper);
 }
 body.light header{background:linear-gradient(180deg,var(--surface),var(--bg2))}
@@ -141,6 +160,8 @@ body.light .leaflet-control-attribution{background:rgba(255,255,255,.7)!importan
 .leaflet-control-zoom a:hover{background:var(--surface2)!important;color:var(--ink)!important}
 .leaflet-control-attribution{background:rgba(8,13,21,.6)!important;color:var(--mut)!important;font-size:9.5px}
 .leaflet-control-attribution a{color:var(--ink2)!important}
+.leaflet-container{font-family:var(--font-ui)}   /* evita fugas de Lucida Console/Arial en los controles */
+.leaflet-control-zoom a{font-family:var(--font-ui)!important;font-weight:500}
 
 /* --- chrome del mapa consolidado (barra + popover "Capas") --- */
 .mapctl{position:absolute;top:12px;left:12px;z-index:640;display:flex;flex-direction:column;gap:8px;align-items:flex-start}
@@ -150,7 +171,7 @@ body.light .leaflet-control-attribution{background:rgba(255,255,255,.7)!importan
 .seg{background:var(--glass);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);display:flex;overflow:hidden;backdrop-filter:blur(10px)}
 .seg button{border:0;background:transparent;padding:7px 12px;font-size:12px;cursor:pointer;color:var(--ink2);font-weight:500;font-family:var(--font-ui);transition:color .15s,background .15s;white-space:nowrap;line-height:1.2}
 .seg button:hover{color:var(--ink)}
-.seg button.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.2)}
+.seg button.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--on-ink);font-weight:600;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),var(--led)}
 .seg.small button{padding:6px 11px;font-size:11px}
 .ctl-more{display:inline-flex;align-items:center;gap:7px;background:var(--glass);border:1px solid var(--line);border-radius:11px;box-shadow:var(--shadow);
   padding:7px 13px;font-size:12px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--font-ui);backdrop-filter:blur(10px);transition:all .15s}
@@ -158,8 +179,8 @@ body.light .leaflet-control-attribution{background:rgba(255,255,255,.7)!importan
 .ctl-more .cur{color:var(--mut);font-weight:500;font-size:11px}
 .ctl-more .cx{transition:transform .18s;font-size:9px;color:var(--mut)}
 .mapctl.open .ctl-more .cx{transform:rotate(180deg)}
-.ctl-pop{display:none;flex-direction:column;gap:2px;background:var(--glass);border:1px solid var(--line);border-radius:13px;
-  box-shadow:var(--shadow);padding:11px 13px 12px;backdrop-filter:blur(14px);min-width:220px;max-width:260px}
+.ctl-pop{display:none;flex-direction:column;gap:2px;background:var(--glass);border:1px solid var(--line);border-radius:var(--r-lg);
+  box-shadow:var(--sh-lg);padding:11px 13px 12px;backdrop-filter:blur(14px);min-width:220px;max-width:260px}
 .mapctl.open .ctl-pop{display:flex}
 .ctl-pop .seg{width:100%}
 .ctl-pop .seg button{flex:1;text-align:center}
@@ -187,19 +208,19 @@ body.light .leaflet-control-attribution{background:rgba(255,255,255,.7)!importan
   box-shadow:0 1px 5px rgba(0,0,0,.5),0 0 0 1px rgba(0,0,0,.28);box-sizing:border-box}
 .mk svg{width:60%;height:60%;display:block}
 .mk.faint,.mkdot.faint{opacity:.3}
-.mk.sel,.mkdot.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent),0 0 14px rgba(31,111,235,.6),0 2px 8px rgba(0,0,0,.55);
+.mk.sel,.mkdot.sel{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent),0 0 15px rgba(255,106,26,.65),0 2px 8px rgba(0,0,0,.55);
   animation:selpulse 1.8s ease-out infinite}
 @keyframes selpulse{
-  0%{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent),0 0 0 4px rgba(31,111,235,.5),0 2px 8px rgba(0,0,0,.55)}
-  70%{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent),0 0 0 15px rgba(31,111,235,0),0 2px 8px rgba(0,0,0,.55)}
-  100%{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent),0 0 0 0 rgba(31,111,235,0),0 2px 8px rgba(0,0,0,.55)}
+  0%{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent),0 0 0 4px rgba(255,106,26,.5),0 2px 8px rgba(0,0,0,.55)}
+  70%{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent),0 0 0 15px rgba(255,106,26,0),0 2px 8px rgba(0,0,0,.55)}
+  100%{box-shadow:0 0 0 2px #fff,0 0 0 4px var(--accent),0 0 0 0 rgba(255,106,26,0),0 2px 8px rgba(0,0,0,.55)}
 }
 @media (prefers-reduced-motion:reduce){.mk.sel,.mkdot.sel{animation:none}}
-/* --- clusters (agrupan puntos cercanos en zoom bajo) --- */
+/* --- clusters: neutros (steel→navy), el naranja queda solo para la selección --- */
 .leaflet-marker-icon.marker-cluster{background:none;border:none}
 .mkcluster{width:100%;height:100%;border-radius:50%;display:flex;align-items:center;justify-content:center;
-  font-family:var(--font-data);font-weight:600;font-size:11px;color:#fff;background:linear-gradient(180deg,rgba(31,111,235,.94),rgba(22,54,90,.94));
-  border:1.6px solid rgba(255,255,255,.9);box-shadow:0 2px 9px rgba(0,0,0,.5),0 0 0 4px rgba(31,111,235,.16);box-sizing:border-box}
+  font-family:var(--font-data);font-weight:600;font-size:11px;color:#fff;background:linear-gradient(180deg,rgba(91,131,176,.95),rgba(22,54,90,.95));
+  border:1.6px solid rgba(255,255,255,.9);box-shadow:0 2px 9px rgba(0,0,0,.5),0 0 0 4px rgba(91,131,176,.18);box-sizing:border-box}
 
 /* panel superior de regiones */
 .regionbar{display:flex;gap:6px;overflow-x:auto;padding:7px 14px 8px;background:var(--bg2);
@@ -269,7 +290,7 @@ body.light .tag.exp,body.light .tag.imp{color:var(--ink)}
 .ph-id h2{font-family:var(--fd);margin:2px 0 0;font-size:22px;font-weight:500;letter-spacing:-.3px;line-height:1.05}
 .ph-id .preg{font-size:11px;color:var(--mut);text-transform:uppercase;letter-spacing:.5px;margin-top:3px}
 .kpis{display:flex;gap:10px;margin-left:auto}
-.kpi{background:rgba(255,255,255,.035);border:1px solid var(--line2);border-radius:12px;padding:8px 15px;min-width:132px}
+.kpi{background:var(--surface2);border:1px solid var(--line2);border-radius:var(--r);padding:8px 15px;min-width:132px;box-shadow:var(--sh-sm)}
 .kpi .l{font-size:8.5px;color:var(--mut);text-transform:uppercase;letter-spacing:1px;font-weight:600}
 .kpi .v{font-family:var(--font-data);font-size:18px;font-weight:600;margin-top:3px;letter-spacing:-.5px}
 .kpi.exp .v{color:var(--exp)} .kpi.imp .v{color:var(--imp)} .kpi.tot{background:var(--accent-soft);border-color:color-mix(in srgb,var(--accent) 28%,transparent)} .kpi.tot .v{color:var(--accent)}
@@ -279,9 +300,8 @@ body.light .kpi.tot .v{color:var(--accent2)}
 .tabs button:hover{color:var(--ink2)}
 .tabs button.on{color:var(--ink);border-bottom-color:var(--accent)}
 .tabbody{flex:1;overflow-y:auto;overflow-x:hidden;display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:14px;padding:14px 18px;align-content:start}
-.card{overflow:auto;border:1px solid var(--line);border-radius:14px;padding:13px 15px;min-height:0;
-  background:linear-gradient(180deg,rgba(255,255,255,.028),rgba(255,255,255,.008))}
-body.light .card{background:var(--surface)}
+.card{overflow:auto;border:1px solid var(--line);border-radius:var(--r-lg);padding:14px 16px;min-height:0;
+  background:var(--card-grad);box-shadow:var(--card-3d)}
 .card.wide{grid-column:span 2}
 .card.full{grid-column:1/-1}
 @media (max-width:720px){.card.wide,.card.full{grid-column:auto}}
@@ -299,7 +319,7 @@ body.light .bars .b .track{background:rgba(15,23,42,.08)}
 .subseg{display:flex;gap:7px;flex-wrap:wrap;margin-bottom:10px}
 .subseg button{border:1px solid var(--line);background:rgba(255,255,255,.03);border-radius:9px;padding:6px 11px;font-size:11.5px;font-weight:600;color:var(--ink2);cursor:pointer;font-family:var(--font-ui);transition:all .15s}
 .subseg button:hover{border-color:var(--accent)}
-.subseg button.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;border-color:transparent}
+.subseg button.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--on-ink);border-color:transparent}
 .cmpgrp{margin-bottom:8px;border:1px solid var(--line2);border-radius:10px;padding:6px 8px}
 .cmpgh{display:flex;align-items:center;gap:7px;font-size:11px;font-weight:600;color:var(--ink2);cursor:pointer;user-select:none}
 .cmpgh:hover{color:var(--ink)}
@@ -311,7 +331,7 @@ body.light .bars .b .track{background:rgba(15,23,42,.08)}
 .cmp-pick{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:11px}
 .cmp-pick .chip{font-size:11px;padding:4px 10px;border-radius:999px;border:1px solid var(--line);cursor:pointer;background:rgba(255,255,255,.03);color:var(--ink2);transition:all .14s}
 .cmp-pick .chip:hover{border-color:var(--accent)}
-.cmp-pick .chip.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:#fff;border-color:transparent;font-weight:600}
+.cmp-pick .chip.on{background:linear-gradient(180deg,var(--accent),var(--accent2));color:var(--on-ink);border-color:transparent;font-weight:600}
 .muted{color:var(--mut);font-size:11.5px;line-height:1.5}
 footer{padding:8px 18px;font-size:10px;color:var(--mut);line-height:1.5;background:var(--bg2);border-top:1px solid var(--line2)}
 footer b{color:var(--ink2)}
@@ -352,8 +372,10 @@ button:focus-visible,input:focus-visible,.it:focus-visible,[tabindex]:focus-visi
   .mapctl{position:fixed;left:0;right:0;bottom:0;top:auto;z-index:760;display:flex;flex-direction:column;gap:9px;align-items:stretch;
     background:var(--surface);border-top:1px solid var(--line);border-radius:18px 18px 0 0;
     padding:16px 16px calc(16px + env(safe-area-inset-bottom));box-shadow:0 -18px 44px -16px rgba(0,0,0,.6);
-    transform:translateY(112%);visibility:hidden;transition:transform .28s cubic-bezier(.22,.61,.36,1),visibility 0s linear .28s;max-height:82vh;overflow:auto}
-  body.sheet-open .mapctl{transform:none;visibility:visible;transition:transform .28s cubic-bezier(.22,.61,.36,1),visibility 0s}
+    transform:translateY(112%);visibility:hidden;opacity:0;pointer-events:none;
+    transition:transform .28s cubic-bezier(.22,.61,.36,1),visibility 0s linear .28s;max-height:82vh;overflow:auto}
+  body.sheet-open .mapctl{transform:none;visibility:visible;opacity:1;pointer-events:auto;
+    transition:transform .28s cubic-bezier(.22,.61,.36,1),visibility 0s}
   .mapctl::before{content:"";position:sticky;top:0;align-self:center;width:42px;height:4px;border-radius:4px;background:var(--line);margin-bottom:2px}
   .mapctl-head{display:flex;align-items:center;justify-content:space-between}
   .mapctl-head b{font-family:var(--font-ui);font-size:10px;text-transform:uppercase;letter-spacing:1.4px;color:var(--ink2);font-weight:600}
@@ -404,6 +426,27 @@ button:focus-visible,input:focus-visible,.it:focus-visible,[tabindex]:focus-visi
   .card{overflow:visible}
   .card.wide,.card.full{grid-column:auto}
   .chartbox{height:216px}
+
+  /* --- ergonomía táctil: objetivos ≥44px + texto legible (hallazgos móviles del diagnóstico) --- */
+  .iconbtn{width:40px;height:40px;font-size:16px}
+  .btn-menu{width:44px;height:40px}
+  .search input{height:42px;font-size:14px;width:150px}
+  .mapfab{min-height:44px;padding:11px 15px;font-size:13px;border-radius:var(--r)}
+  .mapctl-head .sheet-x{width:44px;height:44px;font-size:18px}
+  .grp .gh{padding:12px 12px;font-size:14px;min-height:48px}
+  .gitems .it{padding:12px 14px 12px 42px;font-size:13.5px;min-height:44px;align-items:center}
+  .gitems .it .v{font-size:12.5px}
+  .rchip{padding:8px 12px 9px;min-height:46px;display:flex;flex-direction:column;justify-content:center}
+  .rchip .rn{font-size:12px}.rchip .rv{font-size:11.5px}
+  .tabs button{padding:13px 13px;font-size:13.5px;min-height:46px}
+  .leaflet-control-zoom a{width:40px!important;height:40px!important;line-height:40px!important;font-size:20px!important}
+  .seg button{padding:11px 10px;font-size:13px}
+  .ctl-pop .ctl-cap{font-size:10px}
+  .legend{font-size:13px}
+  .sbhead b{font-size:12px}.sbhead .hint{font-size:12px}
+  .card h3{font-size:11.5px}
+  .bars .b .t{font-size:12.5px}
+  .muted{font-size:12.5px}
 }
 /* iPad/movil estrecho en vertical (≤640px) */
 @media (max-width:640px){
@@ -417,9 +460,9 @@ button:focus-visible,input:focus-visible,.it:focus-visible,[tabindex]:focus-visi
   <button class="iconbtn btn-menu" id="btnMenu" title="Mostrar / ocultar el menú de puntos" aria-label="Menú de puntos">☰</button>
   <div class="brand">
     <svg class="mk-logo" viewBox="0 0 40 40" fill="none">
-      <circle cx="20" cy="20" r="18" stroke="#1F6FEB" stroke-width="1.4" opacity=".6"/>
-      <circle cx="20" cy="20" r="13" stroke="#34E1C4" stroke-width="1" opacity=".45"/>
-      <path d="M20 3 L23 17 L37 20 L23 23 L20 37 L17 23 L3 20 L17 17 Z" fill="#1F6FEB"/>
+      <circle cx="20" cy="20" r="18" stroke="#ff6a1a" stroke-width="1.4" opacity=".62"/>
+      <circle cx="20" cy="20" r="13" stroke="#5b83b0" stroke-width="1" opacity=".5"/>
+      <path d="M20 3 L23 17 L37 20 L23 23 L20 37 L17 23 L3 20 L17 17 Z" fill="#ff6a1a"/>
       <circle cx="20" cy="20" r="2.4" fill="#0B1020"/>
     </svg>
     <div>
@@ -764,8 +807,8 @@ function refreshMarkers(){ PUNTOS.forEach(p=>{ const m=markers[p.cod]; if(m) m.s
 
 // choropleth — escala luminosa segun la métrica
 const RAMP={
-  exp:[[0,'#0e2c29'],[1,'#13524a'],[5,'#1c8a78'],[15,'#2dd4bf'],[30,'#8df0e3']],
-  imp:[[0,'#321a10'],[1,'#5e2f18'],[5,'#9c5028'],[15,'#f47b46'],[30,'#ffb78f']]
+  exp:[[0,'#12263f'],[1,'#1c3f66'],[5,'#2f6bae'],[15,'#5b9bd8'],[30,'#9cc4ea']],
+  imp:[[0,'#3a1620'],[1,'#5e2230'],[5,'#a13548'],[15,'#d9576a'],[30,'#eda0ab']]
 };
 function rampMetric(pct){ const k=state.metric==='imp'?'imp':'exp'; let c=RAMP[k][0][1]; for(const[t,col]of RAMP[k]){ if(pct>=t) c=col; } return c; }
 function selCountryShares(){
@@ -1527,7 +1570,7 @@ document.getElementById('foot').innerHTML=
  `<b>Fuente:</b> Servicio Nacional de Aduanas — microdatos DUS (exportaciones) y DIN (importaciones) ${D.meta.anio}; clasificador 2022 v2.0 y tablas de códigos (Anexo 51). Elaboración propia. Coordenadas: referencia geográfica pública. `+
  `<b>Cuadre:</b> suma FOB por punto = ${fmtUSD(cu.suma_fob_puntos)} (${cu.exp_cobertura_pct}% del total nacional); suma CIF = ${fmtUSD(cu.suma_cif_puntos)} (${cu.imp_cobertura_pct}%). `+
  `El área de influencia de importación usa la aduana de nacionalización (no destino final). `+
- `<b style="color:var(--cop)">build 2026-07-08 18:16 · 0e4178</b>`;
+ `<b style="color:var(--cop)">build 2026-07-16 01:11 · 0e4178</b>`;
 
 // orden del menu de puntos
 document.querySelectorAll('#sbSort button').forEach(b=>b.onclick=()=>{

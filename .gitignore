@@ -1,9 +1,21 @@
 # datos crudos / temporales (los microdatos viven fuera de este repo)
 *.rar
 *.zip
+# consultas: análisis de carga puntuales (privado, no viaja al sitio público)
+consultas/
+# banco SIELP / Observatorio Logístico: el crudo son 54,4 MB en 98 archivos y se
+# reproduce con `python -X utf8 descarga_sielp.py`. Quedan en git el destilado
+# (49 parquet, 1,7 MB) y `_descarga.json`, que es el registro de procedencia con
+# el sha256 de cada crudo — sin él no se puede verificar lo que se bajó.
+data/sielp/raw/
+_hub_encargos/
+_work/
 _diag_*.json
 _try.geojson
 __pycache__/
 *.pyc
 .DS_Store
 Thumbs.db
+# tabla larga de puntos: la produce procesar_comex.py y el sitio no la lee (lee data_bundle.js);
+# retirada del repositorio público el 2026-11-11 (encargo licencia-y-retiro-de-codigo); sigue en disco
+data/puntos_tidy.csv
